@@ -106,16 +106,16 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   return (
     <div className="pb-24 p-4 lg:p-6 space-y-6">
 
-      <section className="bg-white dark:bg-[zinc-900] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 lg:p-6 flex flex-col">
+      <section className="bg-soft-bg dark:bg-zinc-900 rounded-[24px] shadow-soft border-none p-5 lg:p-6 flex flex-col">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-zinc-500 flex items-center gap-2">
+            <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-soft-text-muted flex items-center gap-2">
               <span>🏷️</span> Promoções e Mercados
             </h2>
           </div>
 
         {/* SELETOR DE MERCADO */}
-        <div className="bg-zinc-50 dark:bg-zinc-900/50 p-5 rounded-2xl mb-6">
-          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-zinc-500 flex items-center gap-2">
+        <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] mb-6 border-none">
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-soft-text-muted flex items-center gap-2">
             <Store size={16} /> Selecione ou Adicione um Mercado
           </label>
           
@@ -123,14 +123,14 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
             <select 
               value={selectedMarket} 
               onChange={e => setSelectedMarket(e.target.value)}
-              className="flex-1 p-3 bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-zinc-700 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-3 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] font-medium focus:outline-none focus:ring-2 focus:ring-soft-primary"
             >
               <option value="" disabled>-- Escolha um mercado --</option>
               {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
             
             {selectedMarket && (
-              <button onClick={() => removeMarket(selectedMarket)} className="p-3 text-red-500 bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-zinc-700 hover:bg-red-50 rounded-xl transition-colors">
+              <button onClick={() => removeMarket(selectedMarket)} className="p-3 text-red-400 bg-soft-bg dark:bg-zinc-700/50 border-none hover:bg-red-50 rounded-[20px] transition-colors">
                 <Trash2 size={20} />
               </button>
             )}
@@ -142,24 +142,24 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               value={newMarketName} 
               onChange={e => setNewMarketName(e.target.value)} 
               placeholder="Novo mercado (ex: Extra)"
-              className="flex-1 p-3 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-3 text-sm bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary placeholder-zinc-300"
             />
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 transition-colors text-white px-4 rounded-xl font-semibold text-sm">Criar</button>
+            <button type="submit" className="bg-soft-primary hover:bg-soft-primary-hover transition-colors text-white px-5 rounded-full font-semibold text-sm active:scale-95 shadow-primary">Criar</button>
           </form>
         </div>
 
         {/* CADASTRAR PROMOÇÃO */}
         {selectedMarket ? (
-          <div className="bg-zinc-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800/50 mb-6">
-            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-4 flex flex-row items-center gap-2">
+          <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] border-none mb-6 shadow-sm">
+            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-primary mb-4 flex flex-row items-center gap-2">
               <Plus size={16} /> Adicionar Nova Promoção
             </h3>
             <form onSubmit={handleAddPromotion} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-zinc-500">Produto</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Produto</label>
                 <div 
                   onClick={() => setShowCatalog(true)}
-                  className={`w-full p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/50 rounded-xl cursor-pointer ${itemName ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400'}`}
+                  className={`w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] cursor-pointer ${itemName ? 'text-soft-text-main dark:text-zinc-100' : 'text-zinc-400'}`}
                 >
                   {itemName || "Selecionar produto..."}
                 </div>
@@ -167,14 +167,14 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-zinc-500">Preço Ofertado (R$)</label>
-                  <input type="tel" value={getPriceDisplayValue(price)} onChange={e => handlePriceInput(e.target.value)} placeholder="0,00" className="w-full p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/50 rounded-xl font-semibold text-blue-600 dark:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Preço Ofertado (R$)</label>
+                  <input type="tel" value={getPriceDisplayValue(price)} onChange={e => handlePriceInput(e.target.value)} placeholder="0,00" className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] font-semibold text-soft-primary focus:outline-none focus:ring-2 focus:ring-soft-primary" required />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-zinc-500">Por (Qtd / Un)</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Por (Qtd / Un)</label>
                   <div className="flex gap-1">
-                    <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(Number(e.target.value))} className="w-1/2 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-                    <select value={unit} onChange={e => setUnit(e.target.value as Unit)} className="w-1/2 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(Number(e.target.value))} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-main" required />
+                    <select value={unit} onChange={e => setUnit(e.target.value as Unit)} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-muted">
                       {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                     </select>
                   </div>
@@ -182,17 +182,17 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-zinc-500">Válido Até (opcional)</label>
-                <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Válido Até (opcional)</label>
+                <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
               </div>
 
-              <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-2xl font-semibold text-lg transition-colors">
+              <button type="submit" className="w-full bg-soft-primary hover:bg-soft-primary-hover text-white p-4 pt-4 mt-2 rounded-full font-semibold text-lg transition-transform active:scale-95 shadow-primary">
                 Salvar Promoção
               </button>
             </form>
           </div>
         ) : (
-          <div className="text-center text-zinc-400 pt-8 pb-8 flex flex-col items-center bg-zinc-50 dark:bg-[#1C1C1E] rounded-2xl">
+          <div className="text-center text-zinc-400 pt-8 pb-8 flex flex-col items-center bg-soft-card dark:bg-[#1C1C1E] rounded-[24px]">
             <Store size={48} className="opacity-20 mb-3" />
             <p>Selecione ou adicione um mercado primeiro.</p>
           </div>
@@ -200,33 +200,33 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
 
         {/* LISTA DE PROMOÇÕES DO MERCADO */}
         {selectedMarket && marketPromos.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Ofertas Salvas em {markets.find(m=>m.id===selectedMarket)?.name}</h3>
+          <div className="space-y-4">
+            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-3 ml-2">Ofertas Salvas em {markets.find(m=>m.id===selectedMarket)?.name}</h3>
             {marketPromos.map(promo => {
               const base = convertToBaseUnit(promo.qty, promo.unit);
               const pricePerBase = getPricePerBaseUnit(promo.price, promo.qty, promo.unit);
               
               return (
-                <div key={promo.id} className="bg-zinc-50 dark:bg-zinc-900/50 p-5 rounded-2xl flex justify-between items-center gap-4 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900">
+                <div key={promo.id} className="bg-soft-card dark:bg-zinc-800 p-5 rounded-[24px] shadow-sm flex justify-between items-center gap-4 transition-all">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap">{formatItemName(promo.itemName)}</h4>
-                    <div className="text-blue-600 font-semibold text-[18px] my-0.5">{formatMoney(promo.price)}</div>
-                    <div className="flex gap-2 text-[11px] text-zinc-500 font-semibold uppercase tracking-wide mt-1.5 flex-wrap">
-                      <span className="bg-zinc-200 dark:bg-zinc-800 py-1 px-2 rounded-lg">Por: {promo.qty} {promo.unit}</span>
+                    <h4 className="font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap text-soft-text-main">{formatItemName(promo.itemName)}</h4>
+                    <div className="text-soft-primary font-semibold text-[20px] my-0.5">{formatMoney(promo.price)}</div>
+                    <div className="flex gap-2 text-[11px] text-soft-text-muted font-semibold uppercase tracking-wide mt-2 flex-wrap">
+                      <span className="bg-soft-bg dark:bg-zinc-700 py-1 px-3 rounded-full">Por: {promo.qty} {promo.unit}</span>
                       {base.qty !== 1 && (
-                        <span className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 py-1 px-2 rounded-lg">
+                        <span className="bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 py-1 px-3 rounded-full border border-amber-100 dark:border-none">
                           Equivale a {formatMoney(pricePerBase)} / {base.unit}
                         </span>
                       )}
                     </div>
                     {promo.expiryDate && (
-                      <div className="text-[11px] font-semibold text-red-500 mt-2 flex items-center gap-1">
+                      <div className="text-[11px] font-semibold text-red-400 mt-2 flex items-center gap-1.5 opacity-90">
                         <Calendar size={12} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                       </div>
                     )}
                   </div>
                   
-                  <button onClick={() => setPromotions(promotions.filter(p => p.id !== promo.id))} className="text-zinc-400 hover:text-red-500 p-2 bg-white dark:bg-[#1C1C1E] rounded-xl border border-zinc-200 dark:border-zinc-700">
+                  <button onClick={() => setPromotions(promotions.filter(p => p.id !== promo.id))} className="text-zinc-400 hover:text-red-400 p-2.5 bg-soft-bg dark:bg-zinc-700 rounded-full">
                     <Trash2 size={18} />
                   </button>
                 </div>

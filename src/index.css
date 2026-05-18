@@ -1,54 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
 
-  /* Soft Pastel Blue */
-  --color-blue-50: #F4F7FB;
-  --color-blue-100: #E6EEF5;
-  --color-blue-200: #CDDEEE;
-  --color-blue-300: #ACC8E4;
-  --color-blue-400: #8EB3DA;
-  --color-blue-500: #7AA4D8;
-  --color-blue-600: #628BBF;
-  --color-blue-700: #4B6F9A;
-  --color-blue-800: #3D5A7C;
-  --color-blue-900: #2C435F;
+  /* Soft UI Typography */
+  --color-soft-text-main: #1D1617;
+  --color-soft-text-muted: #7B6F72;
+  
+  /* Soft UI Palette */
+  --color-soft-bg: #FFFFFF;
+  --color-soft-card: #F7F8F8;
+  --color-soft-primary: #F34E3A;
+  --color-soft-primary-hover: #D94432;
+  --color-soft-primary-light: #FEF0EE;
+  --color-soft-accent: #9DCEFF;
 
-  /* Pastel Peach/Terracotta */
-  --color-amber-50: #FCF7F5;
-  --color-amber-100: #F6EBE5;
-  --color-amber-200: #EED7CE;
-  --color-amber-300: #E5B299;
-  --color-amber-400: #E5B299;
-  --color-amber-500: #DCA796;
-  --color-amber-600: #CE8F7B;
-  --color-amber-700: #B77A65;
-  --color-amber-800: #9B6250;
-  --color-amber-900: #7E4A3B;
-
-  /* Soft Coral Red */
-  --color-red-50: #FDF6F6;
-  --color-red-100: #FAEEEE;
-  --color-red-200: #F1D4D4;
-  --color-red-300: #E6B5B5;
-  --color-red-400: #DC9898;
-  --color-red-500: #D98282;
-  --color-red-600: #C26B6B;
-  --color-red-700: #A65757;
-  --color-red-800: #884444;
-  --color-red-900: #6B3434;
-
-  /* Dark Mode & Soft UI Zinc Adjustments */
-  --color-black: #1C1C1E; /* Replace pure black for soft UI dark bg */
-  --color-zinc-50: #F2F2F7; /* Light mode bg */
-  --color-zinc-100: #EBEBF5; /* Dark mode main text (off-white) */
-  --color-zinc-200: #E5E5EA; /* Light mode card borders */
-  --color-zinc-300: #D1D1D6; /* Dark mode regular text */
-  --color-zinc-400: #8E8E93; /* Subtle text */
-  --color-zinc-500: #636366; /* Secondary text */
-  --color-zinc-800: #333336; /* Dark mode card alternative (slightly lighter) */
-  --color-zinc-900: #2C2C2E; /* Dark mode card surfaces */
+  /* Shadows */
+  --shadow-soft: 0px 10px 40px rgba(29, 22, 23, 0.07);
+  --shadow-primary: 0px 8px 20px rgba(243, 78, 58, 0.3);
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -56,4 +26,7 @@
 html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-soft-bg);
+  color: var(--color-soft-text-main);
 }
+

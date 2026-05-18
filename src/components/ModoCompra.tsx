@@ -81,22 +81,22 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   }
 
   return (
-    <div className="pb-28 p-4 lg:p-6 space-y-4">
-      <div className={`sticky top-4 z-20 transition-all ${overBudget ? 'bg-red-50 dark:bg-red-900/50 border-red-200' : 'bg-white dark:bg-[zinc-900] border-zinc-200 dark:border-zinc-800'} rounded-2xl border p-5 flex flex-col mb-6 shadow-sm`}>
+    <div className="pb-28 p-4 lg:p-6">
+      <div className={`sticky top-4 z-20 transition-all ${overBudget ? 'bg-red-50 dark:bg-red-900/50' : 'bg-soft-bg dark:bg-zinc-800'} rounded-[24px] shadow-soft p-5 border-none flex flex-col mb-6`}>
         <div className="flex justify-between items-center">
-          <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-zinc-500 flex items-center gap-2">
+          <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-soft-text-muted flex items-center gap-2">
              <span>⚡</span> Modo Compra
           </h2>
           <div className="text-right">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-0.5">Total Atual</p>
-            <p className={`text-[28px] font-semibold leading-none tracking-tight ${overBudget ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-500'}`}>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-soft-text-muted mb-0.5">Total Atual</p>
+            <p className={`text-[28px] font-semibold leading-none tracking-tight ${overBudget ? 'text-red-600 dark:text-red-400' : 'text-soft-primary'}`}>
               {formatMoney(totalSpent)}
             </p>
           </div>
         </div>
         {settings.budget > 0 && (
-          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-             <div className="text-[12px] font-semibold text-zinc-500">
+          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700 flex justify-between items-center">
+             <div className="text-[12px] font-semibold text-soft-text-muted">
                Orçamento: {formatMoney(settings.budget)}
              </div>
              {overBudget && (
@@ -108,23 +108,23 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-4 mt-2">
         {sortedItems.map(item => (
           <div 
             key={item.id} 
-            className={`p-4 rounded-2xl border-2 transition-all ${
+            className={`p-5 rounded-[24px] shadow-soft border-none transition-all ${
               item.isBought 
-                ? 'bg-zinc-50 dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-800 opacity-70' 
-                : 'bg-white dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-800'
+                ? 'bg-soft-card/50 dark:bg-[#1C1C1E] opacity-70' 
+                : 'bg-soft-bg dark:bg-zinc-800'
             }`}
           >
-            <div className="flex gap-3 items-start">
+            <div className="flex gap-4 items-start">
               <button onClick={() => toggleBought(item.id)} className={`shrink-0 mt-1 transition-transform active:scale-90 ${item.isBought ? '' : 'hover:scale-110'}`}>
-                {item.isBought ? <Check size={26} className="text-blue-600 dark:text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-full p-1 border-[1.5px] border-blue-600" strokeWidth={3} /> : <Circle size={26} className="text-zinc-300 dark:text-zinc-600" strokeWidth={2} />}
+                {item.isBought ? <Check size={26} className="text-white bg-soft-primary rounded-full p-1 border-[2px] border-soft-primary" strokeWidth={3} /> : <Circle size={26} className="text-zinc-300 dark:text-zinc-500" strokeWidth={2} />}
               </button>
               
               <div className="flex-1 min-w-0 pr-2">
-                <div className={`font-semibold text-[16px] dark:text-zinc-200 leading-snug text-wrap ${item.isBought ? 'line-through text-zinc-400 dark:text-zinc-500' : ''}`}>{formatItemName(item.name)}</div>
+                <div className={`font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap ${item.isBought ? 'line-through text-soft-text-muted dark:text-zinc-500' : 'text-soft-text-main'}`}>{formatItemName(item.name)}</div>
                 {context.promotions.find(p => p.itemName === item.name) && (() => {
                   const promo = context.promotions.find(p => p.itemName === item.name)!;
                   const market = context.markets.find(m => m.id === promo.marketId);
@@ -133,7 +133,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                       onClick={() => {
                         setItems(items.map(i => i.id === item.id ? { ...i, actualPrice: promo.price, qty: promo.qty || 1, unit: promo.unit || 'un' } : i));
                       }}
-                      className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-md mt-1 inline-block border border-orange-200 dark:border-orange-500/20 active:scale-95 transition-transform whitespace-normal text-left"
+                      className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-full mt-1 inline-block border-none active:scale-95 transition-transform whitespace-normal text-left"
                     >
                       Promo no {market?.name || 'Mercado'}: {formatMoney(promo.price)}/{promo.qty} {promo.unit} (Aplicar)
                     </button>
@@ -142,43 +142,43 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                 
                 <div className="flex items-center gap-2 mt-2.5">
                   {['kg', 'l'].includes(item.unit.toLowerCase()) ? (
-                    <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                    <div className="flex items-center bg-soft-card dark:bg-zinc-700/50 rounded-full p-1 focus-within:ring-2 focus-within:ring-soft-primary transition-all">
                       <input 
                         type="tel"
                         value={getQtyDisplayValue(item.qty, item.unit)}
                         onChange={(e) => handleQtyChange(item.id, e.target.value, item.unit)}
-                        className="w-[72px] bg-transparent text-center text-[14px] font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none py-1"
+                        className="w-[72px] bg-transparent text-center text-[14px] font-semibold text-soft-text-main dark:text-zinc-100 focus:outline-none py-1"
                       />
                     </div>
                   ) : (
-                    <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                      <button onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition-colors"><Minus size={14}/></button>
+                    <div className="flex items-center bg-soft-card dark:bg-zinc-700/50 rounded-full p-1 focus-within:ring-2 focus-within:ring-soft-primary transition-all">
+                      <button onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-2 text-soft-text-muted hover:text-soft-text-main dark:hover:text-zinc-100 transition-colors"><Minus size={14}/></button>
                       <input 
                         type="tel"
                         value={getQtyDisplayValue(item.qty, item.unit)}
                         onChange={(e) => handleQtyChange(item.id, e.target.value, item.unit)}
-                        className="w-8 bg-transparent text-center text-[14px] font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                        className="w-8 bg-transparent text-center text-[14px] font-semibold text-soft-text-main dark:text-zinc-100 focus:outline-none"
                       />
-                      <button onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition-colors"><Plus size={14}/></button>
+                      <button onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-2 text-soft-text-muted hover:text-soft-text-main dark:hover:text-zinc-100 transition-colors"><Plus size={14}/></button>
                     </div>
                   )}
-                  <span className="text-[10px] font-semibold text-zinc-400 uppercase bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700">{item.unit}</span>
+                  <span className="text-[10px] font-semibold text-soft-text-muted uppercase bg-soft-card dark:bg-zinc-800 px-3 py-2 rounded-full">{item.unit}</span>
                 </div>
               </div>
 
               <div className="w-[100px] shrink-0">
                 <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-zinc-400">R$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-soft-text-muted">R$</span>
                   <input 
                     type="tel" 
                     value={getPriceDisplayValue(item.actualPrice || 0)}
                     onChange={(e) => handlePriceInput(item.id, e.target.value)}
                     placeholder="0,00"
-                    className={`w-full pl-7 pr-3 py-2 bg-zinc-50 dark:bg-zinc-900 border ${item.isBought ? 'border-blue-300 dark:border-blue-700/50 bg-blue-50/50 dark:bg-blue-900/10' : 'border-zinc-200 dark:border-zinc-800'} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400 text-right text-[15px] transition-colors`}
+                    className={`w-full pl-7 pr-4 py-3 bg-soft-card dark:bg-zinc-700/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold ${item.isBought ? 'opacity-80 text-soft-text-main' : 'text-soft-primary'} text-right text-[15px] transition-colors`}
                   />
                 </div>
                 {item.isBought && (item.actualPrice || 0) > 0 && (item.qty || 0) > 0 && (
-                   <div className="text-[10px] text-right mt-1.5 font-semibold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md inline-block float-right border border-zinc-200 dark:border-zinc-700">
+                   <div className="text-[10px] text-right mt-2 font-semibold text-soft-text-muted px-2 py-1 inline-block float-right">
                      = {formatMoney(item.qty * (item.actualPrice || 0))}
                    </div>
                 )}

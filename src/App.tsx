@@ -99,26 +99,44 @@ export default function App() {
     fetchData();
 
     if (session?.user) {
-      const channel = supabase.channel('schema-db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, fetchData)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'markets' }, fetchData)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, fetchData)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchData)
-        .subscribe((status) => {
-          console.log(`🔌 Supabase Realtime Status: ${status}`);
-          if (status === 'SUBSCRIBED') {
-            console.log('✅ Conexão Realtime estabelecida com sucesso!');
-          } else if (status === 'CLOSED') {
-            console.warn('⚠️ Conexão Realtime foi fechada.');
-          } else if (status === 'CHANNEL_ERROR') {
-            console.error('❌ Erro no canal Realtime.');
-          } else if (status === 'TIMED_OUT') {
-            console.error('⏱️ Conexão Realtime esgotou o tempo limite.');
-          }
-        });
+      let channel: ReturnType<typeof supabase.channel>;
+      let retryTimeout: NodeJS.Timeout;
+
+      const setupRealtime = () => {
+        if (channel) supabase.removeChannel(channel);
+        
+        channel = supabase.channel('schema-db-changes')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, fetchData)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'markets' }, fetchData)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, fetchData)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchData)
+          .subscribe((status, err: any) => {
+            console.log(`🔌 Supabase Realtime Status: ${status}`);
+            if (status === 'SUBSCRIBED') {
+              console.log('✅ Conexão Realtime estabelecida com sucesso!');
+            } else if (status === 'CLOSED') {
+              console.warn('⚠️ Conexão Realtime foi fechada.');
+            } else if (status === 'CHANNEL_ERROR') {
+              const errMsg = err?.message || err;
+              if (String(errMsg).includes('1006')) {
+                console.warn('⚠️ Conexão Realtime interrompida (1006). Pode ser oscilação de rede ou falta de permissão de replicação no Supabase. Tentando novamente em breve...');
+              } else {
+                console.error('❌ Erro no canal Realtime:', err);
+              }
+              // Tentar reconectar em caso de erro no canal
+              clearTimeout(retryTimeout);
+              retryTimeout = setTimeout(setupRealtime, 5000);
+            } else if (status === 'TIMED_OUT') {
+              console.error('⏱️ Conexão Realtime esgotou o tempo limite.');
+            }
+          });
+      };
+
+      setupRealtime();
         
       return () => {
-        supabase.removeChannel(channel);
+        clearTimeout(retryTimeout);
+        if (channel) supabase.removeChannel(channel);
       }
     }
   }, [session]);
@@ -140,7 +158,7 @@ export default function App() {
       document.body.style.backgroundColor = '#1C1C1E';
     } else {
       document.documentElement.classList.remove('dark');
-      document.body.style.backgroundColor = '#F2F2F7'; // zinc-50 theme equivalent
+      document.body.style.backgroundColor = '#F7F8F8'; // Cinza Gelo
     }
   }, [settings.darkMode]);
 
@@ -295,8 +313,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black transition-colors font-sans text-zinc-900 dark:text-zinc-100 flex flex-col">
-      <main className="w-full max-w-lg mx-auto flex-1 relative mb-20 bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-soft-bg dark:bg-[#1C1C1E] transition-colors font-sans text-soft-text-main dark:text-zinc-100 flex flex-col">
+      <main className="w-full max-w-lg mx-auto flex-1 relative mb-20 bg-soft-bg dark:bg-[#1C1C1E]">
         
         {activeTab === 'lista' && <ListaCompras context={context} />}
         {activeTab === 'roteiro' && <Roteiro context={context} />}
@@ -307,13 +325,13 @@ export default function App() {
       </main>
 
       {/* BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[zinc-900]/80 backdrop-blur-lg border-t border-zinc-200 dark:border-[zinc-800] px-1 py-3 z-50 flex justify-center max-w-lg mx-auto md:rounded-t-2xl">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-[20px] border-t border-zinc-100 dark:border-zinc-800 px-1 py-4 z-50 flex justify-center max-w-lg mx-auto md:rounded-t-[32px] shadow-[0_-10px_30px_-5px_rgba(0,0,0,0.03)]">
         <div className="flex justify-around w-full max-w-[450px]">
-          <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={22} />} label="Lista" />
-          <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={22} />} label="Rota" />
-          <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={22} />} label="Promoções" />
-          <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={22} />} label="Comprar" primary />
-          <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={22} />} label="Definições" />
+          <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={24} />} label="Lista" />
+          <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={24} />} label="Rota" />
+          <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={24} />} label="Promoções" />
+          <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={24} />} label="Comprar" primary />
+          <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={24} />} label="Config" />
         </div>
       </nav>
     </div>
@@ -324,18 +342,18 @@ function NavButton({ active, onClick, icon, label, primary }: any) {
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-[68px] gap-1 transition-all ${
+      className={`flex flex-col items-center justify-center w-[68px] gap-1.5 transition-all ${
         primary 
-          ? 'text-white' 
+          ? 'text-white translate-y-[-12px]' 
           : active 
-            ? 'text-blue-600 dark:text-blue-500 font-semibold transform scale-110' 
-            : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
+            ? 'text-soft-primary font-semibold transform scale-105' 
+            : 'text-zinc-400 dark:text-zinc-500 hover:text-soft-text-muted dark:hover:text-zinc-300'
       }`}
     >
-      <div className={`${primary ? 'bg-blue-600 dark:bg-blue-500 p-3 rounded-2xl mb-1 transform -translate-y-2' : ''}`}>
+      <div className={`${primary ? 'bg-soft-primary p-4 rounded-full shadow-primary text-white' : ''} ${primary && !active ? 'opacity-90' : ''}`}>
         {icon}
       </div>
-      <span className={`text-[10px] uppercase tracking-wider leading-none whitespace-nowrap ${primary ? 'text-blue-600 dark:text-blue-500 font-semibold -mt-2' : ''}`}>{label}</span>
+      <span className={`text-[10px] uppercase tracking-wider leading-none whitespace-nowrap ${primary ? 'text-soft-primary font-bold mt-1' : ''}`}>{label}</span>
     </button>
   );
 }
