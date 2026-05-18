@@ -6,7 +6,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
   const { settings, setSettings, items, markets, promotions, setItems, setMarkets, setPromotions } = context;
 
   return (
-    <div className="pb-24 p-4 lg:p-6 space-y-6">
+    <div className="pb-24 p-4 lg:p-6 pt-[calc(env(safe-area-inset-top)+20px)] space-y-6">
       
       <section className="bg-soft-bg dark:bg-zinc-900 rounded-[24px] shadow-soft border-none p-5 lg:p-6 flex flex-col space-y-6">
         <div className="flex justify-between items-center mb-2">

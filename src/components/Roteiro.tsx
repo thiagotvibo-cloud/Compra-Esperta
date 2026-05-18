@@ -33,7 +33,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   }, [items, markets, promotions]);
 
   return (
-    <div className="pb-24 p-4 lg:p-6 space-y-6">
+    <div className="pb-24 p-4 lg:p-6 pt-[calc(env(safe-area-inset-top)+20px)] space-y-6">
       <section className="bg-soft-bg dark:bg-zinc-900 rounded-[24px] shadow-soft border-none p-5 lg:p-6">
         <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-soft-text-muted mb-2 flex items-center gap-2">
           <span>🗺️</span> Roteiro de Compras

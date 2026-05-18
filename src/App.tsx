@@ -313,27 +313,29 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-soft-bg dark:bg-[#1C1C1E] transition-colors font-sans text-soft-text-main dark:text-zinc-100 flex flex-col">
-      <main className="w-full max-w-lg mx-auto flex-1 relative mb-20 bg-soft-bg dark:bg-[#1C1C1E]">
-        
-        {activeTab === 'lista' && <ListaCompras context={context} />}
-        {activeTab === 'roteiro' && <Roteiro context={context} />}
-        {activeTab === 'promocoes' && <Promocoes context={context} />}
-        {activeTab === 'compras' && <ModoCompra context={context} />}
-        {activeTab === 'extras' && <MenuExtra context={context} />}
+    <div className="min-h-[100dvh] bg-zinc-100 dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
+      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+        <main className="flex-1 relative pb-24">
+          
+          {activeTab === 'lista' && <ListaCompras context={context} />}
+          {activeTab === 'roteiro' && <Roteiro context={context} />}
+          {activeTab === 'promocoes' && <Promocoes context={context} />}
+          {activeTab === 'compras' && <ModoCompra context={context} />}
+          {activeTab === 'extras' && <MenuExtra context={context} />}
 
-      </main>
+        </main>
 
-      {/* BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-[20px] border-t border-zinc-100 dark:border-zinc-800 px-1 py-4 z-50 flex justify-center max-w-lg mx-auto md:rounded-t-[32px] shadow-[0_-10px_30px_-5px_rgba(0,0,0,0.03)]">
-        <div className="flex justify-around w-full max-w-[450px]">
-          <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={24} />} label="Lista" />
-          <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={24} />} label="Rota" />
-          <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={24} />} label="Promoções" />
-          <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={24} />} label="Comprar" primary />
-          <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={24} />} label="Config" />
-        </div>
-      </nav>
+        {/* BOTTOM NAVIGATION */}
+        <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800 px-2 py-3 z-50 flex justify-between items-end pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="flex justify-between w-full">
+            <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={22} />} label="Lista" />
+            <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={22} />} label="Rota" />
+            <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={22} />} label="Promoções" />
+            <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={22} />} label="Comprar" primary />
+            <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={22} />} label="Config" />
+          </div>
+        </nav>
+      </div>
     </div>
   );
 }
@@ -342,7 +344,7 @@ function NavButton({ active, onClick, icon, label, primary }: any) {
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-[68px] gap-1.5 transition-all ${
+      className={`flex flex-col items-center justify-center flex-1 min-w-[60px] gap-1.5 transition-all ${
         primary 
           ? 'text-white translate-y-[-12px]' 
           : active 
@@ -350,7 +352,7 @@ function NavButton({ active, onClick, icon, label, primary }: any) {
             : 'text-zinc-400 dark:text-zinc-500 hover:text-soft-text-muted dark:hover:text-zinc-300'
       }`}
     >
-      <div className={`${primary ? 'bg-soft-primary p-4 rounded-full shadow-primary text-white' : ''} ${primary && !active ? 'opacity-90' : ''}`}>
+      <div className={`${primary ? 'bg-soft-primary p-3.5 rounded-full shadow-primary text-white' : ''} ${primary && !active ? 'opacity-90' : ''}`}>
         {icon}
       </div>
       <span className={`text-[10px] uppercase tracking-wider leading-none whitespace-nowrap ${primary ? 'text-soft-primary font-bold mt-1' : ''}`}>{label}</span>

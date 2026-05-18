@@ -69,8 +69,8 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     <div className="pb-28 relative">
       
       {/* HEADER SOFT UI */}
-      <div className="bg-soft-primary rounded-b-[40px] pt-12 pb-24 px-6 text-center text-white relative shadow-soft">
-         <div className="absolute top-6 left-6 right-6 flex justify-between items-center">
+      <div className="bg-soft-primary rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-24 px-6 text-center text-white relative shadow-soft">
+         <div className="absolute top-[calc(env(safe-area-inset-top)+16px)] left-6 right-6 flex justify-between items-center">
             <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full px-5 py-2.5 font-medium text-sm flex items-center gap-2">
               <span>🗓️ Lista Atual</span> <ChevronRight size={14} className="opacity-70" />
             </div>

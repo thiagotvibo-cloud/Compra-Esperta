@@ -28,5 +28,15 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-soft-bg);
   color: var(--color-soft-text-main);
+  overscroll-behavior-y: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 

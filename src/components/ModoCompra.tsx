@@ -81,7 +81,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   }
 
   return (
-    <div className="pb-28 p-4 lg:p-6">
+    <div className="pb-28 p-4 lg:p-6 pt-[calc(env(safe-area-inset-top)+20px)]">
       <div className={`sticky top-4 z-20 transition-all ${overBudget ? 'bg-red-50 dark:bg-red-900/50' : 'bg-soft-bg dark:bg-zinc-800'} rounded-[24px] shadow-soft p-5 border-none flex flex-col mb-6`}>
         <div className="flex justify-between items-center">
           <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-soft-text-muted flex items-center gap-2">
