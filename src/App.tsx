@@ -82,6 +82,19 @@ export default function App() {
     };
 
     fetchData();
+
+    if (session?.user) {
+      const channel = supabase.channel('schema-db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, fetchData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'markets' }, fetchData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, fetchData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchData)
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(channel);
+      }
+    }
   }, [session]);
 
   const updateSetting = async (key: string, value: any) => {
