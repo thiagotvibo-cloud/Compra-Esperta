@@ -29,7 +29,8 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
       cat.subcategories.flatMap(sub => 
         sub.items.map(item => ({
           name: item,
-          category: cat.name
+          category: cat.name,
+          searchKey: item.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         }))
       )
     );
@@ -37,8 +38,8 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    const query = searchQuery.toLowerCase();
-    return flatCatalog.filter(i => i.name.toLowerCase().includes(query));
+    const query = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return flatCatalog.filter(i => i.searchKey.includes(query));
   }, [searchQuery, flatCatalog]);
 
   const handlePriceInput = (inputValue: string) => {

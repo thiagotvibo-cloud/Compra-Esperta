@@ -1,23 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AppContextType } from '../types';
-import { formatMoney } from '../utils';
-import { Settings, Calculator, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { settings, setSettings, items, markets, promotions, setItems, setMarkets, setPromotions } = context;
-
-  // Calculadora de proporção
-  const [calcPrice, setCalcPrice] = useState<number | string>('');
-  const [calcBaseQty, setCalcBaseQty] = useState<number | string>('');
-  const [calcTargetQty, setCalcTargetQty] = useState<number | string>('');
-
-  const calcResult = () => {
-    const p = Number(calcPrice);
-    const b = Number(calcBaseQty);
-    const t = Number(calcTargetQty);
-    if (b > 0 && p && t) return (p / b) * t;
-    return 0;
-  };
 
   return (
     <div className="pb-24 p-4 lg:p-6 space-y-6">
@@ -29,30 +15,6 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
           </h2>
         </div>
         
-        {/* CALCULADORA DE PROPORÇÃO */}
-        <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] border-none">
-          <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted flex items-center gap-2 mb-4">
-            <Calculator size={16} className="text-soft-primary" /> Calculadora de Proporção
-          </h3>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-soft-text-muted dark:text-zinc-400">Se algo custa (R$)</label>
-              <input type="number" step="0.01" value={calcPrice} onChange={e=>setCalcPrice(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] ring-0 focus:ring-2 focus:ring-soft-primary mt-1 placeholder-zinc-300" placeholder="10.00" />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-soft-text-muted dark:text-zinc-400">E vem na qtd de</label>
-              <input type="number" value={calcBaseQty} onChange={e=>setCalcBaseQty(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] ring-0 focus:ring-2 focus:ring-soft-primary mt-1 placeholder-zinc-300" placeholder="Ex: 500g" />
-            </div>
-          </div>
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-soft-text-muted dark:text-zinc-400">Quanto custaria para levar (Qtd)</label>
-            <input type="number" value={calcTargetQty} onChange={e=>setCalcTargetQty(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] ring-0 focus:ring-2 focus:ring-soft-primary mt-1 placeholder-zinc-300" placeholder="Ex: 200g" />
-          </div>
-          <div className="mt-4 p-4 bg-soft-primary-light dark:bg-soft-primary/20 rounded-[20px] text-center font-semibold text-[20px] text-soft-primary">
-            {formatMoney(calcResult())}
-          </div>
-        </div>
-
         {/* AJUSTES GERAIS */}
         <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] border-none space-y-4">
           <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted border-b border-zinc-200/50 dark:border-zinc-700 pb-3">Preferências</h3>

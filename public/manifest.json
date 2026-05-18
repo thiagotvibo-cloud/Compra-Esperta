@@ -1,0 +1,24 @@
+{
+  "name": "Compra Esperta",
+  "short_name": "Compras",
+  "description": "Lista de Compras Inteligente",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F8F8",
+  "theme_color": "#F34E3A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
