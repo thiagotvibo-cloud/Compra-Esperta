@@ -170,14 +170,17 @@ export default function App() {
         actual_price: i.actualPrice || null
       }));
       
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const validItemsToUpsert = itemsToUpsert.filter(i => uuidRegex.test(i.id));
+      
       const currentIds = newItems.map(i => i.id);
       const { data: existingIds, error: selectErr } = await supabase.from('items').select('id');
       if (selectErr) return handleError('Listar Itens para Sincronização', selectErr);
 
       const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
       
-      if (itemsToUpsert.length > 0) {
-        const { error: upErr } = await supabase.from('items').upsert(itemsToUpsert);
+      if (validItemsToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('items').upsert(validItemsToUpsert);
         if (upErr) handleError('Salvar/Atualizar Itens', upErr);
       }
       if (idsToDelete.length > 0) {
@@ -201,6 +204,8 @@ export default function App() {
     if (!session?.user) return;
     try {
       const marketsToUpsert = newMarkets.map(m => ({ id: m.id, user_id: session.user.id, name: m.name }));
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const validMarketsToUpsert = marketsToUpsert.filter(m => uuidRegex.test(m.id));
       const currentIds = newMarkets.map(m => m.id);
       
       const { data: existingIds, error: selectErr } = await supabase.from('markets').select('id');
@@ -208,8 +213,8 @@ export default function App() {
 
       const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
       
-      if (marketsToUpsert.length > 0) {
-        const { error: upErr } = await supabase.from('markets').upsert(marketsToUpsert);
+      if (validMarketsToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('markets').upsert(validMarketsToUpsert);
         if (upErr) handleError('Salvar/Atualizar Mercados', upErr);
       }
       if (idsToDelete.length > 0) {
@@ -243,6 +248,8 @@ export default function App() {
         expiry_date: p.expiryDate || null,
         notes: p.notes || null
       }));
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const validPromosToUpsert = promosToUpsert.filter(p => uuidRegex.test(p.id));
       const currentIds = newPromos.map(p => p.id);
       
       const { data: existingIds, error: selectErr } = await supabase.from('promotions').select('id');
@@ -250,8 +257,8 @@ export default function App() {
 
       const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
       
-      if (promosToUpsert.length > 0) {
-        const { error: upErr } = await supabase.from('promotions').upsert(promosToUpsert);
+      if (validPromosToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('promotions').upsert(validPromosToUpsert);
         if (upErr) handleError('Salvar/Atualizar Promoções', upErr);
       }
       if (idsToDelete.length > 0) {
