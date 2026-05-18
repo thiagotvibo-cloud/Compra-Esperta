@@ -46,7 +46,7 @@ export const AuthUI: React.FC = () => {
         
         {!isConfigured && (
           <div className="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-4 rounded-xl mb-6 text-sm font-medium border border-orange-200 dark:border-orange-500/20">
-            <strong>Atenção:</strong> Configure as variáveis <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_URL</code> e <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> nas configurações da sua plataforma (Vercel) para usar a autenticação.
+            <strong>Atenção:</strong> Configure as variáveis <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_URL</code> e <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_ANON_KEY</code> no menu Settings (ícone de engrenagem) aqui no AI Studio para usar a autenticação no modo Preview. Na Vercel, configure-as nas Environment Variables.
           </div>
         )}
 
