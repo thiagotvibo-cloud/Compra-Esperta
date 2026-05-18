@@ -143,9 +143,9 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               value={newMarketName} 
               onChange={e => setNewMarketName(e.target.value)} 
               placeholder="Novo mercado (ex: Extra)"
-              className="flex-1 p-3 text-sm bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary placeholder-zinc-300"
+              className="flex-1 min-w-0 p-3 text-sm bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary placeholder-zinc-300"
             />
-            <button type="submit" className="bg-soft-primary hover:bg-soft-primary-hover transition-colors text-white px-5 rounded-full font-semibold text-sm active:scale-95 shadow-primary">Criar</button>
+            <button type="submit" className="shrink-0 bg-soft-primary hover:bg-soft-primary-hover transition-colors text-white px-5 py-3 rounded-full font-semibold text-sm active:scale-95 shadow-primary">Criar</button>
           </form>
         </div>
 
