@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { ShoppingCart } from 'lucide-react';
 
 export const AuthUI: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -37,8 +38,8 @@ export const AuthUI: React.FC = () => {
     <div className="min-h-screen bg-soft-bg dark:bg-zinc-900 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-[24px] p-8 shadow-soft">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-soft-primary rounded-[20px] flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">
-            E
+          <div className="w-20 h-20 bg-soft-primary rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
+            <ShoppingCart size={40} strokeWidth={2.5} />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-soft-text-main dark:text-soft-text-main">Compra Esperta</h1>
           <p className="text-soft-text-muted text-sm mt-2">Entre para sincronizar suas listas</p>
