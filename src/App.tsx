@@ -21,15 +21,24 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras'>('lista');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Session error:', error);
+        // If there's an error fetching the session (e.g. Invalid Refresh Token), clear the auth state
+        supabase.auth.signOut();
+      }
       setSession(session);
       setIsLoadingAuth(false);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        setSession(null);
+      } else {
+        setSession(session);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -37,6 +46,14 @@ export default function App() {
 
   const handleError = (context: string, error: any) => {
     console.error(`❌ Erro Supabase (${context}):`, error?.message, error?.details, error);
+    
+    // Ignore auth/JWT/Refresh token errors quietly instead of alerting the user, and sign out automatically.
+    const msg = error?.message || '';
+    if (msg.includes('JWT') || msg.includes('Refresh Token') || msg.includes('token') || error?.code === '401' || error?.code === '403') {
+      supabase.auth.signOut();
+      return;
+    }
+
     alert(`Erro Supabase: ${context}\nDetalhes: ${error?.message || JSON.stringify(error)}`);
   };
 
