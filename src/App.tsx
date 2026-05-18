@@ -35,49 +35,64 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleError = (context: string, error: any) => {
+    console.error(`❌ Erro Supabase (${context}):`, error?.message, error?.details, error);
+    alert(`Erro Supabase: ${context}\nDetalhes: ${error?.message || JSON.stringify(error)}`);
+  };
+
   // Sync data with Supabase when session changes
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user) return;
       
-      const { data: sData } = await supabase.from('settings').select('*').eq('user_id', session.user.id).single();
-      if (sData) {
-        setSettings({ budget: sData.budget, darkMode: sData.dark_mode });
-      } else {
-        await supabase.from('settings').insert({ budget: 0, dark_mode: false });
-      }
+      try {
+        const { data: sData, error: sErr } = await supabase.from('settings').select('*').eq('user_id', session.user.id).single();
+        if (sErr && sErr.code !== 'PGRST116') handleError('Buscar Settings', sErr);
+        
+        if (sData) {
+          setSettings({ budget: sData.budget, darkMode: sData.dark_mode });
+        } else if (!sErr || sErr.code === 'PGRST116') {
+          const { error: insErr } = await supabase.from('settings').insert({ budget: 0, dark_mode: false, user_id: session.user.id });
+          if (insErr) handleError('Criar Settings', insErr);
+        }
 
-      const { data: iData } = await supabase.from('items').select('*').order('created_at');
-      if (iData) {
-        setItems(iData.map(i => ({
-          id: i.id,
-          name: i.name,
-          qty: Number(i.qty),
-          unit: i.unit as any,
-          category: i.category as any,
-          isEssential: i.is_essential,
-          onlyPromo: i.only_promo,
-          isBought: i.is_bought,
-          notes: i.notes,
-          actualPrice: i.actual_price ? Number(i.actual_price) : undefined
-        })));
-      }
+        const { data: iData, error: iErr } = await supabase.from('items').select('*').order('created_at');
+        if (iErr) handleError('Buscar Itens', iErr);
+        else if (iData) {
+          setItems(iData.map(i => ({
+            id: i.id,
+            name: i.name,
+            qty: Number(i.qty),
+            unit: i.unit as any,
+            category: i.category as any,
+            isEssential: i.is_essential,
+            onlyPromo: i.only_promo,
+            isBought: i.is_bought,
+            notes: i.notes,
+            actualPrice: i.actual_price ? Number(i.actual_price) : undefined
+          })));
+        }
 
-      const { data: mData } = await supabase.from('markets').select('*').order('created_at');
-      if (mData) setMarkets(mData.map(m => ({ id: m.id, name: m.name })));
+        const { data: mData, error: mErr } = await supabase.from('markets').select('*').order('created_at');
+        if (mErr) handleError('Buscar Mercados', mErr);
+        else if (mData) setMarkets(mData.map(m => ({ id: m.id, name: m.name })));
 
-      const { data: pData } = await supabase.from('promotions').select('*').order('created_at');
-      if (pData) {
-        setPromotions(pData.map(p => ({
-          id: p.id,
-          marketId: p.market_id,
-          itemName: p.item_name,
-          price: Number(p.price),
-          qty: Number(p.qty),
-          unit: p.unit as any,
-          expiryDate: p.expiry_date,
-          notes: p.notes
-        })));
+        const { data: pData, error: pErr } = await supabase.from('promotions').select('*').order('created_at');
+        if (pErr) handleError('Buscar Promoções', pErr);
+        else if (pData) {
+          setPromotions(pData.map(p => ({
+            id: p.id,
+            marketId: p.market_id,
+            itemName: p.item_name,
+            price: Number(p.price),
+            qty: Number(p.qty),
+            unit: p.unit as any,
+            expiryDate: p.expiry_date,
+            notes: p.notes
+          })));
+        }
+      } catch (err) {
+        handleError('Exceção no Fetch API', err);
       }
     };
 
@@ -89,7 +104,18 @@ export default function App() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'markets' }, fetchData)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, fetchData)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchData)
-        .subscribe();
+        .subscribe((status) => {
+          console.log(`🔌 Supabase Realtime Status: ${status}`);
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Conexão Realtime estabelecida com sucesso!');
+          } else if (status === 'CLOSED') {
+            console.warn('⚠️ Conexão Realtime foi fechada.');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('❌ Erro no canal Realtime.');
+          } else if (status === 'TIMED_OUT') {
+            console.error('⏱️ Conexão Realtime esgotou o tempo limite.');
+          }
+        });
         
       return () => {
         supabase.removeChannel(channel);
@@ -99,7 +125,12 @@ export default function App() {
 
   const updateSetting = async (key: string, value: any) => {
     if (!session?.user) return;
-    await supabase.from('settings').update({ [key]: value }).eq('user_id', session.user.id);
+    try {
+      const { error } = await supabase.from('settings').update({ [key]: value }).eq('user_id', session.user.id);
+      if (error) handleError(`Atualizar Configuração (${key})`, error);
+    } catch (err) {
+      handleError(`Exceção ao Atualizar (${key})`, err);
+    }
   }
 
   // Effect specifically for darkMode
@@ -124,30 +155,37 @@ export default function App() {
 
   const syncItems = async (newItems: typeof items) => {
     if (!session?.user) return;
-    const itemsToUpsert = newItems.map(i => ({
-      id: i.id,
-      user_id: session.user.id,
-      name: i.name,
-      qty: i.qty,
-      unit: i.unit,
-      category: i.category,
-      is_essential: i.isEssential || false,
-      only_promo: i.onlyPromo || false,
-      is_bought: i.isBought || false,
-      notes: i.notes || null,
-      actual_price: i.actualPrice || null
-    }));
-    
-    // very naïve sync for this example: upsert everything, and also delete removed items
-    const currentIds = newItems.map(i => i.id);
-    const { data: existingIds } = await supabase.from('items').select('id');
-    const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
-    
-    if (itemsToUpsert.length > 0) {
-      await supabase.from('items').upsert(itemsToUpsert);
-    }
-    if (idsToDelete.length > 0) {
-      await supabase.from('items').delete().in('id', idsToDelete);
+    try {
+      const itemsToUpsert = newItems.map(i => ({
+        id: i.id,
+        user_id: session.user.id,
+        name: i.name,
+        qty: i.qty,
+        unit: i.unit,
+        category: i.category,
+        is_essential: i.isEssential || false,
+        only_promo: i.onlyPromo || false,
+        is_bought: i.isBought || false,
+        notes: i.notes || null,
+        actual_price: i.actualPrice || null
+      }));
+      
+      const currentIds = newItems.map(i => i.id);
+      const { data: existingIds, error: selectErr } = await supabase.from('items').select('id');
+      if (selectErr) return handleError('Listar Itens para Sincronização', selectErr);
+
+      const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
+      
+      if (itemsToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('items').upsert(itemsToUpsert);
+        if (upErr) handleError('Salvar/Atualizar Itens', upErr);
+      }
+      if (idsToDelete.length > 0) {
+        const { error: delErr } = await supabase.from('items').delete().in('id', idsToDelete);
+        if (delErr) handleError('Excluir Itens', delErr);
+      }
+    } catch (err) {
+      handleError('Exceção ao Sincronizar Itens', err);
     }
   };
 
@@ -161,13 +199,26 @@ export default function App() {
 
   const syncMarkets = async (newMarkets: typeof markets) => {
     if (!session?.user) return;
-    const marketsToUpsert = newMarkets.map(m => ({ id: m.id, user_id: session.user.id, name: m.name }));
-    const currentIds = newMarkets.map(m => m.id);
-    const { data: existingIds } = await supabase.from('markets').select('id');
-    const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
-    
-    if (marketsToUpsert.length > 0) await supabase.from('markets').upsert(marketsToUpsert);
-    if (idsToDelete.length > 0) await supabase.from('markets').delete().in('id', idsToDelete);
+    try {
+      const marketsToUpsert = newMarkets.map(m => ({ id: m.id, user_id: session.user.id, name: m.name }));
+      const currentIds = newMarkets.map(m => m.id);
+      
+      const { data: existingIds, error: selectErr } = await supabase.from('markets').select('id');
+      if (selectErr) return handleError('Listar Mercados para Sincronização', selectErr);
+
+      const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
+      
+      if (marketsToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('markets').upsert(marketsToUpsert);
+        if (upErr) handleError('Salvar/Atualizar Mercados', upErr);
+      }
+      if (idsToDelete.length > 0) {
+        const { error: delErr } = await supabase.from('markets').delete().in('id', idsToDelete);
+        if (delErr) handleError('Excluir Mercados', delErr);
+      }
+    } catch (err) {
+      handleError('Exceção ao Sincronizar Mercados', err);
+    }
   };
 
   const handleSetMarkets = (newMarketsOrCb: React.SetStateAction<Market[]>) => {
@@ -180,23 +231,36 @@ export default function App() {
 
   const syncPromotions = async (newPromos: typeof promotions) => {
     if (!session?.user) return;
-    const promosToUpsert = newPromos.map(p => ({
-      id: p.id,
-      user_id: session.user.id,
-      market_id: p.marketId,
-      item_name: p.itemName,
-      price: p.price,
-      qty: p.qty,
-      unit: p.unit,
-      expiry_date: p.expiryDate || null,
-      notes: p.notes || null
-    }));
-    const currentIds = newPromos.map(p => p.id);
-    const { data: existingIds } = await supabase.from('promotions').select('id');
-    const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
-    
-    if (promosToUpsert.length > 0) await supabase.from('promotions').upsert(promosToUpsert);
-    if (idsToDelete.length > 0) await supabase.from('promotions').delete().in('id', idsToDelete);
+    try {
+      const promosToUpsert = newPromos.map(p => ({
+        id: p.id,
+        user_id: session.user.id,
+        market_id: p.marketId,
+        item_name: p.itemName,
+        price: p.price,
+        qty: p.qty,
+        unit: p.unit,
+        expiry_date: p.expiryDate || null,
+        notes: p.notes || null
+      }));
+      const currentIds = newPromos.map(p => p.id);
+      
+      const { data: existingIds, error: selectErr } = await supabase.from('promotions').select('id');
+      if (selectErr) return handleError('Listar Promoções para Sincronização', selectErr);
+
+      const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
+      
+      if (promosToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('promotions').upsert(promosToUpsert);
+        if (upErr) handleError('Salvar/Atualizar Promoções', upErr);
+      }
+      if (idsToDelete.length > 0) {
+        const { error: delErr } = await supabase.from('promotions').delete().in('id', idsToDelete);
+        if (delErr) handleError('Excluir Promoções', delErr);
+      }
+    } catch (err) {
+      handleError('Exceção ao Sincronizar Promoções', err);
+    }
   };
 
   const handleSetPromotions = (newPromosOrCb: React.SetStateAction<Promotion[]>) => {
