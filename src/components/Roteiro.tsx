@@ -86,6 +86,11 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                               (Equivale a {formatMoney(pricePerBase)} / {base.unit})
                             </div>
                           )}
+                          {promo.notes && (
+                            <div className="text-[11px] font-medium text-soft-text-muted mt-0.5 max-w-[200px] text-wrap italic sm:ml-auto">
+                              {promo.notes}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );

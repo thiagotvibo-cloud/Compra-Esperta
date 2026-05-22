@@ -161,8 +161,13 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                           const promo = context.promotions.find(p => p.itemName === item.name)!;
                           const market = context.markets.find(m => m.id === promo.marketId);
                           return (
-                            <div className="text-[11px] font-medium text-soft-primary bg-soft-primary-light dark:bg-soft-primary/10 dark:text-soft-primary px-2 py-0.5 rounded-full mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
-                              Promoção {market ? `no ${market.name}` : ''}
+                            <div className="text-[11px] font-medium text-soft-primary bg-soft-primary-light dark:bg-soft-primary/10 dark:text-soft-primary px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
+                              <span>Promoção {market ? `no ${market.name}` : ''}</span>
+                              {promo.notes && (
+                                <div className="opacity-80 mt-0.5 max-w-full text-wrap italic">
+                                  {promo.notes}
+                                </div>
+                              )}
                             </div>
                           );
                         })()}

@@ -18,6 +18,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   const [qty, setQty] = useState<number | string>(1);
   const [unit, setUnit] = useState<Unit>('un');
   const [expiryDate, setExpiryDate] = useState('');
+  const [notes, setNotes] = useState('');
 
   // States para o modal de catálogo
   const [showCatalog, setShowCatalog] = useState(false);
@@ -84,13 +85,14 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
       qty: Number(qty) || 1,
       unit,
       expiryDate,
-      notes: ''
+      notes: notes.trim()
     };
 
     setPromotions([newPromo, ...promotions]);
     setItemName('');
     setPrice(0);
     setQty(1);
+    setNotes('');
     // expiry mantém caso ele esteja encartando promoções da mesma data
   };
 
@@ -182,9 +184,15 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Válido Até (opcional)</label>
-                <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Observação (opcional)</label>
+                  <input type="text" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ex: Marca Ype, pote 500g..." className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Válido Até (opcional)</label>
+                  <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
+                </div>
               </div>
 
               <button type="submit" className="w-full bg-soft-primary hover:bg-soft-primary-hover text-white p-4 pt-4 mt-2 rounded-full font-semibold text-lg transition-transform active:scale-95 shadow-primary">
@@ -220,9 +228,18 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                         </span>
                       )}
                     </div>
-                    {promo.expiryDate && (
-                      <div className="text-[11px] font-semibold text-red-400 mt-2 flex items-center gap-1.5 opacity-90">
-                        <Calendar size={12} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                    {(promo.notes || promo.expiryDate) && (
+                      <div className="flex flex-col gap-1 mt-2">
+                        {promo.notes && (
+                           <div className="text-[12px] font-medium text-soft-text-muted mt-1 dark:text-zinc-400 italic">
+                             {promo.notes}
+                           </div>
+                        )}
+                        {promo.expiryDate && (
+                          <div className="text-[11px] font-semibold text-red-400 mt-1 flex items-center gap-1.5 opacity-90">
+                            <Calendar size={12} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -133,9 +133,14 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                       onClick={() => {
                         setItems(items.map(i => i.id === item.id ? { ...i, actualPrice: promo.price, qty: promo.qty || 1, unit: promo.unit || 'un' } : i));
                       }}
-                      className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-full mt-1 inline-block border-none active:scale-95 transition-transform whitespace-normal text-left"
+                      className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none active:scale-95 transition-transform whitespace-normal text-left max-w-full"
                     >
-                      Promo no {market?.name || 'Mercado'}: {formatMoney(promo.price)}/{promo.qty} {promo.unit} (Aplicar)
+                      <span>Promo no {market?.name || 'Mercado'}: {formatMoney(promo.price)}/{promo.qty}{promo.unit} (Aplicar)</span>
+                      {promo.notes && (
+                        <div className="font-medium opacity-80 mt-0.5 max-w-full text-wrap italic">
+                          {promo.notes}
+                        </div>
+                      )}
                     </button>
                   );
                 })()}
