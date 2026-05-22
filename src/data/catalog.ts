@@ -17,7 +17,7 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Açougue - Bovinos",
         items: [
-          "Acém", "Alcatra", "Bife Ancho", "Bife de Chorizo", "Capa de Filé", "Carne Moída (1ª e 2ª)", "Chuleta", "Contrafilé", "Costela Minga", "Costela Ripa", "Coxão Duro (Chã de Fora)", "Coxão Mole (Chã de Dentro)", "Cupim", "Fígado Bovino", "Filé Mignon", "Fraldinha", "Lagarto", "Maminha", "Músculo", "Paleta", "Patinho", "Peito Bovino", "Picanha", "Rabada", "T-Bone"
+          "Acém", "Alcatra", "Bife Ancho", "Bife de Chorizo", "Capa de Filé", "Carne Moída (1ª e 2ª)", "Chuleta", "Contrafilé", "Costela Minga", "Costela Ripa", "Coxão Duro (Chã de Fora)", "Coxão Mole (Chã de Dentro)", "Cupim", "Fígado Bovino", "Filé Mignon", "Fraldinha", "Lagarto", "Maminha", "Músculo", "Paleta", "Patinho", "Peito Bovino", "Picanha", "Rabada", "T-Bone", "Hambúrguer (Fresco)"
         ]
       },
       {
@@ -71,7 +71,25 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Laticínios e Frios",
         items: [
-          "Creme de Leite", "Iogurte (Grego/Natural/Saborizado)", "Leite (Desnatado/Integral/Sem Lactose)", "Leite Condensado", "Leite Fermentado", "Leite Vegetal (Amêndoas/Aveia/Soja)", "Manteiga (Com/Sem Sal)", "Margarina", "Nata", "Queijo Brie/Camembert", "Queijo Coalho", "Queijo Gorgonzola", "Queijo Minas Frescal/Padrão", "Queijo Mussarela", "Queijo Parmesão (Inteiro/Ralado)", "Queijo Prato", "Queijo Provolone", "Requeijão", "Apresuntado", "Copa", "Mortadela", "Patê", "Peito de Peru", "Presunto", "Salame", "Salsicha"
+          "Creme de Leite", "Iogurte (Grego/Natural/Saborizado)", "Leite (Desnatado/Integral/Sem Lactose)", "Leite Condensado", "Leite Fermentado", "Leite Vegetal (Amêndoas/Aveia/Soja)", "Manteiga (Com/Sem Sal)", "Margarina", "Nata", "Queijo Brie/Camembert", "Queijo Coalho", "Queijo Gorgonzola", "Queijo Minas Frescal/Padrão", "Queijo Mussarela", "Queijo Parmesão (Inteiro/Ralado)", "Queijo Prato", "Queijo Provolone", "Requeijão", "Apresuntado", "Copa", "Linguiça Calabresa", "Mortadela", "Patê", "Peito de Peru", "Presunto", "Salame", "Salsicha", "Massa de Pastel", "Massa de Lasanha", "Massa de Pizza"
+        ]
+      }
+    ]
+  },
+  {
+    name: "Congelados",
+    icon: "🧊",
+    subcategories: [
+      {
+        name: "Congelados - Salgados e Refeições",
+        items: [
+          "Batata Frita Congelada", "Cebola Congelada", "Empanados (Nuggets)", "Esfirra Congelada", "Hambúrguer", "Lasanha Congelada", "Mandioca Congelada", "Misto Quente Congelado", "Pão de Queijo Congelado", "Pizza Congelada", "Polenta Congelada", "Pratos Prontos Congelados", "Salgadinhos de Festa"
+        ]
+      },
+      {
+        name: "Congelados - Massas e Outros",
+        items: [
+          "Açaí", "Carne Seca Desfiada (Congelada)", "Ervilha Congelada", "Frutas Vermelhas Congeladas", "Legumes Congelados", "Polpa de Fruta", "Sorvete"
         ]
       }
     ]
@@ -83,7 +101,7 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Mercearia - Grãos e Farináceos",
         items: [
-          "Açúcar (Cristal/Mascavo/Refinado)", "Adoçante", "Arroz (Arbóreo/Branco/Integral/Parboilizado)", "Aveia (Flocos/Farinha)", "Azeite de Oliva", "Farinha de Mandioca", "Farinha de Milho (Fubá)", "Farinha de Rosca", "Farinha de Trigo", "Feijão (Branco/Carioca/Fradinho/Preto)", "Milho para Pipoca", "Óleo (Canola/Girassol/Milho/Soja)", "Sal (Grosso/Himalaia/Refinado)", "Tapioca"
+          "Açúcar (Cristal/Mascavo/Refinado)", "Adoçante", "Arroz (Arbóreo/Branco/Integral/Parboilizado)", "Aveia (Flocos/Farinha)", "Azeite de Oliva", "Farinha de Mandioca", "Farinha de Milho (Fubá)", "Farinha de Rosca", "Farinha de Trigo", "Feijão (Branco/Carioca/Fradinho/Preto)", "Milho para Pipoca", "Óleo (Canola/Girassol/Milho/Soja)", "Polenta", "Sal (Grosso/Himalaia/Refinado)", "Tapioca"
         ]
       },
       {
@@ -107,7 +125,7 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Padaria, Biscoitos e Doces",
         items: [
-          "Achocolatado em Pó", "Amendoim", "Biscoito Água e Sal", "Biscoito de Polvilho", "Biscoito Maisena/Maria", "Biscoito Recheado", "Biscoito Waffer", "Bolo Pronto", "Café (Cápsula/Grão/Pó/Solúvel)", "Castanhas/Nozes", "Cereal Matinal", "Chá (Caixa/Sachê)", "Chocolate (Barra/Caixa)", "Creme de Avelã", "Doce de Leite", "Gelatina", "Granola", "Mistura para Bolo", "Pão (de Forma/Francês/Hambúrguer/Hot Dog/Integral)", "Pão de Queijo", "Salgadinhos (Snacks/Chips)", "Torrada"
+          "Achocolatado em Pó", "Amendoim", "Biscoito Água e Sal", "Biscoito de Polvilho", "Biscoito Maisena/Maria", "Biscoito Recheado", "Biscoito Waffer", "Bolo Pronto", "Café (Cápsula/Grão/Pó/Solúvel)", "Castanhas/Nozes", "Cereal Matinal", "Chá (Caixa/Sachê)", "Chocolate (Barra/Caixa)", "Creme de Avelã", "Doce de Leite", "Fermento Biológico", "Fermento em Pó", "Gelatina", "Granola", "Granulado", "Leite Condensado", "Mistura para Bolo", "Pão (de Forma/Francês/Integral/Hot Dog)", "Pão de Hambúrguer", "Pão de Queijo", "Salgadinhos (Snacks/Chips)", "Torrada"
         ]
       }
     ]

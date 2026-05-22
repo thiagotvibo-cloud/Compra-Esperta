@@ -15,7 +15,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   // States para nova promoção
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState<number>(0);
-  const [qty, setQty] = useState<number>(1);
+  const [qty, setQty] = useState<number | string>(1);
   const [unit, setUnit] = useState<Unit>('un');
   const [expiryDate, setExpiryDate] = useState('');
 
@@ -81,7 +81,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
       marketId: selectedMarket,
       itemName: itemName.trim(),
       price,
-      qty,
+      qty: Number(qty) || 1,
       unit,
       expiryDate,
       notes: ''
@@ -174,7 +174,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Por (Qtd / Un)</label>
                   <div className="flex gap-1">
-                    <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(Number(e.target.value))} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-main" required />
+                    <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(e.target.value === '' ? '' : Number(e.target.value))} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-main" required />
                     <select value={unit} onChange={e => setUnit(e.target.value as Unit)} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-muted">
                       {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                     </select>

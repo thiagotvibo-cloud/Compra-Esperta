@@ -135,10 +135,10 @@ export default function App() {
               console.warn('⚠️ Conexão Realtime foi fechada.');
             } else if (status === 'CHANNEL_ERROR') {
               const errMsg = err?.message || err;
-              if (String(errMsg).includes('1006')) {
-                console.warn('⚠️ Conexão Realtime interrompida (1006). Pode ser oscilação de rede ou falta de permissão de replicação no Supabase. Tentando novamente em breve...');
+              if (String(errMsg).includes('1006') || String(errMsg).includes('transport failure') || String(errMsg).includes('closed')) {
+                console.warn(`⚠️ Conexão Realtime interrompida (${errMsg}). Pode ser oscilação de rede. Tentando novamente em breve...`);
               } else {
-                console.error('❌ Erro no canal Realtime:', err);
+                console.warn('⚠️ Erro no canal Realtime:', err);
               }
               // Tentar reconectar em caso de erro no canal
               clearTimeout(retryTimeout);

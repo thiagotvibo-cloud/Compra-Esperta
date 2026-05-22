@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { AppContextType } from '../types';
 import { Store, ChevronRight, BadgePercent } from 'lucide-react';
-import { formatMoney, formatItemName } from '../utils';
+import { formatMoney, formatItemName, getPricePerBaseUnit, convertToBaseUnit } from '../utils';
 
 export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { items, markets, promotions } = context;
@@ -69,17 +69,27 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                 </div>
 
                 <div className="space-y-4 mt-5 border-t border-zinc-100 dark:border-zinc-700 pt-4">
-                  {ranking.matchedPromos.map(promo => (
-                    <div key={promo.id} className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center text-sm gap-1 sm:gap-3">
-                      <div className="flex items-start gap-2 text-soft-text-main dark:text-zinc-300 font-medium">
-                        <BadgePercent size={16} className="text-orange-400 shrink-0 mt-0.5" />
-                        <span className="leading-snug text-wrap">{formatItemName(promo.itemName)}</span>
+                  {ranking.matchedPromos.map(promo => {
+                    const base = convertToBaseUnit(promo.qty, promo.unit);
+                    const pricePerBase = getPricePerBaseUnit(promo.price, promo.qty, promo.unit);
+
+                    return (
+                      <div key={promo.id} className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center text-sm gap-1 sm:gap-3">
+                        <div className="flex items-start gap-2 text-soft-text-main dark:text-zinc-300 font-medium">
+                          <BadgePercent size={16} className="text-orange-400 shrink-0 mt-0.5" />
+                          <span className="leading-snug text-wrap">{formatItemName(promo.itemName)}</span>
+                        </div>
+                        <div className="font-bold text-soft-text-main dark:text-zinc-100 sm:text-right pl-6 sm:pl-0">
+                          {formatMoney(promo.price)} <span className="text-[11px] text-soft-text-muted font-medium ml-1">por {promo.qty} {promo.unit}</span>
+                          {base.qty !== 1 && (
+                            <div className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                              (Equivale a {formatMoney(pricePerBase)} / {base.unit})
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="font-bold text-soft-text-main dark:text-zinc-100 sm:text-right pl-6 sm:pl-0">
-                        {formatMoney(promo.price)} <span className="text-[11px] text-soft-text-muted font-medium ml-1">por {promo.qty} {promo.unit}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
