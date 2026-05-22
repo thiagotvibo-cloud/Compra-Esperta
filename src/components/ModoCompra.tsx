@@ -71,10 +71,23 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
   const overBudget = settings.budget > 0 && totalSpent > settings.budget;
 
-  const sortedItems = [...items].sort((a, b) => {
-    if (a.isBought === b.isBought) return 0;
-    return a.isBought ? 1 : -1;
-  });
+  const itemsByCategory = useMemo(() => {
+    const grouped = items.reduce((acc, item) => {
+      const cat = item.category || 'Outros';
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(item);
+      return acc;
+    }, {} as Record<string, Item[]>);
+
+    Object.keys(grouped).forEach(cat => {
+      grouped[cat].sort((a, b) => {
+        if (a.isBought === b.isBought) return a.name.localeCompare(b.name);
+        return a.isBought ? 1 : -1;
+      });
+    });
+
+    return grouped;
+  }, [items]);
 
   if (items.length === 0) {
     return <div className="p-10 text-center text-zinc-500">Lista vazia. Adicione itens primeiro.</div>;
@@ -108,16 +121,22 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
         )}
       </div>
 
-      <div className="flex flex-col gap-4 mt-2">
-        {sortedItems.map(item => (
-          <div 
-            key={item.id} 
-            className={`p-5 rounded-[24px] shadow-soft border-none transition-all ${
-              item.isBought 
-                ? 'bg-soft-card/50 dark:bg-[#1C1C1E] opacity-70' 
-                : 'bg-soft-bg dark:bg-zinc-800'
-            }`}
-          >
+      <div className="flex flex-col gap-6 mt-2">
+        {Object.entries(itemsByCategory)
+          .sort(([catA], [catB]) => catA.localeCompare(catB))
+          .map(([category, catItems]) => (
+            <div key={category} className="space-y-4">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-soft-text-muted px-2">{category}</h3>
+              <div className="flex flex-col gap-4">
+                {catItems.map(item => (
+                  <div 
+                    key={item.id} 
+                    className={`p-5 rounded-[24px] shadow-soft border-none transition-all ${
+                      item.isBought 
+                        ? 'bg-soft-card/50 dark:bg-[#1C1C1E] opacity-70' 
+                        : 'bg-soft-bg dark:bg-zinc-800'
+                    }`}
+                  >
             <div className="flex gap-4 items-start">
               <button onClick={() => toggleBought(item.id)} className={`shrink-0 mt-1 transition-transform active:scale-90 ${item.isBought ? '' : 'hover:scale-110'}`}>
                 {item.isBought ? <Check size={26} className="text-white bg-soft-primary rounded-full p-1 border-[2px] border-soft-primary" strokeWidth={3} /> : <Circle size={26} className="text-zinc-300 dark:text-zinc-500" strokeWidth={2} />}
@@ -191,6 +210,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
             </div>
           </div>
         ))}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
