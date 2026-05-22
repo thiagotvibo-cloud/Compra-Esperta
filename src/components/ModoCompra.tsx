@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { AppContextType, Item } from '../types';
 import { formatMoney, formatItemName } from '../utils';
-import { Check, Circle, AlertTriangle, Plus, Minus } from 'lucide-react';
+import { Check, Circle, AlertTriangle, Plus, Minus, Star } from 'lucide-react';
 
 export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { items, setItems, settings } = context;
@@ -81,7 +81,11 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
     Object.keys(grouped).forEach(cat => {
       grouped[cat].sort((a, b) => {
-        if (a.isBought === b.isBought) return a.name.localeCompare(b.name);
+        if (a.isBought === b.isBought) {
+          if (a.isEssential && !b.isEssential) return -1;
+          if (!a.isEssential && b.isEssential) return 1;
+          return a.name.localeCompare(b.name);
+        }
         return a.isBought ? 1 : -1;
       });
     });
@@ -143,7 +147,16 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
               </button>
               
               <div className="flex-1 min-w-0 pr-2">
-                <div className={`font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap ${item.isBought ? 'line-through text-soft-text-muted dark:text-zinc-500' : 'text-soft-text-main'}`}>{formatItemName(item.name)}</div>
+                <div className={`font-semibold text-[16px] flex items-start gap-2 dark:text-zinc-100 leading-snug text-wrap ${item.isBought ? 'line-through text-soft-text-muted dark:text-zinc-500' : 'text-soft-text-main'}`}>
+                  <span>{formatItemName(item.name)}</span>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
+                    className={`mt-0.5 shrink-0 transition-all ${item.isEssential ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600 hover:text-amber-400 opacity-50 hover:opacity-100'}`}
+                    title={item.isEssential ? "Remover prioridade" : "Marcar como prioridade"}
+                  >
+                    <Star size={16} className={item.isEssential ? 'fill-amber-400' : ''} strokeWidth={item.isEssential ? 0 : 2} />
+                  </button>
+                </div>
                 {context.promotions.find(p => p.itemName === item.name) && (() => {
                   const promo = context.promotions.find(p => p.itemName === item.name)!;
                   const market = context.markets.find(m => m.id === promo.marketId);
