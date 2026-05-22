@@ -113,7 +113,7 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Mercearia - Condimentos e Conservas",
         items: [
-          "Azeitona", "Caldo em Cubos", "Catchup", "Champignon", "Cominho", "Ervilha em Conserva", "Louro", "Maionese", "Milho em Conserva", "Molho de Alho", "Molho de Pimenta", "Molho Inglês", "Molho Shoyu", "Mostarda", "Orégano", "Palmito", "Picles", "Pimenta-do-reino", "Sardinha/Atum em Lata", "Vinagre (Álcool/Balsâmico/Maçã)"
+          "Azeitona", "Caldo em Cubos", "Ketchup", "Champignon", "Cominho", "Ervilha em Conserva", "Louro", "Maionese", "Milho em Conserva", "Molho de Alho", "Molho de Pimenta", "Molho Inglês", "Molho Shoyu", "Mostarda", "Orégano", "Palmito", "Picles", "Pimenta-do-reino", "Sardinha/Atum em Lata", "Vinagre (Álcool/Balsâmico/Maçã)"
         ]
       }
     ]

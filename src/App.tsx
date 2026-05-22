@@ -149,6 +149,8 @@ export default function App() {
               retryTimeout = setTimeout(setupRealtime, 5000);
             } else if (status === 'TIMED_OUT') {
               console.error('⏱️ Conexão Realtime esgotou o tempo limite.');
+              clearTimeout(retryTimeout);
+              retryTimeout = setTimeout(setupRealtime, 5000);
             }
           });
       };

@@ -19,6 +19,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   const [unit, setUnit] = useState<Unit>('un');
   const [expiryDate, setExpiryDate] = useState('');
   const [notes, setNotes] = useState('');
+  const [editingPromoId, setEditingPromoId] = useState<string | null>(null);
 
   // States para o modal de catálogo
   const [showCatalog, setShowCatalog] = useState(false);
@@ -77,23 +78,58 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
     e.preventDefault();
     if (!itemName || price <= 0 || !selectedMarket) return;
 
-    const newPromo: Promotion = {
-      id: generateId(),
-      marketId: selectedMarket,
-      itemName: itemName.trim(),
-      price,
-      qty: Number(qty) || 1,
-      unit,
-      expiryDate,
-      notes: notes.trim()
-    };
+    if (editingPromoId) {
+      setPromotions(promotions.map(p => p.id === editingPromoId ? {
+        ...p,
+        marketId: selectedMarket,
+        itemName: itemName.trim(),
+        price,
+        qty: Number(qty) || 1,
+        unit,
+        expiryDate,
+        notes: notes.trim()
+      } : p));
+      setEditingPromoId(null);
+    } else {
+      const newPromo: Promotion = {
+        id: generateId(),
+        marketId: selectedMarket,
+        itemName: itemName.trim(),
+        price,
+        qty: Number(qty) || 1,
+        unit,
+        expiryDate,
+        notes: notes.trim()
+      };
+      setPromotions([newPromo, ...promotions]);
+    }
 
-    setPromotions([newPromo, ...promotions]);
     setItemName('');
     setPrice(0);
     setQty(1);
     setNotes('');
-    // expiry mantém caso ele esteja encartando promoções da mesma data
+    setExpiryDate('');
+  };
+
+  const handleEditPromo = (promo: Promotion) => {
+    setEditingPromoId(promo.id);
+    setSelectedMarket(promo.marketId);
+    setItemName(promo.itemName);
+    setPrice(promo.price);
+    setQty(promo.qty);
+    setUnit(promo.unit);
+    setExpiryDate(promo.expiryDate || '');
+    setNotes(promo.notes || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingPromoId(null);
+    setItemName('');
+    setPrice(0);
+    setQty(1);
+    setNotes('');
+    setExpiryDate('');
   };
 
   const removeMarket = (id: string) => {
@@ -151,11 +187,11 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
           </form>
         </div>
 
-        {/* CADASTRAR PROMOÇÃO */}
+        {/* CADASTRAR/EDITAR PROMOÇÃO */}
         {selectedMarket ? (
           <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] border-none mb-6 shadow-sm">
             <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-primary mb-4 flex flex-row items-center gap-2">
-              <Plus size={16} /> Adicionar Nova Promoção
+              <Plus size={16} /> {editingPromoId ? 'Editar Promoção' : 'Adicionar Nova Promoção'}
             </h3>
             <form onSubmit={handleAddPromotion} className="space-y-4">
               <div>
@@ -195,9 +231,16 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-soft-primary hover:bg-soft-primary-hover text-white p-4 pt-4 mt-2 rounded-full font-semibold text-lg transition-transform active:scale-95 shadow-primary">
-                Salvar Promoção
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                <button type="submit" className="flex-1 bg-soft-primary hover:bg-soft-primary-hover text-white p-4 rounded-full font-semibold text-lg transition-transform active:scale-95 shadow-primary">
+                  {editingPromoId ? 'Salvar Alterações' : 'Salvar Promoção'}
+                </button>
+                {editingPromoId && (
+                  <button type="button" onClick={cancelEdit} className="w-full sm:w-auto px-6 py-4 bg-soft-bg dark:bg-zinc-700/50 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-soft-text-main dark:text-zinc-200 rounded-full font-semibold transition-colors active:scale-95">
+                    Cancelar
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         ) : (
@@ -216,8 +259,8 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               const pricePerBase = getPricePerBaseUnit(promo.price, promo.qty, promo.unit);
               
               return (
-                <div key={promo.id} className="bg-soft-card dark:bg-zinc-800 p-5 rounded-[24px] shadow-sm flex justify-between items-center gap-4 transition-all">
-                  <div className="flex-1 min-w-0">
+                <div key={promo.id} className="bg-soft-card dark:bg-zinc-800 p-5 rounded-[24px] shadow-sm flex justify-between items-center gap-4 transition-all cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50" onClick={() => handleEditPromo(promo)}>
+                  <div className="flex-1 min-w-0 pointer-events-none">
                     <h4 className="font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap text-soft-text-main">{formatItemName(promo.itemName)}</h4>
                     <div className="text-soft-primary font-semibold text-[20px] my-0.5">{formatMoney(promo.price)}</div>
                     <div className="flex gap-2 text-[11px] text-soft-text-muted font-semibold uppercase tracking-wide mt-2 flex-wrap">
@@ -244,7 +287,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                     )}
                   </div>
                   
-                  <button onClick={() => setPromotions(promotions.filter(p => p.id !== promo.id))} className="text-zinc-400 hover:text-red-400 p-2.5 bg-soft-bg dark:bg-zinc-700 rounded-full">
+                  <button onClick={(e) => { e.stopPropagation(); setPromotions(promotions.filter(p => p.id !== promo.id)); }} className="text-zinc-400 hover:text-red-400 p-2.5 bg-soft-bg dark:bg-zinc-700 rounded-full shrink-0">
                     <Trash2 size={18} />
                   </button>
                 </div>
