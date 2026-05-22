@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type Category = string;
 export type Unit = 'kg' | 'g' | 'L' | 'ml' | 'un' | 'pct';
 

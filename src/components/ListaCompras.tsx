@@ -40,7 +40,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const groupedItems = uniqueCategories.map(cat => ({
     category: cat || 'Sem Categoria',
     items: items.filter(i => i.category === cat)
-  })).sort((a, b) => (a.category || '').localeCompare(b.category || '')); // Optional sorting
+  })).sort((a, b) => String(a.category).localeCompare(String(b.category)));
 
   const totalItems = items.length;
   const boughtItems = items.filter(i => i.isBought).length;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Item, Market, Promotion, Settings, AppContextType } from './types';
 import { ListaCompras } from './components/ListaCompras';
 import { Promocoes } from './components/Promocoes';
@@ -34,7 +34,7 @@ export default function App() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      if (event === 'SIGNED_OUT') {
         setSession(null);
       } else {
         setSession(session);
