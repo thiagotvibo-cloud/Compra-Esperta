@@ -373,12 +373,12 @@ export default function App() {
         </main>
 
         {/* BOTTOM NAVIGATION */}
-        <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800 px-2 py-3 z-50 flex justify-between items-end pb-[calc(env(safe-area-inset-bottom)+12px)]">
-          <div className="flex justify-between w-full">
+        <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800 px-2 py-3 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <div className="grid grid-cols-5 w-full items-center">
             <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={22} />} label="Lista" />
             <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={22} />} label="Rota" />
             <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={22} />} label="Promoções" />
-            <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={22} />} label="Comprar" primary />
+            <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={22} />} label="Comprar" />
             <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={22} />} label="Config" />
           </div>
         </nav>
@@ -387,22 +387,20 @@ export default function App() {
   );
 }
 
-function NavButton({ active, onClick, icon, label, primary }: any) {
+function NavButton({ active, onClick, icon, label }: any) {
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center justify-center flex-1 min-w-[60px] gap-1.5 transition-all ${
-        primary 
-          ? 'text-white translate-y-[-12px]' 
-          : active 
-            ? 'text-soft-primary font-semibold transform scale-105' 
-            : 'text-zinc-400 dark:text-zinc-500 hover:text-soft-text-muted dark:hover:text-zinc-300'
+      className={`flex flex-col items-center justify-center w-full gap-1.5 transition-all ${
+        active 
+          ? 'text-soft-primary font-semibold transform scale-105' 
+          : 'text-zinc-400 dark:text-zinc-500 hover:text-soft-text-muted dark:hover:text-zinc-300'
       }`}
     >
-      <div className={`${primary ? 'bg-soft-primary p-3.5 rounded-full shadow-primary text-white' : ''} ${primary && !active ? 'opacity-90' : ''}`}>
+      <div>
         {icon}
       </div>
-      <span className={`text-[10px] uppercase tracking-wider leading-none whitespace-nowrap ${primary ? 'text-soft-primary font-bold mt-1' : ''}`}>{label}</span>
+      <span className="text-[10px] uppercase tracking-wider leading-none whitespace-nowrap">{label}</span>
     </button>
   );
 }
