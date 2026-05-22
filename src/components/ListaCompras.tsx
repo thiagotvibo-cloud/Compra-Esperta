@@ -13,21 +13,28 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddFromCatalog = (itemName: string, categoryName: string) => {
-    const newItem: Item = {
-      id: generateId(),
-      name: itemName,
-      qty: 1,
-      unit: 'un', // Padrão
-      category: categoryName as Category,
-      isEssential: false,
-      onlyPromo: false,
-      isBought: false,
-      notes: '',
-      actualPrice: 0,
-    };
-    setItems([...items, newItem]);
-    setShowCatalog(false);
-    setSearchQuery('');
+    setItems((prevItems) => {
+      const normalizedItemName = itemName.trim().toLowerCase();
+      const existingItem = prevItems.find(i => i.name.trim().toLowerCase() === normalizedItemName);
+
+      if (existingItem) {
+        return prevItems.filter(i => i.id !== existingItem.id);
+      } else {
+        const newItem: Item = {
+          id: generateId(),
+          name: itemName,
+          qty: 1,
+          unit: 'un', // Padrão
+          category: categoryName as Category,
+          isEssential: false,
+          onlyPromo: false,
+          isBought: false,
+          notes: '',
+          actualPrice: 0,
+        };
+        return [...prevItems, newItem];
+      }
+    });
   };
 
   const clearBought = () => {
@@ -35,6 +42,10 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
       setItems(items.filter(item => !item.isBought));
     }
   };
+
+  const normalizedItemNamesForCatalog = useMemo(() => {
+    return new Set(items.map(i => i.name.trim().toLowerCase()));
+  }, [items]);
 
   const uniqueCategories = Array.from(new Set(items.map(i => i.category)));
   const groupedItems = uniqueCategories.map(cat => ({
@@ -208,9 +219,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
               <h2 className="text-lg font-semibold text-soft-text-main dark:text-zinc-100 tracking-tight">Adicionar Produto</h2>
               <button 
                 onClick={() => { setShowCatalog(false); setSearchQuery(''); }} 
-                className="p-2 bg-soft-card dark:bg-zinc-800 rounded-full text-zinc-500 hover:text-soft-text-main dark:hover:text-zinc-200 transition-colors"
+                className="p-2 bg-soft-card dark:bg-zinc-800 rounded-full text-zinc-500 hover:text-soft-text-main dark:hover:text-zinc-200 transition-colors flex items-center justify-center -mr-2"
                >
-                <X size={20} />
+                <ChevronDown size={24} />
               </button>
             </div>
             
@@ -240,15 +251,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                   <div className="bg-soft-card dark:bg-[#1C1C1E] rounded-[24px] border-none p-5">
                     <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4">Resultados da Busca</h4>
                     <div className="flex flex-wrap gap-2">
-                      {searchResults.map((item, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAddFromCatalog(item.name, item.category)}
-                          className="px-4 py-2 bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border border-zinc-100 dark:border-none"
-                        >
-                          <Plus size={14} className="opacity-50 shrink-0 mt-0.5" /> <span className="leading-snug text-wrap">{formatItemName(item.name)}</span>
-                        </button>
-                      ))}
+                      {searchResults.map((item, index) => {
+                        const isAdded = normalizedItemNamesForCatalog.has(item.name.trim().toLowerCase());
+                        return (
+                          <button
+                            key={index}
+                            onClick={() => handleAddFromCatalog(item.name, item.category)}
+                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-soft-primary text-white border-soft-primary shadow-sm' : 'bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                          >
+                            {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
+                            <span className="leading-snug text-wrap">{formatItemName(item.name)}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )
@@ -273,15 +288,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                             <div key={j} className="pt-2">
                               <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-3">{sub.name}</h4>
                               <div className="flex flex-wrap gap-2">
-                                {sub.items.map((itemName, k) => (
-                                  <button
-                                    key={k}
-                                    onClick={() => handleAddFromCatalog(itemName, cat.name)}
-                                    className="px-4 py-2 bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border border-zinc-100 dark:border-none"
-                                  >
-                                    <Plus size={14} className="opacity-50 shrink-0 mt-0.5" /> <span className="leading-snug text-wrap">{formatItemName(itemName)}</span>
-                                  </button>
-                                ))}
+                                {sub.items.map((itemName, k) => {
+                                  const isAdded = normalizedItemNamesForCatalog.has(itemName.trim().toLowerCase());
+                                  return (
+                                    <button
+                                      key={k}
+                                      onClick={() => handleAddFromCatalog(itemName, cat.name)}
+                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-soft-primary text-white border-soft-primary shadow-sm' : 'bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                                    >
+                                      {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
+                                      <span className="leading-snug text-wrap">{formatItemName(itemName)}</span>
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
                           ))}

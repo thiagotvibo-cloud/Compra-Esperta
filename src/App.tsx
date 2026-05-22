@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Item, Market, Promotion, Settings, AppContextType } from './types';
 import { ListaCompras } from './components/ListaCompras';
 import { Promocoes } from './components/Promocoes';
@@ -57,6 +57,10 @@ export default function App() {
     alert(`Erro Supabase: ${context}\nDetalhes: ${error?.message || JSON.stringify(error)}`);
   };
 
+  const isSyncingItems = useRef(false);
+  const isSyncingMarkets = useRef(false);
+  const isSyncingPromotions = useRef(false);
+
   // Sync data with Supabase when session changes
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +79,7 @@ export default function App() {
 
         const { data: iData, error: iErr } = await supabase.from('items').select('*').order('created_at');
         if (iErr) handleError('Buscar Itens', iErr);
-        else if (iData) {
+        else if (iData && !isSyncingItems.current) {
           setItems(iData.map(i => ({
             id: i.id,
             name: i.name,
@@ -92,11 +96,11 @@ export default function App() {
 
         const { data: mData, error: mErr } = await supabase.from('markets').select('*').order('created_at');
         if (mErr) handleError('Buscar Mercados', mErr);
-        else if (mData) setMarkets(mData.map(m => ({ id: m.id, name: m.name })));
+        else if (mData && !isSyncingMarkets.current) setMarkets(mData.map(m => ({ id: m.id, name: m.name })));
 
         const { data: pData, error: pErr } = await supabase.from('promotions').select('*').order('created_at');
         if (pErr) handleError('Buscar Promoções', pErr);
-        else if (pData) {
+        else if (pData && !isSyncingPromotions.current) {
           setPromotions(pData.map(p => ({
             id: p.id,
             marketId: p.market_id,
@@ -227,10 +231,18 @@ export default function App() {
     }
   };
 
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleSetItems = (newItemsOrCb: React.SetStateAction<Item[]>) => {
+    isSyncingItems.current = true;
     setItems((prev) => {
       const next = typeof newItemsOrCb === 'function' ? newItemsOrCb(prev) : newItemsOrCb;
-      syncItems(next);
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        syncItems(next).finally(() => {
+          setTimeout(() => { isSyncingItems.current = false; }, 2000);
+        });
+      }, 800);
       return next;
     });
   }
@@ -261,10 +273,18 @@ export default function App() {
     }
   };
 
+  const marketsSyncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleSetMarkets = (newMarketsOrCb: React.SetStateAction<Market[]>) => {
+    isSyncingMarkets.current = true;
     setMarkets((prev) => {
       const next = typeof newMarketsOrCb === 'function' ? newMarketsOrCb(prev) : newMarketsOrCb;
-      syncMarkets(next);
+      if (marketsSyncTimeoutRef.current) clearTimeout(marketsSyncTimeoutRef.current);
+      marketsSyncTimeoutRef.current = setTimeout(() => {
+        syncMarkets(next).finally(() => {
+          setTimeout(() => { isSyncingMarkets.current = false; }, 2000);
+        });
+      }, 800);
       return next;
     });
   }
@@ -305,10 +325,18 @@ export default function App() {
     }
   };
 
+  const promotionsSyncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleSetPromotions = (newPromosOrCb: React.SetStateAction<Promotion[]>) => {
+    isSyncingPromotions.current = true;
     setPromotions((prev) => {
       const next = typeof newPromosOrCb === 'function' ? newPromosOrCb(prev) : newPromosOrCb;
-      syncPromotions(next);
+      if (promotionsSyncTimeoutRef.current) clearTimeout(promotionsSyncTimeoutRef.current);
+      promotionsSyncTimeoutRef.current = setTimeout(() => {
+        syncPromotions(next).finally(() => {
+          setTimeout(() => { isSyncingPromotions.current = false; }, 2000);
+        });
+      }, 800);
       return next;
     });
   }

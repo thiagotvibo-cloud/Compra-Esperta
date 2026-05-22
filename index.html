@@ -14,6 +14,33 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
 
     <title>Compra Esperta</title>
+    <script>
+      // Fallback definitivo anti-tela branca
+      // Se um script falhar ao carregar (ex: cache antigo do SW e arquivo não existe mais),
+      // limpa os caches, remove o SW e recarrega.
+      window.addEventListener('error', function(e) {
+        if (e.target && e.target.tagName === 'SCRIPT' && e.target.src) {
+          console.error("Falha ao carregar script:", e.target.src);
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              Promise.all(names.map(name => caches.delete(name))).then(() => {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(registrations => {
+                    Promise.all(registrations.map(r => r.unregister())).then(() => {
+                      // Impede loops infinitos
+                      if (!sessionStorage.getItem('reloaded_once')) {
+                        sessionStorage.setItem('reloaded_once', 'true');
+                        window.location.reload();
+                      }
+                    });
+                  });
+                }
+              });
+            });
+          }
+        }
+      }, true);
+    </script>
   </head>
   <body>
     <div id="root"></div>
@@ -21,9 +48,27 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          // Força atualização das versões antigas ignorando o cache
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let r of registrations) {
+               r.update();
+            }
+          });
+
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
             .then(registration => {
               console.log('ServiceWorker registrado com sucesso no escopo: ', registration.scope);
+              registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                if (installingWorker == null) return;
+                installingWorker.onstatechange = () => {
+                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('Nova versão no Cache, recarregando para aplicar...');
+                    // Se encontrar nova versão e instalar, recarregamos para forçar uso dela.
+                    window.location.reload();
+                  }
+                };
+              };
             })
             .catch(err => {
               console.log('Falha ao registrar o ServiceWorker: ', err);

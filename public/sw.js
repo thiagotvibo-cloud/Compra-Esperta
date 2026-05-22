@@ -1,4 +1,4 @@
-const CACHE_NAME = 'compra-esperta-v1';
+const CACHE_NAME = 'compra-esperta-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -35,18 +35,31 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Use Network First for navigation (HTML) and API/dynamic content if any.
+  // We'll apply NetworkFirst for everything to avoid stuck PWA versions easily.
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // Retorna o cache se houver, caso contrário busca da rede
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).catch(() => {
-            // Em caso de falha de rede (offline), retornar o App Shell (index.html) para navegação
-            if (event.request.mode === 'navigate') {
-                return caches.match('/index.html');
-            }
+        // Obtenha uma cópia para o cache
+        const resClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          // Apenas adicione ao cache se a requisição for suportada
+          if (event.request.method === 'GET' && event.request.url.startsWith('http')) {
+            cache.put(event.request, resClone);
+          }
+        });
+        return response;
+      })
+      .catch(() => {
+        // Em caso de falha (offline), tente buscar do cache
+        return caches.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Se for uma navegação para rota e não estiver em cache, retorne index.html
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
         });
       })
   );
