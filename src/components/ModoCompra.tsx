@@ -1,10 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AppContextType, Item } from '../types';
-import { formatMoney, formatItemName } from '../utils';
-import { Check, Circle, AlertTriangle, Plus, Minus, Star } from 'lucide-react';
+import { formatMoney, formatItemName, generateId } from '../utils';
+import { Check, Circle, AlertTriangle, Plus, Minus, Star, Search, BadgeDollarSign, X, Trash2 } from 'lucide-react';
 
 export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { items, setItems, settings } = context;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAvulso, setShowAvulso] = useState(false);
+  const [avulsoVal, setAvulsoVal] = useState('');
 
   const totalSpent = useMemo(() => {
     return items.filter(i => i.isBought).reduce((acc, curr) => acc + ((curr.actualPrice || 0) * (curr.qty || 1)), 0);
@@ -69,10 +72,35 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     return (qty || 0).toString();
   };
 
+  const handleAvulsoAdd = () => {
+    const numericStr = avulsoVal.replace(/\D/g, '');
+    if (!numericStr) return;
+    const newPrice = parseInt(numericStr, 10) / 100;
+    if (newPrice <= 0) return;
+
+    setItems([...items, {
+      id: generateId(),
+      name: `Item Avulso`,
+      category: 'Outros',
+      qty: 1,
+      unit: 'un',
+      defaultPrice: 0,
+      actualPrice: newPrice,
+      isBought: true,
+      isEssential: false
+    }]);
+    setAvulsoVal('');
+    setShowAvulso(false);
+  };
+
   const overBudget = settings.budget > 0 && totalSpent > settings.budget;
 
   const itemsByCategory = useMemo(() => {
-    const grouped = items.reduce((acc, item) => {
+    const filteredItems = items.filter(item => 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const grouped = filteredItems.reduce((acc, item) => {
       const cat = item.category || 'Outros';
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(item);
@@ -91,7 +119,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     });
 
     return grouped;
-  }, [items]);
+  }, [items, searchTerm]);
 
   if (items.length === 0) {
     return <div className="p-10 text-center text-zinc-500">Lista vazia. Adicione itens primeiro.</div>;
@@ -111,6 +139,53 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
             </p>
           </div>
         </div>
+        
+        {/* Barra de Pesquisa */}
+        <div className="mt-4 relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <input 
+            type="text" 
+            placeholder="Buscar item..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white dark:bg-zinc-900/50 pl-10 pr-4 py-3 rounded-xl border-none focus:ring-2 focus:ring-soft-primary font-medium placeholder-zinc-400 text-[14px] shadow-sm"
+          />
+        </div>
+
+        {/* Adicionar Valor Avulso */}
+        <div className="mt-3">
+          {showAvulso ? (
+            <div className="flex items-center gap-2 bg-white dark:bg-zinc-900/50 p-2 rounded-xl border border-zinc-100 dark:border-zinc-700/50">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-soft-text-muted">R$</span>
+                <input 
+                  type="tel"
+                  autoFocus
+                  placeholder="0,00"
+                  value={avulsoVal}
+                  onChange={(e) => {
+                     const numericStr = e.target.value.replace(/\D/g, '');
+                     if (!numericStr) { setAvulsoVal(''); return; }
+                     const val = parseInt(numericStr, 10) / 100;
+                     setAvulsoVal(val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                  }}
+                  className="w-full bg-transparent pl-8 pr-3 py-2 outline-none font-semibold text-[16px] text-soft-primary"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAvulsoAdd()}
+                />
+              </div>
+              <button onClick={handleAvulsoAdd} className="bg-soft-primary text-white p-2 rounded-lg"><Plus size={20}/></button>
+              <button onClick={() => setShowAvulso(false)} className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 p-2 rounded-lg"><X size={20}/></button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setShowAvulso(true)}
+              className="flex items-center gap-2 text-[12px] font-bold text-soft-primary bg-soft-primary/10 px-3 py-2 rounded-lg w-full justify-center transition-colors hover:bg-soft-primary/20"
+            >
+              <BadgeDollarSign size={16} /> Somar Valor Avulso
+            </button>
+          )}
+        </div>
+
         {settings.budget > 0 && (
           <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-700 flex justify-between items-center">
              <div className="text-[12px] font-semibold text-soft-text-muted">
@@ -142,9 +217,14 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                     }`}
                   >
             <div className="flex gap-4 items-start">
-              <button onClick={() => toggleBought(item.id)} className={`shrink-0 mt-1 transition-transform active:scale-90 ${item.isBought ? '' : 'hover:scale-110'}`}>
-                {item.isBought ? <Check size={26} className="text-white bg-soft-primary rounded-full p-1 border-[2px] border-soft-primary" strokeWidth={3} /> : <Circle size={26} className="text-zinc-300 dark:text-zinc-500" strokeWidth={2} />}
-              </button>
+              <div className="flex flex-col gap-3 items-center mt-1">
+                <button onClick={() => toggleBought(item.id)} className={`shrink-0 transition-transform active:scale-90 ${item.isBought ? '' : 'hover:scale-110'}`}>
+                  {item.isBought ? <Check size={26} className="text-white bg-soft-primary rounded-full p-1 border-[2px] border-soft-primary" strokeWidth={3} /> : <Circle size={26} className="text-zinc-300 dark:text-zinc-500" strokeWidth={2} />}
+                </button>
+                <button onClick={() => setItems(items.filter(i => i.id !== item.id))} className="text-zinc-300 hover:text-red-500 dark:text-zinc-600 dark:hover:text-red-400 transition-colors p-1 shrink-0" title="Apagar item">
+                  <Trash2 size={18} />
+                </button>
+              </div>
               
               <div className="flex-1 min-w-0 pr-2">
                 <div className={`font-semibold text-[16px] flex items-start gap-2 dark:text-zinc-100 leading-snug text-wrap ${item.isBought ? 'line-through text-soft-text-muted dark:text-zinc-500' : 'text-soft-text-main'}`}>
@@ -157,23 +237,32 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                     <Star size={16} className={item.isEssential ? 'fill-amber-400' : ''} strokeWidth={item.isEssential ? 0 : 2} />
                   </button>
                 </div>
-                {context.promotions.find(p => p.itemName === item.name) && (() => {
-                  const promo = context.promotions.find(p => p.itemName === item.name)!;
-                  const market = context.markets.find(m => m.id === promo.marketId);
+                {(() => {
+                  const promos = context.promotions.filter(p => p.itemName === item.name);
+                  if (promos.length === 0) return null;
+                  
                   return (
-                    <button 
-                      onClick={() => {
-                        setItems(items.map(i => i.id === item.id ? { ...i, actualPrice: promo.price, qty: promo.qty || 1, unit: promo.unit || 'un' } : i));
-                      }}
-                      className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none active:scale-95 transition-transform whitespace-normal text-left max-w-full"
-                    >
-                      <span>Promo no {market?.name || 'Mercado'}: {formatMoney(promo.price)}/{promo.qty}{promo.unit} (Aplicar)</span>
-                      {promo.notes && (
-                        <div className="font-medium opacity-80 mt-0.5 max-w-full text-wrap italic">
-                          {promo.notes}
-                        </div>
-                      )}
-                    </button>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      {promos.map(promo => {
+                        const market = context.markets.find(m => m.id === promo.marketId);
+                        return (
+                          <button 
+                            key={promo.id}
+                            onClick={() => {
+                              setItems(items.map(i => i.id === item.id ? { ...i, actualPrice: promo.price, qty: promo.qty || 1, unit: promo.unit || 'un' } : i));
+                            }}
+                            className="text-[11px] font-semibold text-orange-500 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400 px-2.5 py-1.5 rounded-lg border-none active:scale-95 transition-transform whitespace-normal text-left max-w-full"
+                          >
+                            <span><strong className="text-orange-600 dark:text-orange-300">{market?.name || 'Mercado'}</strong>: {formatMoney(promo.price)}/{promo.qty}{promo.unit} (Aplicar)</span>
+                            {promo.notes && (
+                              <div className="font-medium opacity-80 mt-0.5 max-w-full text-wrap italic">
+                                {promo.notes}
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
                   );
                 })()}
                 

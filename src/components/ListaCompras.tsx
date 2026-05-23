@@ -38,9 +38,8 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   };
 
   const clearBought = () => {
-    if (window.confirm("Deseja limpar todos os itens comprados da lista?")) {
-      setItems(items.filter(item => !item.isBought));
-    }
+    // window.confirm may be blocked in iframe
+    setItems(items.map(item => ({ ...item, isBought: false })));
   };
 
   const normalizedItemNamesForCatalog = useMemo(() => {

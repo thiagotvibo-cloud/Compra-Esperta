@@ -133,11 +133,10 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   };
 
   const removeMarket = (id: string) => {
-    if (window.confirm('Excluir este mercado e TODAS as suas promoções?')) {
-      setMarkets(markets.filter(m => m.id !== id));
-      setPromotions(promotions.filter(p => p.marketId !== id));
-      if (selectedMarket === id) setSelectedMarket('');
-    }
+    // window.confirm is blocked in iframe
+    setMarkets(markets.filter(m => m.id !== id));
+    setPromotions(promotions.filter(p => p.marketId !== id));
+    if (selectedMarket === id) setSelectedMarket('');
   };
 
   const marketPromos = promotions.filter(p => p.marketId === selectedMarket);
