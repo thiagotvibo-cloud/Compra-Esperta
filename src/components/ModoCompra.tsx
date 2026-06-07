@@ -1,21 +1,39 @@
-import React, { useMemo, useState } from 'react';
-import { AppContextType, Item } from '../types';
+import React, { useMemo, useState, useEffect } from 'react';
+import { AppContextType, Item, HistoryItem } from '../types';
 import { formatMoney, formatItemName, generateId } from '../utils';
-import { Check, Circle, AlertTriangle, Plus, Minus, Star, Search, CreditCard, X, Trash2 } from 'lucide-react';
+import { Check, AlertTriangle, Plus, Minus, Search, CreditCard, X, Trash2, Store, Ban, ShoppingBag } from 'lucide-react';
 
 export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) => {
-  const { items, setItems, settings } = context;
+  const { items, setItems, settings, markets, promotions, setHistory, history, shoppingMarketId, setShoppingMarketId } = context;
   const [searchTerm, setSearchTerm] = useState('');
   const [showAvulso, setShowAvulso] = useState(false);
   const [avulsoVal, setAvulsoVal] = useState('');
+  const [delayedSorting, setDelayedSorting] = useState<boolean>(false);
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
+
+  const activeItems = useMemo(() => items.filter(i => !i.notFound), [items]);
 
   const totalSpent = useMemo(() => {
-    return items.filter(i => i.isBought).reduce((acc, curr) => acc + ((curr.actualPrice || 0) * (curr.qty || 1)), 0);
-  }, [items]);
+    return activeItems.filter(i => i.isBought).reduce((acc, curr) => acc + ((curr.actualPrice || 0) * (curr.qty || 1)), 0);
+  }, [activeItems]);
 
   const toggleBought = (id: string) => {
     setItems(items.map(item => item.id === id ? { ...item, isBought: !item.isBought } : item));
+    setDelayedSorting(true);
   };
+
+  const markNotFound = (id: string) => {
+    setItems(items.map(item => item.id === id ? { ...item, notFound: true, isBought: false } : item));
+  };
+
+  useEffect(() => {
+    if (delayedSorting) {
+      const timer = setTimeout(() => {
+        setDelayedSorting(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [delayedSorting, items]);
 
   const updatePrice = (id: string, newPrice: number) => {
     setItems(items.map(item => item.id === id ? { ...item, actualPrice: newPrice } : item));
@@ -63,16 +81,81 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     if (newPrice <= 0) return;
 
     setItems([...items, {
-      id: generateId(), name: `Item Avulso`, category: 'Outros', qty: 1, unit: 'un', defaultPrice: 0, actualPrice: newPrice, isBought: true, isEssential: false
+      id: generateId(), name: `Item Avulso`, category: 'Outros', qty: 1, unit: 'un', actualPrice: newPrice, isBought: true, isEssential: false, onlyPromo: false, notes: ''
     }]);
     setAvulsoVal('');
     setShowAvulso(false);
   };
 
-  const overBudget = settings.budget > 0 && totalSpent > settings.budget;
+  const handleMarketSelect = (marketId: string) => {
+    setShoppingMarketId(marketId);
+    if (!marketId) return;
+    
+    const marketPromos = promotions.filter(p => p.marketId === marketId);
+    setItems(prev => prev.map(item => {
+       if (item.isBought) return item; // Conserva valor preenchido manualmente
+       const promo = marketPromos.find(p => p.itemName === item.name);
+       if (promo) {
+         return { ...item, actualPrice: promo.price };
+       }
+       return item;
+    }));
+  };
+
+  const budgetPercent = settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
+  
+  let headerColor = 'bg-sky-500';
+  let textColor = 'text-white';
+  let subTextColor = 'text-sky-100';
+  let pulseClass = '';
+
+  if (budgetPercent > 100) {
+     headerColor = 'bg-red-600';
+     textColor = 'text-white';
+     subTextColor = 'text-red-100';
+     pulseClass = 'animate-pulse';
+  } else if (budgetPercent >= 90) {
+     headerColor = 'bg-red-200';
+     textColor = 'text-red-800';
+     subTextColor = 'text-red-700';
+  } else if (budgetPercent >= 70) {
+     headerColor = 'bg-orange-500';
+     textColor = 'text-white';
+     subTextColor = 'text-orange-100';
+  }
+
+  const finishPurchase = () => {
+    let economy = 0;
+    if (settings.budget > 0) {
+      economy = settings.budget - totalSpent;
+    } else {
+      // Simplification of economy if no budget
+      const expectedTotal = activeItems.reduce((acc, curr) => acc + (15.00 * curr.qty), 0); // 15 = placeholder
+      economy = expectedTotal - totalSpent;
+    }
+
+    const h: HistoryItem = {
+      id: generateId(),
+      date: new Date().toISOString(),
+      marketId: shoppingMarketId || null,
+      totalSpent: totalSpent,
+      economyGenerated: Math.max(0, economy), // para não ficar negativo se passou
+      items: activeItems.filter(i => i.isBought).map(i => ({
+        nome: i.name,
+        quantidade: i.qty,
+        subtotal: (i.actualPrice || 0) * i.qty
+      }))
+    };
+    
+    setHistory([h, ...history]);
+    
+    setItems(items.map(i => ({...i, isBought: false, actualPrice: 0, notFound: false})));
+    setShowFinishConfirm(false);
+    context.setActiveTab('lista');
+  };
 
   const itemsByCategory = useMemo(() => {
-    const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredItems = activeItems.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const grouped = filteredItems.reduce((acc, item) => {
       const cat = item.category || 'Outros';
       if (!acc[cat]) acc[cat] = [];
@@ -80,53 +163,87 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       return acc;
     }, {} as Record<string, Item[]>);
 
-    Object.keys(grouped).forEach(cat => {
-      grouped[cat].sort((a, b) => {
-        if (a.isBought === b.isBought) {
-          if (a.isEssential && !b.isEssential) return -1;
-          if (!a.isEssential && b.isEssential) return 1;
-          return a.name.localeCompare(b.name);
-        }
-        return a.isBought ? 1 : -1;
+    if (!delayedSorting) {
+      Object.keys(grouped).forEach(cat => {
+        grouped[cat].sort((a, b) => {
+          if (a.isBought === b.isBought) {
+            if (a.isEssential && !b.isEssential) return -1;
+            if (!a.isEssential && b.isEssential) return 1;
+            return a.name.localeCompare(b.name);
+          }
+          return a.isBought ? 1 : -1;
+        });
       });
-    });
+    }
     return grouped;
-  }, [items, searchTerm]);
+  }, [activeItems, searchTerm, delayedSorting]);
 
+  // Se não tem itens
   if (items.length === 0) return <div className="p-10 text-center text-zinc-500 font-medium">Sua lista está vazia. Adicione itens antes de ir às compras.</div>;
 
   return (
-    <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen">
+    <div className="pb-36 bg-soft-bg dark:bg-black min-h-screen">
       
-      {/* STICKY HEADER (Market Pro Style) */}
-      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors geometric-bg ${overBudget ? 'bg-red-500' : 'bg-sky-400'}`}>
+      {/* STICKY HEADER */}
+      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
         <div className="geometric-circle" style={{ top: '15px', right: '15px', width: '45px', height: '45px' }}></div>
+        
+        {/* MARKET SELECTOR IN HEADER */}
+        <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10">
+          <Store className={textColor} size={16} />
+          <select 
+            value={shoppingMarketId} 
+            onChange={e => handleMarketSelect(e.target.value)}
+            className={`flex-1 bg-transparent border-none focus:outline-none font-semibold text-[14px] cursor-pointer appearance-none ${textColor}`}
+          >
+            <option value="" className="text-zinc-900">-- Selecione o Mercado --</option>
+            {markets.map(m => <option className="text-zinc-900" key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+        </div>
+
         <div className="flex justify-between items-end relative z-10">
           <div>
-            <div className={`text-[11px] font-semibold uppercase tracking-widest mb-1 ${overBudget ? 'text-red-100' : 'text-sky-50'}`}>Total no Carrinho</div>
-            <div className="text-[36px] font-bold tracking-tight text-white leading-none">
+            <div className={`text-[12px] font-semibold uppercase tracking-widest mb-1 ${subTextColor}`}>Valor no Carrinho</div>
+            <div className={`text-[36px] font-bold tracking-tight leading-none ${textColor}`}>
               <span className="text-[20px] font-semibold mr-1 opacity-80">R$</span>
               {totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
+            
+            {settings.budget > 0 && (
+               <div className={`text-[13px] font-medium mt-1 ${subTextColor}`}>
+                  de R$ {settings.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} · 
+                  {budgetPercent > 100 ? 
+                    <span className="font-bold ml-1">Estourou R$ {(totalSpent - settings.budget).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span> : 
+                    <span className="ml-1">Faltam R$ {(settings.budget - totalSpent).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  }
+               </div>
+            )}
           </div>
-          {overBudget && (
-            <div className="bg-white/20 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold backdrop-blur-sm">
-              <AlertTriangle size={14} /> Passou!
-            </div>
+          {budgetPercent >= 70 && budgetPercent < 100 && (
+             <div className="bg-black/10 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold backdrop-blur-sm">
+                <AlertTriangle size={14} /> Atenção
+             </div>
           )}
+          {budgetPercent >= 100 && (
+             <div className="bg-black/20 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold backdrop-blur-sm">
+                ⛔ Passou!
+             </div>
+          )}
+        </div>
+
+        <div className={`mt-4 relative z-10 text-[13px] font-semibold flex items-center gap-2 ${subTextColor}`}>
+          <span>{activeItems.filter(i => i.isBought).length} de {activeItems.length} itens</span>
+          <span>·</span>
+          <span>{activeItems.filter(i => !i.isBought).length} pendentes</span>
         </div>
 
         {/* PROGRESS BAR */}
         {settings.budget > 0 && (
-          <div className="mt-5 relative z-10">
-            <div className={`flex justify-between text-[11px] font-semibold uppercase tracking-widest mb-2 ${overBudget ? 'text-red-100' : 'text-sky-50'}`}>
-              <span>Orçamento: {formatMoney(settings.budget)}</span>
-              <span>{Math.round((totalSpent / settings.budget) * 100)}%</span>
-            </div>
-            <div className={`h-2.5 rounded-full overflow-hidden ${overBudget ? 'bg-red-800/40' : 'bg-sky-800/20'}`}>
+          <div className="mt-3 relative z-10">
+            <div className={`h-2.5 rounded-full overflow-hidden bg-black/10 border border-white/10 shadow-inner`}>
               <div 
-                className="h-full bg-white rounded-full transition-all duration-300 ease-out" 
-                style={{ width: `${Math.min((totalSpent / settings.budget) * 100, 100)}%` }} 
+                className={`h-full rounded-full transition-all duration-300 ease-out ${budgetPercent >= 90 ? 'bg-red-500' : 'bg-white'}`}
+                style={{ width: `${Math.min(budgetPercent, 100)}%` }} 
               />
             </div>
           </div>
@@ -134,6 +251,20 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       </div>
 
       <div className="px-4 mt-6">
+        
+        {/* MARKET SELECTOR (INJEÇÃO DE PREÇO) */}
+        <div className="mb-6 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
+          <Store className="text-sky-500 shrink-0" size={20} />
+          <select 
+            value={shoppingMarketId} 
+            onChange={e => handleMarketSelect(e.target.value)}
+            className="flex-1 bg-transparent border-none focus:outline-none font-semibold text-zinc-900 dark:text-zinc-100 text-[15px] cursor-pointer"
+          >
+            <option value="">-- Onde você está comprando? --</option>
+            {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+        </div>
+
         {/* COMPACT SEARCH & AVULSO */}
         <div className="flex gap-2 mb-6">
           <div className="relative flex-1">
@@ -169,21 +300,32 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
           </div>
         )}
 
-        {/* LIST */}
+        {/* ITEMS LIST */}
         <div className="flex flex-col gap-6">
-          {Object.entries(itemsByCategory)
+          {Object.entries<Item[]>(itemsByCategory)
             .sort(([catA], [catB]) => catA.localeCompare(catB))
-            .map(([category, catItems]) => (
+            .map(([category, catItems]) => {
+              const catSubtotal = catItems.reduce((acc, item) => acc + ((typeof item.actualPrice === 'number' ? item.actualPrice : 0) * (typeof item.qty === 'number' ? item.qty : 1)), 0);
+
+              return (
               <div key={category} className="space-y-3">
-                <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 px-2">{category}</h3>
+                <div className="flex items-center gap-3 px-2">
+                  <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 whitespace-nowrap">{category}</h3>
+                  <div className="flex-1 border-t border-dashed border-zinc-300 dark:border-zinc-700"></div>
+                  {catSubtotal > 0 && (
+                     <div className="text-[14px] font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap">
+                       R$ {catSubtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                     </div>
+                  )}
+                </div>
                 <div className="flex flex-col gap-3">
                   {catItems.map(item => (
                     <div 
                       key={item.id} 
-                      className={`p-3.5 rounded-2xl border transition-colors flex gap-3 items-center ${
+                      className={`p-3.5 rounded-2xl border transition-all duration-500 ease-out flex gap-3 items-center ${
                         item.isBought 
-                          ? 'bg-zinc-100/80 dark:bg-zinc-900/80 border-dashed border-zinc-300 dark:border-zinc-700 opacity-60' 
-                          : 'bg-white dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-700 shadow-sm'
+                          ? 'bg-zinc-100 dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 opacity-40 scale-[0.98]' 
+                          : 'bg-white dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-700 shadow-sm opacity-100 scale-100'
                       }`}
                     >
                       {/* HUGE CHECK TARGET */}
@@ -197,41 +339,51 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                       </button>
 
                       <div className="flex-1 min-w-0 py-1">
-                        <div className={`text-[17px] font-semibold leading-tight truncate ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}>
-                          {item.name}
+                        <div className="flex items-start justify-between">
+                          <div className={`text-[17px] font-semibold leading-tight pr-2 ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                            {item.name}
+                          </div>
+                          {!item.isBought && (
+                            <button onClick={() => markNotFound(item.id)} className="text-zinc-400 hover:text-red-500 p-1 shrink-0 bg-zinc-50 dark:bg-zinc-800 rounded-lg" title="Não Encontrado na Prateleira">
+                               <Ban size={16} />
+                            </button>
+                          )}
                         </div>
                         
                         {/* INPUTS ROW */}
-                        <div className="flex items-center gap-3 mt-2.5">
+                        <div className="flex items-center gap-2 mt-2.5" onClick={(e) => { if (item.isBought) e.stopPropagation(); }}>
                           {/* QTY */}
                           <div className={`flex items-center rounded-xl p-1 shrink-0 ${item.isBought ? 'bg-zinc-200/50 dark:bg-zinc-800' : 'bg-zinc-100 dark:bg-zinc-800'}`}>
                             {['kg', 'l'].includes(item.unit.toLowerCase()) ? (
                                 <input 
+                                  disabled={item.isBought}
                                   type="tel" value={getQtyDisplayValue(item.qty, item.unit)} onChange={(e) => handleQtyChange(item.id, e.target.value, item.unit)}
                                   className="w-[60px] bg-transparent text-center text-[15px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none"
                                 />
                             ) : (
                               <>
-                                <button onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-1.5 text-zinc-500 active:bg-white dark:active:bg-zinc-700 rounded-lg"><Minus size={16}/></button>
+                                <button disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-1 text-zinc-500 active:bg-white dark:active:bg-zinc-700 rounded-lg"><Minus size={14}/></button>
                                 <input 
+                                  disabled={item.isBought}
                                   type="tel" value={getQtyDisplayValue(item.qty, item.unit)} onChange={(e) => handleQtyChange(item.id, e.target.value, item.unit)}
-                                  className="w-8 bg-transparent text-center text-[15px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none"
+                                  className="w-6 bg-transparent text-center text-[15px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none"
                                 />
-                                <button onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-1.5 text-zinc-500 active:bg-white dark:active:bg-zinc-700 rounded-lg"><Plus size={16}/></button>
+                                <button disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-1 text-zinc-500 active:bg-white dark:active:bg-zinc-700 rounded-lg"><Plus size={14}/></button>
                               </>
                             )}
-                            <span className="text-[11px] font-semibold text-zinc-400 uppercase pr-1.5">{item.unit}</span>
+                            <span className="text-[10px] font-semibold text-zinc-400 uppercase pr-1">{item.unit}</span>
                           </div>
 
-                          <div className="text-zinc-300 dark:text-zinc-600 font-semibold">×</div>
+                          <div className="text-zinc-300 dark:text-zinc-600 font-semibold text-xs">×</div>
 
                           {/* PRICE */}
                           <div className="relative flex-1">
-                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-zinc-400">R$</span>
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-zinc-400">R$</span>
                             <input 
+                              disabled={item.isBought}
                               type="tel" value={getPriceDisplayValue(item.actualPrice || 0)} onChange={(e) => handlePriceInput(item.id, e.target.value)}
                               placeholder="0,00"
-                              className={`w-full pl-[26px] pr-3 py-2.5 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 text-[15px] transition-colors ${
+                              className={`w-full pl-6 pr-2 py-2 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 text-[14px] transition-colors ${
                                 item.isBought ? 'bg-transparent text-zinc-600 dark:text-zinc-400' : 'bg-zinc-100 dark:bg-zinc-800 text-sky-600 dark:text-sky-400'
                               }`}
                             />
@@ -243,10 +395,59 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                   ))}
                 </div>
               </div>
-            ))}
+            );
+          })}
         </div>
+
+        {/* NOT FOUND SECTION */}
+        {items.filter(i => i.notFound).length > 0 && (
+           <div className="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+              <h3 className="text-[12px] font-bold uppercase tracking-widest text-red-500 mb-3 px-2 flex items-center gap-2">
+                 <Ban size={14} strokeWidth={3} /> Itens Não Encontrados ({items.filter(i => i.notFound).length})
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                 {items.filter(i => i.notFound).map(item => (
+                    <button 
+                       key={item.id} 
+                       onClick={() => setItems(items.map(i => i.id === item.id ? { ...i, notFound: false } : i))}
+                       className="text-[13px] font-medium bg-red-50 text-red-600 dark:bg-red-900/10 dark:text-red-400 px-3 py-1.5 rounded-xl border border-red-100 dark:border-red-900/30 flex items-center gap-2 hover:bg-red-100 transition-colors"
+                    >
+                       <span className="line-through opacity-70">{item.name}</span>
+                       <Plus size={14} />
+                    </button>
+                 ))}
+              </div>
+           </div>
+        )}
       </div>
+
+      {/* FLOAT BUTTON FINALIZAR COMPRA */}
+      <div className="fixed bottom-20 left-0 w-full flex justify-center z-40 pointer-events-none px-4">
+         <button 
+            onClick={() => setShowFinishConfirm(true)}
+            className="pointer-events-auto bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"
+         >
+            <ShoppingBag size={18} /> Finalizar Compra
+         </button>
+      </div>
+
+      {/* CONFIRM FINISH PURCHASE MODAL */}
+      {showFinishConfirm && (
+        <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowFinishConfirm(false)}>
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingBag size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Finalizar e Salvar?</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 mb-6 text-sm">Sua compra será salva no histórico e os itens do carrinho atual serão desmarcados.</p>
+            <div className="flex gap-3">
+               <button onClick={() => setShowFinishConfirm(false)} className="flex-1 py-3 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Voltar</button>
+               <button onClick={finishPurchase} className="flex-1 py-3 rounded-2xl font-bold text-white bg-sky-500 hover:bg-sky-600">Sim, Finalizar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
-

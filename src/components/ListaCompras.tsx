@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Item, Category, Unit, AppContextType } from '../types';
 import { generateId, formatItemName, formatMoney } from '../utils';
-import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb } from 'lucide-react';
+import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb, ExternalLink } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -12,6 +12,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const [searchQuery, setSearchQuery] = useState('');
   const [tip, setTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const fetchTip = async () => {
     const essentialItems = items.filter(i => i.isEssential).map(i => i.name);
@@ -66,9 +67,48 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   };
 
   const clearBought = () => {
-    // window.confirm may be blocked in iframe
     setItems(items.map(item => ({ ...item, isBought: false })));
+    setShowClearConfirm(false);
   };
+
+  const getBestOffer = (itemName: string) => {
+    const promos = context.promotions.filter(p => p.itemName.toLowerCase() === itemName.toLowerCase());
+    if (promos.length === 0) return null;
+    return promos.reduce((prev, curr) => (prev.price < curr.price ? prev : curr));
+  };
+
+  const calculateEstimatedTotal = () => {
+    let total = 0;
+    const globalDefault = 12.00;
+    items.forEach(item => {
+      const bestOffer = getBestOffer(item.name);
+      if (bestOffer) {
+        total += bestOffer.price * item.qty;
+      } else {
+        total += globalDefault * item.qty;
+      }
+    });
+    return total;
+  };
+
+  const calculateEconomy = () => {
+    let totalWithoutOffers = 0;
+    let totalWithOffers = 0;
+    const globalDefault = 12.00;
+
+    items.forEach(item => {
+      const bestOffer = getBestOffer(item.name);
+      if (bestOffer) {
+        totalWithoutOffers += globalDefault * item.qty; // ou preço médio se houvesse, mas usarei default por enquanto
+        totalWithOffers += bestOffer.price * item.qty;
+      }
+    });
+    return Math.max(0, totalWithoutOffers - totalWithOffers);
+  };
+
+  const expectedTotal = calculateEstimatedTotal();
+  const progOrçamento = settings.budget > 0 ? (expectedTotal / settings.budget) * 100 : 0;
+  const progressPercent = Math.min(progOrçamento, 100);
 
   const normalizedItemNamesForCatalog = useMemo(() => {
     return new Set(items.map(i => i.name.trim().toLowerCase()));
@@ -102,6 +142,17 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     );
   }, []);
 
+  const frequentItems = useMemo(() => {
+    const counts: Record<string, number> = {};
+    context.history.forEach(h => {
+      h.items?.forEach(i => {
+        const lowerName = i.nome.trim().toLowerCase();
+        counts[lowerName] = (counts[lowerName] || 0) + 1;
+      });
+    });
+    return Object.fromEntries(Object.entries(counts).filter(([_, count]) => count >= 2));
+  }, [context.history]);
+
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -133,6 +184,22 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
             <div className="bg-white/20 backdrop-blur rounded-full px-4 py-1.5 text-[13px] font-semibold text-white flex items-center gap-2">
               {boughtItems} de {totalItems} itens no carrinho
             </div>
+            {settings.budget > 0 && expectedTotal > 0 && (
+              <div className="w-full mt-5 bg-black/10 rounded-2xl p-3 border border-white/10 text-left">
+                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-2 text-sky-100">
+                    <span>Total Estimado: {formatMoney(expectedTotal)}</span>
+                    <span className={progOrçamento > 100 ? 'text-red-200' : ''}>{Math.round(progOrçamento)}%</span>
+                 </div>
+                 <div className="h-2 rounded-full bg-black/20 overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-white'}`} style={{ width: `${progressPercent}%` }} />
+                 </div>
+                 {calculateEconomy() > 0 && (
+                   <div className="mt-2 text-[11px] font-bold text-sky-100 flex items-center gap-1.5">
+                     <span className="bg-green-500/20 text-green-100 px-1.5 py-0.5 rounded-md">Se comprar onde tem oferta, você poupará {formatMoney(calculateEconomy())}.</span>
+                   </div>
+                 )}
+              </div>
+            )}
          </div>
       </div>
 
@@ -151,7 +218,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
             </div>
             <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 text-center leading-tight">Modo<br/>Compra</span>
           </div>
-          <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={clearBought}>
+          <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowClearConfirm(true)}>
              <div className="w-14 h-14 rounded-full bg-zinc-50 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-100 dark:border-zinc-700/50">
               <Check strokeWidth={3} size={24} />
             </div>
@@ -222,19 +289,26 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                            >
                             <span>{formatItemName(item.name)}</span>
                             <button 
+                              onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isFavorite: !i.isFavorite } : i)); }}
+                              className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 'text-yellow-500' : 'text-zinc-300 hover:text-yellow-400 opacity-50 hover:opacity-100'}`}
+                              title={item.isFavorite ? "Remover dos favoritos" : frequentItems[item.name.trim().toLowerCase()] ? "Frequente no seu histórico" : "Marcar como favorito"}
+                            >
+                              <Star size={16} className={(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 'fill-yellow-500' : ''} strokeWidth={(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 0 : 2} />
+                            </button>
+                            <button 
                               onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
                               className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${item.isEssential ? 'text-amber-500' : 'text-zinc-300 hover:text-amber-400 opacity-50 hover:opacity-100'}`}
                               title={item.isEssential ? "Remover prioridade" : "Marcar como prioridade"}
                             >
-                              <Star size={16} className={item.isEssential ? 'fill-amber-500' : ''} strokeWidth={item.isEssential ? 0 : 2} />
+                              <ExternalLink size={16} className={item.isEssential ? 'text-amber-500' : ''} strokeWidth={2} />
                             </button>
                           </motion.div>
-                          {context.promotions.find(p => p.itemName === item.name) && (() => {
-                            const promo = context.promotions.find(p => p.itemName === item.name)!;
+                          {getBestOffer(item.name) && (() => {
+                            const promo = getBestOffer(item.name)!;
                             const market = context.markets.find(m => m.id === promo.marketId);
                             return (
-                              <div className="text-[11px] font-semibold text-orange-600 bg-orange-100 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
-                                <span>Oferta {market ? `no ${market.name}` : ''}</span>
+                              <div className="text-[11px] font-semibold text-green-700 bg-green-100 dark:bg-green-500/20 dark:text-green-400 px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
+                                <span>Melhor: {formatMoney(promo.price)} {market ? `no ${market.name}` : ''}</span>
                               </div>
                             );
                           })()}
@@ -279,6 +353,39 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
           ))}
         </div>
       </div>
+
+      {/* CLEAR CONFIRM MODAL */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowClearConfirm(false)}>
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Opções de Limpeza</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 mb-6 text-[14px]">O que você deseja fazer?</p>
+            <div className="flex flex-col gap-3">
+               <button 
+                 onClick={() => { clearBought(); setShowClearConfirm(false); }} 
+                 className="w-full py-3.5 rounded-2xl font-bold text-white bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all shadow-sm"
+               >
+                 Desmarcar Itens (Limpar Carrinho)
+               </button>
+               <button 
+                 onClick={() => { setItems([]); setShowClearConfirm(false); }} 
+                 className="w-full py-3.5 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all shadow-sm"
+               >
+                 Apagar Tudo (Limpar Lista)
+               </button>
+               <button 
+                 onClick={() => setShowClearConfirm(false)} 
+                 className="w-full py-3.5 mt-2 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 active:scale-95 transition-all"
+               >
+                 Cancelar
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL BOTTOM SHEET DO CATÁLOGO HIDDEN */}
       {showCatalog && (

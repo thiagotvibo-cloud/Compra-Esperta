@@ -14,6 +14,8 @@ export interface Item {
   isBought: boolean;
   notes: string;
   actualPrice: number; // Para ser preenchido durante o Modo Compra
+  isFavorite?: boolean;
+  notFound?: boolean;
 }
 
 export interface Market {
@@ -37,6 +39,15 @@ export interface Settings {
   darkMode: boolean;
 }
 
+export interface HistoryItem {
+  id: string;
+  date: string;
+  marketId: string | null;
+  totalSpent: number;
+  economyGenerated: number;
+  items: { nome: string; quantidade: number; subtotal: number }[];
+}
+
 export interface AppContextType {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
@@ -46,5 +57,10 @@ export interface AppContextType {
   setPromotions: React.Dispatch<React.SetStateAction<Promotion[]>>;
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  history: HistoryItem[];
+  setHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
+  shoppingMarketId: string;
+  setShoppingMarketId: React.Dispatch<React.SetStateAction<string>>;
   setActiveTab: (tab: 'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras') => void;
 }
+

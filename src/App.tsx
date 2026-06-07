@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Item, Market, Promotion, Settings, AppContextType } from './types';
+import { Item, Market, Promotion, Settings, AppContextType, HistoryItem } from './types';
 import { ListaCompras } from './components/ListaCompras';
 import { Promocoes } from './components/Promocoes';
 import { ModoCompra } from './components/ModoCompra';
@@ -16,9 +16,31 @@ export default function App() {
   
   const [items, setItems] = useState<Item[]>([]);
   const [markets, setMarkets] = useState<Market[]>([]);
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>(() => {
+    const saved = localStorage.getItem('market_pro_promotions');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const today = new Date().toISOString().split('T')[0];
+      return parsed.filter((p: Promotion) => !p.expiryDate || p.expiryDate >= today);
+    }
+    return [];
+  });
   const [settings, setSettings] = useState<Settings>({ budget: 0, darkMode: false });
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    const saved = localStorage.getItem('market_pro_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [shoppingMarketId, setShoppingMarketId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras'>('lista');
+
+  useEffect(() => {
+    localStorage.setItem('market_pro_history', JSON.stringify(history));
+  }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('market_pro_promotions', JSON.stringify(promotions));
+  }, [promotions]);
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session }, error }) => {
@@ -101,7 +123,7 @@ export default function App() {
         const { data: pData, error: pErr } = await supabase.from('promotions').select('*').order('created_at');
         if (pErr) handleError('Buscar Promoções', pErr);
         else if (pData && !isSyncingPromotions.current) {
-          setPromotions(pData.map(p => ({
+          const loadedPromos = pData.map(p => ({
             id: p.id,
             marketId: p.market_id,
             itemName: p.item_name,
@@ -110,7 +132,20 @@ export default function App() {
             unit: p.unit as any,
             expiryDate: p.expiry_date,
             notes: p.notes
-          })));
+          }));
+          
+          const today = new Date().toISOString().split('T')[0];
+          const validPromos = loadedPromos.filter(p => !p.expiryDate || p.expiryDate >= today);
+          
+          setPromotions(validPromos);
+          
+          // Se encontrou promos expiradas, remove do banco (opcional)
+          if (validPromos.length < loadedPromos.length) {
+            const expiredIds = loadedPromos.filter(p => p.expiryDate && p.expiryDate < today).map(p => p.id);
+            if (expiredIds.length > 0) {
+              supabase.from('promotions').delete().in('id', expiredIds).then();
+            }
+          }
         }
       } catch (err) {
         handleError('Exceção no Fetch API', err);
@@ -148,7 +183,7 @@ export default function App() {
               clearTimeout(retryTimeout);
               retryTimeout = setTimeout(setupRealtime, 5000);
             } else if (status === 'TIMED_OUT') {
-              console.error('⏱️ Conexão Realtime esgotou o tempo limite.');
+              console.warn('⏱️ Conexão Realtime esgotou o tempo limite.');
               clearTimeout(retryTimeout);
               retryTimeout = setTimeout(setupRealtime, 5000);
             }
@@ -356,6 +391,8 @@ export default function App() {
     markets, setMarkets: handleSetMarkets, 
     promotions, setPromotions: handleSetPromotions, 
     settings, setSettings: handleSetSettings, 
+    history, setHistory,
+    shoppingMarketId, setShoppingMarketId,
     setActiveTab 
   };
 

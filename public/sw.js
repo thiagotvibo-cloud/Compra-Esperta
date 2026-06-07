@@ -1,4 +1,4 @@
-const CACHE_NAME = 'compra-esperta-v2';
+const CACHE_NAME = 'compra-esperta-v4';
 const urlsToCache = [
   '/',
   '/index.html',

@@ -26,6 +26,9 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  // Filtro
+  const [promoFilter, setPromoFilter] = useState<'all' | 'today' | 'tomorrow'>('all');
+
   const flatCatalog = useMemo(() => {
     return PRODUCT_CATALOG.flatMap(cat => 
       cat.subcategories.flatMap(sub => 
@@ -133,13 +136,23 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   };
 
   const removeMarket = (id: string) => {
-    // window.confirm is blocked in iframe
     setMarkets(markets.filter(m => m.id !== id));
     setPromotions(promotions.filter(p => p.marketId !== id));
     if (selectedMarket === id) setSelectedMarket('');
   };
 
-  const marketPromos = promotions.filter(p => p.marketId === selectedMarket);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+  const filteredPromos = useMemo(() => {
+    return promotions.filter(p => {
+       if (promoFilter === 'today') return p.expiryDate === todayStr;
+       if (promoFilter === 'tomorrow') return p.expiryDate === tomorrowStr;
+       return true;
+    });
+  }, [promotions, promoFilter, todayStr, tomorrowStr]);
 
   return (
     <div className="pb-28 bg-zinc-50 dark:bg-black min-h-screen">
@@ -151,7 +164,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               Ofertas & Mercados
             </h2>
          </div>
-         <p className="text-sky-50 mt-2 text-[13px] font-medium relative z-10 pr-10">
+         <p className="text-sky-50 mt-2 text-[13px] font-medium relative z-10 pr-10 mb-5">
            Gerencie as ofertas que encontrou e organize por supermercado.
          </p>
       </div>
@@ -258,20 +271,57 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
         </div>
       )}
 
-      {/* LISTA DE PROMOÇÕES DO MERCADO */}
-      {selectedMarket && marketPromos.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-[13px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 ml-2">Salvas em {markets.find(m=>m.id===selectedMarket)?.name}</h3>
+      {/* LISTA DE PROMOÇÕES */}
+      <div className="space-y-4">
+        
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+           <button 
+             onClick={() => setPromoFilter('all')} 
+             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'all' ? 'bg-sky-500 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}
+           >
+              Todas Ofertas
+           </button>
+           <button 
+             onClick={() => setPromoFilter('today')} 
+             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'today' ? 'bg-red-500 text-white' : 'bg-red-50 dark:bg-red-900/10 text-red-500'}`}
+           >
+              Vence Hoje
+           </button>
+           <button 
+             onClick={() => setPromoFilter('tomorrow')} 
+             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'tomorrow' ? 'bg-orange-500 text-white' : 'bg-orange-50 dark:bg-orange-900/10 text-orange-500'}`}
+           >
+              Vence Amanhã
+           </button>
+        </div>
+
+        {filteredPromos.length === 0 ? (
+           <div className="text-center py-10 text-zinc-400 font-medium bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+             Não há promoções nesta aba.
+           </div>
+        ) : (
           <div className="flex flex-col gap-3">
-            {marketPromos.map(promo => {
+            {filteredPromos.map(promo => {
               const base = convertToBaseUnit(promo.qty, promo.unit);
               const pricePerBase = getPricePerBaseUnit(promo.price, promo.qty, promo.unit);
+              const marketName = markets.find(m => m.id === promo.marketId)?.name || 'Desconhecido';
               
+              const isExpiringToday = promo.expiryDate === todayStr;
+              const isExpiringTomorrow = promo.expiryDate === tomorrowStr;
+
               return (
                 <div key={promo.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex justify-between items-center gap-4 transition-all cursor-pointer active:scale-95" onClick={() => handleEditPromo(promo)}>
                   <div className="flex-1 min-w-0 pointer-events-none">
+                    
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full flex items-center gap-1"><Store size={10} /> {marketName}</span>
+                    </div>
+
                     <h4 className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 leading-snug">{formatItemName(promo.itemName)}</h4>
-                    <div className="text-sky-600 dark:text-sky-400 font-bold text-[22px] tracking-tight my-1">{formatMoney(promo.price)}</div>
+                    
+                    <div className="flex items-end gap-2 mt-1 mb-2">
+                      <div className="text-sky-600 dark:text-sky-400 font-bold text-[22px] tracking-tight leading-none">{formatMoney(promo.price)}</div>
+                    </div>
                     
                     <div className="flex gap-2 text-[10px] font-bold uppercase tracking-widest mt-2 flex-wrap">
                       <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 py-1 px-2.5 rounded-full">Por {promo.qty} {promo.unit}</span>
@@ -289,23 +339,28 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                            </div>
                         )}
                         {promo.expiryDate && (
-                          <div className="text-[11px] font-semibold text-red-500 mt-1 flex items-center gap-1.5 opacity-90">
-                            <Calendar size={14} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                          <div className={`text-[11px] font-bold mt-1 flex items-center gap-1.5 px-2 py-1 rounded border inline-flex w-max ${
+                            isExpiringToday ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400' :
+                            isExpiringTomorrow ? 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/20 dark:border-orange-900/30 dark:text-orange-400' :
+                            'bg-zinc-50 border-zinc-200 text-zinc-500 dark:bg-zinc-800/50 dark:border-zinc-700 dark:text-zinc-400'
+                          }`}>
+                            <Calendar size={14} /> 
+                            {isExpiringToday ? 'VENCE HOJE' : isExpiringTomorrow ? 'VENCE AMANHÃ' : `ATÉ ${new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`}
                           </div>
                         )}
                       </div>
                     )}
                   </div>
                   
-                  <button onClick={(e) => { e.stopPropagation(); setPromotions(promotions.filter(p => p.id !== promo.id)); }} className="text-zinc-300 hover:text-red-500 p-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-red-50 rounded-xl shrink-0 transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); setPromotions(promotions.filter(p => p.id !== promo.id)); }} className="text-zinc-300 hover:text-red-500 p-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-red-50 flex-shrink-0 rounded-xl transition-colors">
                     <Trash2 size={20} />
                   </button>
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       </div>
 
