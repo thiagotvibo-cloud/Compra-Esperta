@@ -373,13 +373,13 @@ export default function App() {
         </main>
 
         {/* BOTTOM NAVIGATION */}
-        <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800 px-2 py-3 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+        <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           <div className="grid grid-cols-5 w-full items-center">
-            <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={22} />} label="Lista" />
-            <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={22} />} label="Rota" />
-            <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={22} />} label="Promoções" />
-            <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={22} />} label="Comprar" />
-            <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={22} />} label="Config" />
+            <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={24} />} label="Lista" />
+            <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={24} />} label="Rota" />
+            <NavButton active={activeTab === 'promocoes'} onClick={() => setActiveTab('promocoes')} icon={<Tags size={24} />} label="Ofertas" />
+            <NavButton active={activeTab === 'compras'} onClick={() => setActiveTab('compras')} icon={<ShoppingCart size={24} />} label="Comprar" />
+            <NavButton active={activeTab === 'extras'} onClick={() => setActiveTab('extras')} icon={<SettingsIcon size={24} />} label="Config" />
           </div>
         </nav>
       </div>
@@ -391,16 +391,16 @@ function NavButton({ active, onClick, icon, label }: any) {
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-full gap-1.5 transition-all ${
+      className={`flex flex-col items-center justify-center w-full gap-1 pt-1.5 pb-1 transition-colors ${
         active 
-          ? 'text-soft-primary font-semibold transform scale-105' 
-          : 'text-zinc-400 dark:text-zinc-500 hover:text-soft-text-muted dark:hover:text-zinc-300'
+          ? 'text-sky-500 font-bold' 
+          : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 font-medium'
       }`}
     >
-      <div>
+      <div className={`${active ? 'transform scale-110 transition-transform' : ''}`}>
         {icon}
       </div>
-      <span className="text-[10px] uppercase tracking-wider leading-none whitespace-nowrap">{label}</span>
+      <span className="text-[10px] uppercase tracking-wide leading-none whitespace-nowrap">{label}</span>
     </button>
   );
 }

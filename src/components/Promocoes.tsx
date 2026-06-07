@@ -142,175 +142,188 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   const marketPromos = promotions.filter(p => p.marketId === selectedMarket);
 
   return (
-    <div className="pb-24 p-4 lg:p-6 pt-[calc(env(safe-area-inset-top)+20px)] space-y-6">
-
-      <section className="bg-soft-bg dark:bg-zinc-900 rounded-[24px] shadow-soft border-none p-5 lg:p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[14px] font-semibold uppercase tracking-[1px] text-soft-text-muted flex items-center gap-2">
-              <span>🏷️</span> Promoções e Mercados
+    <div className="pb-28 bg-zinc-50 dark:bg-black min-h-screen">
+      
+      {/* HEADER */}
+      <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 geometric-bg relative">
+         <div className="flex justify-between items-center relative z-10">
+            <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
+              Ofertas & Mercados
             </h2>
-          </div>
+         </div>
+         <p className="text-sky-50 mt-2 text-[13px] font-medium relative z-10 pr-10">
+           Gerencie as ofertas que encontrou e organize por supermercado.
+         </p>
+      </div>
 
+      <div className="px-4 lg:px-6 -mt-10 relative z-20">
         {/* SELETOR DE MERCADO */}
-        <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] mb-6 border-none">
-          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-soft-text-muted flex items-center gap-2">
-            <Store size={16} /> Selecione ou Adicione um Mercado
+        <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl mb-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+          <label className="block text-[12px] font-semibold uppercase tracking-wider mb-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+            <Store size={18} className="text-sky-500" /> Selecione o Mercado
           </label>
+        
+        <div className="flex gap-2">
+          <select 
+            value={selectedMarket} 
+            onChange={e => setSelectedMarket(e.target.value)}
+            className="flex-1 px-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-inner appearance-none"
+          >
+            <option value="" disabled>-- Escolha um mercado --</option>
+            {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
           
-          <div className="flex gap-2">
-            <select 
-              value={selectedMarket} 
-              onChange={e => setSelectedMarket(e.target.value)}
-              className="flex-1 p-3 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] font-medium focus:outline-none focus:ring-2 focus:ring-soft-primary"
-            >
-              <option value="" disabled>-- Escolha um mercado --</option>
-              {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-            
-            {selectedMarket && (
-              <button onClick={() => removeMarket(selectedMarket)} className="p-3 text-red-400 bg-soft-bg dark:bg-zinc-700/50 border-none hover:bg-red-50 rounded-[20px] transition-colors">
-                <Trash2 size={20} />
-              </button>
-            )}
-          </div>
-
-          <form onSubmit={handleAddMarket} className="mt-3 flex gap-2">
-            <input 
-              type="text" 
-              value={newMarketName} 
-              onChange={e => setNewMarketName(e.target.value)} 
-              placeholder="Novo mercado (ex: Extra)"
-              className="flex-1 min-w-0 p-3 text-sm bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary placeholder-zinc-300"
-            />
-            <button type="submit" className="shrink-0 bg-soft-primary hover:bg-soft-primary-hover transition-colors text-white px-5 py-3 rounded-full font-semibold text-sm active:scale-95 shadow-primary">Criar</button>
-          </form>
+          {selectedMarket && (
+            <button onClick={() => removeMarket(selectedMarket)} className="p-3.5 text-zinc-400 bg-zinc-100 dark:bg-zinc-800 border-none hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-2xl transition-colors">
+              <Trash2 size={22} />
+            </button>
+          )}
         </div>
 
-        {/* CADASTRAR/EDITAR PROMOÇÃO */}
-        {selectedMarket ? (
-          <div className="bg-soft-card dark:bg-zinc-800 p-6 rounded-[24px] border-none mb-6 shadow-sm">
-            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-primary mb-4 flex flex-row items-center gap-2">
-              <Plus size={16} /> {editingPromoId ? 'Editar Promoção' : 'Adicionar Nova Promoção'}
-            </h3>
-            <form onSubmit={handleAddPromotion} className="space-y-4">
+        <form onSubmit={handleAddMarket} className="mt-3 flex gap-2">
+          <input 
+            type="text" 
+            value={newMarketName} 
+            onChange={e => setNewMarketName(e.target.value)} 
+            placeholder="Novo mercado (ex: Extra)"
+            className="flex-1 min-w-0 px-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 placeholder-zinc-400 font-medium"
+          />
+          <button type="submit" className="shrink-0 bg-sky-600 hover:bg-sky-700 transition-colors text-white px-5 py-3.5 rounded-2xl font-semibold active:scale-95 shadow-sm">Criar</button>
+        </form>
+      </div>
+
+      {/* CADASTRAR/EDITAR PROMOÇÃO */}
+      {selectedMarket ? (
+        <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 mb-6 shadow-sm">
+          <h3 className="text-[13px] font-bold uppercase tracking-wide text-sky-600 dark:text-sky-500 mb-4 flex items-center gap-2">
+            <Plus size={18} strokeWidth={3} /> {editingPromoId ? 'Editar Oferta' : 'Adicionar Nova Oferta'}
+          </h3>
+          <form onSubmit={handleAddPromotion} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5 text-zinc-500">Produto</label>
+              <div 
+                onClick={() => setShowCatalog(true)}
+                className={`w-full px-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl cursor-pointer font-semibold ${itemName ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400'}`}
+              >
+                {itemName || "Selecionar produto..."}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Produto</label>
-                <div 
-                  onClick={() => setShowCatalog(true)}
-                  className={`w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] cursor-pointer ${itemName ? 'text-soft-text-main dark:text-zinc-100' : 'text-zinc-400'}`}
-                >
-                  {itemName || "Selecionar produto..."}
+                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5 text-zinc-500">Preço (R$)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[12px] font-semibold text-zinc-400">R$</span>
+                  <input type="tel" value={getPriceDisplayValue(price)} onChange={e => handlePriceInput(e.target.value)} placeholder="0,00" className="w-full pl-9 pr-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl font-bold text-[16px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500" required />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Preço Ofertado (R$)</label>
-                  <input type="tel" value={getPriceDisplayValue(price)} onChange={e => handlePriceInput(e.target.value)} placeholder="0,00" className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] font-semibold text-soft-primary focus:outline-none focus:ring-2 focus:ring-soft-primary" required />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Por (Qtd / Un)</label>
-                  <div className="flex gap-1">
-                    <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(e.target.value === '' ? '' : Number(e.target.value))} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-main" required />
-                    <select value={unit} onChange={e => setUnit(e.target.value as Unit)} className="w-1/2 p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-semibold text-soft-text-muted">
-                      {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                    </select>
-                  </div>
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5 text-zinc-500">Por (Qtd / Un)</label>
+                <div className="flex gap-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-2xl p-1.5 focus-within:ring-2 focus-within:ring-sky-500">
+                  <input type="number" step="0.01" min="0" value={qty} onChange={e => setQty(e.target.value === '' ? '' : Number(e.target.value))} className="w-1/2 px-2 py-2 bg-transparent border-none focus:outline-none font-semibold text-center text-zinc-900 dark:text-zinc-100" required />
+                  <select value={unit} onChange={e => setUnit(e.target.value as Unit)} className="w-1/2 px-1 py-2 bg-transparent border-none outline-none focus:outline-none font-semibold text-zinc-500 uppercase appearance-none" style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}>
+                    {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
                 </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Observação (opcional)</label>
-                  <input type="text" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ex: Marca Ype, pote 500g..." className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-soft-text-muted">Válido Até (opcional)</label>
-                  <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full p-4 bg-soft-bg dark:bg-zinc-700/50 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary font-medium text-soft-text-main" />
-                </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5 text-zinc-500">Anotação</label>
+                <input type="text" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ex: Marca Ype..." className="w-full px-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium placeholder-zinc-400" />
               </div>
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5 text-zinc-500">Validade</label>
+                <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full px-4 py-3.5 bg-zinc-100 dark:bg-zinc-800 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium text-zinc-900 dark:text-zinc-100 uppercase" />
+              </div>
+             </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                <button type="submit" className="flex-1 bg-soft-primary hover:bg-soft-primary-hover text-white p-4 rounded-full font-semibold text-lg transition-transform active:scale-95 shadow-primary">
-                  {editingPromoId ? 'Salvar Alterações' : 'Salvar Promoção'}
+            <div className="flex flex-col sm:flex-row gap-2 mt-2 pt-2">
+              <button type="submit" className="flex-1 bg-sky-600 hover:bg-sky-700 text-white p-4 rounded-2xl font-bold text-[15px] transition-transform active:scale-95 shadow-sm">
+                {editingPromoId ? 'Salvar Alterações' : 'Salvar Oferta'}
+              </button>
+              {editingPromoId && (
+                <button type="button" onClick={cancelEdit} className="w-full sm:w-auto px-6 py-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-2xl font-semibold transition-colors active:scale-95">
+                  Cancelar
                 </button>
-                {editingPromoId && (
-                  <button type="button" onClick={cancelEdit} className="w-full sm:w-auto px-6 py-4 bg-soft-bg dark:bg-zinc-700/50 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-soft-text-main dark:text-zinc-200 rounded-full font-semibold transition-colors active:scale-95">
-                    Cancelar
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
-        ) : (
-          <div className="text-center text-zinc-400 pt-8 pb-8 flex flex-col items-center bg-soft-card dark:bg-[#1C1C1E] rounded-[24px]">
-            <Store size={48} className="opacity-20 mb-3" />
-            <p>Selecione ou adicione um mercado primeiro.</p>
-          </div>
-        )}
+              )}
+            </div>
+          </form>
+        </div>
+      ) : (
+        <div className="text-center text-zinc-400 pt-10 pb-10 flex flex-col items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm mb-6">
+          <Store size={48} className="text-zinc-200 dark:text-zinc-800 mb-4" strokeWidth={1.5} />
+          <p className="font-semibold text-[15px] text-zinc-500">Selecione ou adicione um mercado.</p>
+        </div>
+      )}
 
-        {/* LISTA DE PROMOÇÕES DO MERCADO */}
-        {selectedMarket && marketPromos.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-3 ml-2">Ofertas Salvas em {markets.find(m=>m.id===selectedMarket)?.name}</h3>
+      {/* LISTA DE PROMOÇÕES DO MERCADO */}
+      {selectedMarket && marketPromos.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-[13px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 ml-2">Salvas em {markets.find(m=>m.id===selectedMarket)?.name}</h3>
+          <div className="flex flex-col gap-3">
             {marketPromos.map(promo => {
               const base = convertToBaseUnit(promo.qty, promo.unit);
               const pricePerBase = getPricePerBaseUnit(promo.price, promo.qty, promo.unit);
               
               return (
-                <div key={promo.id} className="bg-soft-card dark:bg-zinc-800 p-5 rounded-[24px] shadow-sm flex justify-between items-center gap-4 transition-all cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700/50" onClick={() => handleEditPromo(promo)}>
+                <div key={promo.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex justify-between items-center gap-4 transition-all cursor-pointer active:scale-95" onClick={() => handleEditPromo(promo)}>
                   <div className="flex-1 min-w-0 pointer-events-none">
-                    <h4 className="font-semibold text-[16px] dark:text-zinc-100 leading-snug text-wrap text-soft-text-main">{formatItemName(promo.itemName)}</h4>
-                    <div className="text-soft-primary font-semibold text-[20px] my-0.5">{formatMoney(promo.price)}</div>
-                    <div className="flex gap-2 text-[11px] text-soft-text-muted font-semibold uppercase tracking-wide mt-2 flex-wrap">
-                      <span className="bg-soft-bg dark:bg-zinc-700 py-1 px-3 rounded-full">Por: {promo.qty} {promo.unit}</span>
+                    <h4 className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 leading-snug">{formatItemName(promo.itemName)}</h4>
+                    <div className="text-sky-600 dark:text-sky-400 font-bold text-[22px] tracking-tight my-1">{formatMoney(promo.price)}</div>
+                    
+                    <div className="flex gap-2 text-[10px] font-bold uppercase tracking-widest mt-2 flex-wrap">
+                      <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 py-1 px-2.5 rounded-full">Por {promo.qty} {promo.unit}</span>
                       {base.qty !== 1 && (
-                        <span className="bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 py-1 px-3 rounded-full border border-amber-100 dark:border-none">
-                          Equivale a {formatMoney(pricePerBase)} / {base.unit}
+                        <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 py-1 px-2.5 rounded-full">
+                          Equivale {formatMoney(pricePerBase)} / {base.unit}
                         </span>
                       )}
                     </div>
                     {(promo.notes || promo.expiryDate) && (
                       <div className="flex flex-col gap-1 mt-2">
                         {promo.notes && (
-                           <div className="text-[12px] font-medium text-soft-text-muted mt-1 dark:text-zinc-400 italic">
+                           <div className="text-[12px] font-medium text-zinc-500 mt-1 dark:text-zinc-400 italic">
                              {promo.notes}
                            </div>
                         )}
                         {promo.expiryDate && (
-                          <div className="text-[11px] font-semibold text-red-400 mt-1 flex items-center gap-1.5 opacity-90">
-                            <Calendar size={12} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                          <div className="text-[11px] font-semibold text-red-500 mt-1 flex items-center gap-1.5 opacity-90">
+                            <Calendar size={14} /> ATÉ {new Date(promo.expiryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                           </div>
                         )}
                       </div>
                     )}
                   </div>
                   
-                  <button onClick={(e) => { e.stopPropagation(); setPromotions(promotions.filter(p => p.id !== promo.id)); }} className="text-zinc-400 hover:text-red-400 p-2.5 bg-soft-bg dark:bg-zinc-700 rounded-full shrink-0">
-                    <Trash2 size={18} />
+                  <button onClick={(e) => { e.stopPropagation(); setPromotions(promotions.filter(p => p.id !== promo.id)); }} className="text-zinc-300 hover:text-red-500 p-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-red-50 rounded-xl shrink-0 transition-colors">
+                    <Trash2 size={20} />
                   </button>
                 </div>
               );
             })}
           </div>
-        )}
-      </section>
+        </div>
+      )}
+
+      </div>
 
       {/* MODAL BOTTOM SHEET DO CATÁLOGO HIDDEN */}
       {showCatalog && (
         <div className="fixed inset-0 z-[100] flex justify-center items-end bg-black/40 backdrop-blur-[2px] animate-in fade-in" onClick={() => setShowCatalog(false)}>
           <div 
-            className="w-full max-w-lg bg-white dark:bg-[#1C1C1E] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom"
+            className="w-full max-w-lg bg-zinc-50 dark:bg-[#1C1C1E] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom"
             style={{ maxHeight: '85vh' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-white dark:bg-[#1C1C1E] z-10">
-              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">Selecionar Produto</h2>
+            <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-white dark:bg-[#1C1C1E] z-10">
+              <h2 className="text-[16px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Selecionar Produto</h2>
               <button 
                 onClick={() => { setShowCatalog(false); setSearchQuery(''); }} 
                 className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
                >
-                <X size={20} />
+                <X size={20} className="w-5 h-5"/>
               </button>
             </div>
             
@@ -322,7 +335,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar itens..." 
-                  className="w-full pl-10 pr-4 py-3 bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-[15px] dark:text-zinc-100 transition-colors shadow-sm"
+                  className="w-full pl-10 pr-4 py-3.5 bg-white dark:bg-[#1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 font-semibold text-[15px] dark:text-zinc-100 transition-colors shadow-sm placeholder-zinc-400"
                 />
                 {searchQuery && (
                   <button onClick={() => setSearchQuery('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
@@ -335,18 +348,18 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
             <div className="overflow-y-auto p-4 space-y-3 bg-zinc-50 dark:bg-black">
               {searchQuery ? (
                 searchResults.length === 0 ? (
-                  <div className="text-center py-10 text-zinc-500">Nenhum produto encontrado.</div>
+                  <div className="text-center py-10 text-zinc-500 font-medium">Nenhum produto encontrado.</div>
                 ) : (
-                  <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4">
-                    <h4 className="text-[12px] font-semibold uppercase tracking-wider text-zinc-400 mb-3">Resultados da Busca</h4>
+                  <div className="bg-white dark:bg-[#1C1C1E] rounded-3xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
+                    <h4 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 mb-4">Resultados</h4>
                     <div className="flex flex-wrap gap-2">
                       {searchResults.map((item, index) => (
                         <button
                           key={index}
                           onClick={() => handleAddFromCatalog(item.name)}
-                          className="px-3.5 py-2 bg-zinc-100 hover:bg-blue-50 dark:bg-zinc-800 dark:hover:bg-blue-900/30 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 text-[14px] font-medium rounded-xl transition-colors flex items-center gap-1 active:scale-95"
+                          className="px-4 py-2.5 bg-zinc-100 hover:bg-sky-50 dark:bg-zinc-800 dark:hover:bg-sky-900/30 text-zinc-800 dark:text-zinc-200 hover:text-sky-700 dark:hover:text-sky-400 text-[14px] font-semibold rounded-2xl transition-colors flex items-center gap-1.5 active:scale-95"
                         >
-                          <Plus size={14} className="opacity-50" /> {item.name}
+                          <Plus size={16} className="opacity-50" /> {item.name}
                         </button>
                       ))}
                     </div>
@@ -356,30 +369,30 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                 PRODUCT_CATALOG.map((cat, i) => {
                   const isExpanded = expandedCategory === cat.name;
                   return (
-                    <div key={i} className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all">
+                    <div key={i} className="bg-white dark:bg-[#1C1C1E] rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all shadow-sm">
                       <button 
                         onClick={() => setExpandedCategory(isExpanded ? null : cat.name)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
+                        className="w-full px-5 py-4.5 flex items-center justify-between text-left focus:outline-none"
                       >
-                        <span className="font-medium text-zinc-900 dark:text-zinc-100 text-base flex items-center gap-3">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 text-[15px] flex items-center gap-3">
                           <span className="text-xl">{cat.icon}</span> {cat.name}
                         </span>
-                        {isExpanded ? <ChevronUp size={20} className="text-zinc-400" /> : <ChevronDown size={20} className="text-zinc-400" />}
+                        {isExpanded ? <ChevronUp size={22} className="text-zinc-400" /> : <ChevronDown size={22} className="text-zinc-400" />}
                       </button>
                       
                       {isExpanded && (
-                        <div className="px-5 pb-4 pt-1 space-y-4">
+                        <div className="px-5 pb-5 pt-1 space-y-4">
                           {cat.subcategories.map((sub, j) => (
                             <div key={j}>
-                              <h4 className="text-[12px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">{sub.name}</h4>
+                              <h4 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">{sub.name}</h4>
                               <div className="flex flex-wrap gap-2">
                                 {sub.items.map((itemName, k) => (
                                   <button
                                     key={k}
                                     onClick={() => handleAddFromCatalog(itemName)}
-                                    className="px-3.5 py-2 bg-zinc-100 hover:bg-blue-50 dark:bg-zinc-800 dark:hover:bg-blue-900/30 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 text-[14px] font-medium rounded-xl transition-colors flex items-center gap-1 active:scale-95"
+                                    className="px-4 py-2.5 bg-zinc-100 hover:bg-sky-50 dark:bg-zinc-800 dark:hover:bg-sky-900/30 text-zinc-800 dark:text-zinc-200 hover:text-sky-700 dark:hover:text-sky-400 text-[14px] font-semibold rounded-2xl transition-colors flex items-center gap-1.5 active:scale-95"
                                   >
-                                    <Plus size={14} className="opacity-50" /> {itemName}
+                                    <Plus size={16} className="opacity-50" /> {itemName}
                                   </button>
                                 ))}
                               </div>

@@ -1,16 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Item, Category, Unit, AppContextType } from '../types';
 import { generateId, formatItemName, formatMoney } from '../utils';
-import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star } from 'lucide-react';
+import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
-
-
+import { motion, AnimatePresence } from 'motion/react';
 
 export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { items, setItems, settings } = context;
   const [showCatalog, setShowCatalog] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [tip, setTip] = useState<string | null>(null);
+  const [isLoadingTip, setIsLoadingTip] = useState(false);
+
+  const fetchTip = async () => {
+    const essentialItems = items.filter(i => i.isEssential).map(i => i.name);
+    if (essentialItems.length === 0) return;
+    
+    setIsLoadingTip(true);
+    try {
+      const response = await fetch('/api/tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ essentialItems })
+      });
+      const data = await response.json();
+      if (data.tip) setTip(data.tip);
+    } catch (error) {
+      console.error('Failed to fetch tip:', error);
+    } finally {
+      setIsLoadingTip(false);
+    }
+  };
+
+  useEffect(() => {
+    const essentialItemsCount = items.filter(i => i.isEssential).length;
+    if (essentialItemsCount > 0 && !tip && !isLoadingTip) {
+      fetchTip();
+    }
+  }, [items]);
 
   const handleAddFromCatalog = (itemName: string, categoryName: string) => {
     setItems((prevItems) => {
@@ -83,142 +111,169 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const progressPercentage = totalItems > 0 ? (boughtItems / totalItems) * 100 : 0;
 
   return (
-    <div className="pb-28 relative">
+    <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen relative">
       
-      {/* HEADER SOFT UI */}
-      <div className="bg-soft-primary rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-24 px-6 text-center text-white relative shadow-soft">
-         <div className="absolute top-[calc(env(safe-area-inset-top)+16px)] left-6 right-6 flex justify-between items-center">
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full px-5 py-2.5 font-medium text-sm flex items-center gap-2">
-              <span>🗓️ Lista Atual</span> <ChevronRight size={14} className="opacity-70" />
+      {/* HEADER MARKET PRO */}
+      <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 geometric-bg">
+         <div className="geometric-circle"></div>
+         <div className="flex justify-between items-center mb-6 relative z-10">
+            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full px-4 py-2 font-semibold text-xs uppercase tracking-widest flex items-center gap-2">
+              <span>Lista de Compras</span>
             </div>
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full w-11 h-11 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
+            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
               <PieChart size={18} />
             </div>
          </div>
          
-         <div className="mt-8 flex flex-col items-center">
-            <p className="text-white/80 font-medium text-[13px] uppercase tracking-widest mb-2">Orçamento p/ Mercado</p>
-            <h1 className="text-[44px] font-semibold tracking-tight leading-none mb-3">
+         <div className="flex flex-col items-center relative z-10">
+            <p className="text-sky-50 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
+            <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3">
               {formatMoney(settings.budget)}
             </h1>
-            <p className="text-white/70 text-sm flex items-center gap-1 font-medium">
-              Progresso atual: {boughtItems} de {totalItems} itens <ChevronRight size={14} className="opacity-70" />
-            </p>
+            <div className="bg-white/20 backdrop-blur rounded-full px-4 py-1.5 text-[13px] font-semibold text-white flex items-center gap-2">
+              {boughtItems} de {totalItems} itens no carrinho
+            </div>
          </div>
       </div>
 
       {/* OVERLAP SHORTCUT CARDS */}
-      <div className="px-5 -mt-10 relative z-10">
-        <div className="bg-soft-bg dark:bg-zinc-800 rounded-[24px] p-6 shadow-soft flex justify-around border-none">
-          <div className="flex flex-col items-center gap-3 cursor-pointer" onClick={() => setShowCatalog(true)}>
-            <div className="w-14 h-14 rounded-full bg-soft-primary-light text-soft-primary dark:bg-soft-primary/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm">
-              <BadgePlus size={24} />
+      <div className="px-5 -mt-8 relative z-20">
+        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 grid grid-cols-3 gap-2">
+          <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowCatalog(true)}>
+            <div className="w-14 h-14 rounded-full bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-sky-100 dark:border-sky-800/30">
+              <BadgePlus size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-[13px] font-medium text-soft-text-main dark:text-zinc-100">Adicionar</span>
+            <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 text-center leading-tight">Adicionar</span>
           </div>
-          <div className="flex flex-col items-center gap-3 cursor-pointer" onClick={() => context.setActiveTab('compras')}>
-            <div className="w-14 h-14 rounded-full bg-soft-card text-blue-400 dark:bg-blue-900/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm">
-              <Calculator size={24} />
+          <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => context.setActiveTab('compras')}>
+            <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-blue-100 dark:border-blue-800/30">
+              <Calculator size={24} strokeWidth={2.5} />
             </div>
-            <span className="text-[13px] font-medium text-soft-text-main dark:text-zinc-100">Calcular</span>
+            <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 text-center leading-tight">Modo<br/>Compra</span>
           </div>
-          <div className="flex flex-col items-center gap-3 cursor-pointer" onClick={clearBought}>
-             <div className="w-14 h-14 rounded-full bg-soft-card text-green-400 dark:bg-green-900/20 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm">
+          <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={clearBought}>
+             <div className="w-14 h-14 rounded-full bg-zinc-50 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-100 dark:border-zinc-700/50">
               <Check strokeWidth={3} size={24} />
             </div>
-            <span className="text-[13px] font-medium text-soft-text-main dark:text-zinc-100">Limpar</span>
+            <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 text-center leading-tight">Limpar</span>
           </div>
         </div>
       </div>
 
-      <div className="px-4 lg:px-6 mt-8 space-y-6">
+      <div className="px-4 mt-6 space-y-6">
+        {/* DICA DO GEMINI */}
+        <AnimatePresence>
+          {tip && (
+            <motion.div 
+               initial={{ opacity: 0, y: -20, height: 0 }}
+               animate={{ opacity: 1, y: 0, height: 'auto' }}
+               exit={{ opacity: 0, y: -20, height: 0 }}
+               className="bg-sky-50 dark:bg-sky-900/20 p-4 rounded-2xl border border-sky-200 dark:border-sky-800 flex items-start gap-3"
+            >
+              <Lightbulb className="text-sky-500 shrink-0 mt-0.5" size={20} />
+              <div>
+                <h4 className="text-[12px] font-semibold text-sky-700 dark:text-sky-400 mb-1 uppercase tracking-wider">Dica da IA</h4>
+                <p className="text-[13px] text-zinc-800 dark:text-zinc-200 font-medium leading-snug">{tip}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* LISTA DE ITENS */}
         <div className="overflow-y-auto">
           {items.length === 0 && (
             <div className="text-center text-zinc-500 py-12 flex flex-col items-center">
               <span className="text-5xl block mb-3 opacity-50">📋</span>
-              <p className="font-medium text-lg text-zinc-700 dark:text-zinc-300">Sua lista está vazia.</p>
-              <p className="text-sm mt-1">Toque no atalho "Adicionar" acima.</p>
+              <p className="font-semibold text-lg text-zinc-800 dark:text-zinc-200">Sua lista está vazia.</p>
+              <p className="text-sm mt-1 font-medium text-zinc-500">Adicione itens para planejar a ida ao mercado.</p>
             </div>
           )}
 
           {groupedItems.map(group => (
             <div key={group.category} className="mb-6">
-              <div className="text-[14px] font-semibold text-soft-text-muted dark:text-zinc-500 uppercase mt-2 mb-3 tracking-[1px] ml-2">
-                {group.category} <span className="lowercase text-[12px] ml-1 bg-soft-card dark:bg-zinc-800 px-2 py-0.5 rounded-full">{group.items.length}</span>
+              <div className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1">
+                {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
               </div>
               
-              <div className="flex flex-col gap-4">
-                {group.items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 p-5 bg-soft-bg dark:bg-zinc-800 rounded-[20px] shadow-soft border-none">
-                    
-                    <button 
-                      onClick={() => setItems(items.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
-                      className={`shrink-0 w-6 h-6 border-[2px] rounded-full flex items-center justify-center transition-all ${item.isBought ? 'bg-soft-primary border-soft-primary' : 'border-zinc-300 dark:border-zinc-500'}`}
+              <div className="flex flex-col gap-3">
+                <AnimatePresence>
+                  {group.items.map((item) => (
+                    <motion.div 
+                      key={item.id} 
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: item.isBought ? 0.6 : 1, y: 0, scale: item.isBought ? 0.98 : 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                      className={`flex items-center gap-3.5 p-3.5 rounded-2xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
                     >
-                      {item.isBought && <Check size={14} strokeWidth={3} className="text-white" />}
-                    </button>
-                    
-                    <div className="flex-1 min-w-0">
-                        <div className={`font-semibold text-[16px] flex items-start gap-2 dark:text-zinc-100 leading-snug text-wrap ${item.isBought ? 'line-through text-soft-text-muted dark:text-zinc-500' : 'text-soft-text-main'}`}>
-                          <span>{formatItemName(item.name)}</span>
+                      
+                      <button 
+                        onClick={() => setItems(items.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
+                        className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? 'bg-sky-500 border-sky-500' : 'border-zinc-300 dark:border-zinc-600'}`}
+                      >
+                        {item.isBought && <Check size={18} strokeWidth={4} className="text-white" />}
+                      </button>
+                      
+                      <div className="flex-1 min-w-0">
+                          <motion.div 
+                            animate={{ color: item.isBought ? '#9ca3af' : 'var(--color-text-main)' }}
+                            className={`font-semibold text-[16px] flex items-start gap-2 leading-snug text-wrap ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}
+                           >
+                            <span>{formatItemName(item.name)}</span>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
+                              className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${item.isEssential ? 'text-amber-500' : 'text-zinc-300 hover:text-amber-400 opacity-50 hover:opacity-100'}`}
+                              title={item.isEssential ? "Remover prioridade" : "Marcar como prioridade"}
+                            >
+                              <Star size={16} className={item.isEssential ? 'fill-amber-500' : ''} strokeWidth={item.isEssential ? 0 : 2} />
+                            </button>
+                          </motion.div>
+                          {context.promotions.find(p => p.itemName === item.name) && (() => {
+                            const promo = context.promotions.find(p => p.itemName === item.name)!;
+                            const market = context.markets.find(m => m.id === promo.marketId);
+                            return (
+                              <div className="text-[11px] font-semibold text-orange-600 bg-orange-100 dark:bg-orange-500/10 dark:text-orange-400 px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
+                                <span>Oferta {market ? `no ${market.name}` : ''}</span>
+                              </div>
+                            );
+                          })()}
+                      </div>
+  
+                      <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-xl px-1.5 py-1">
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={item.qty || ""}
+                              onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, qty: parseFloat(e.target.value) || 0 } : i))}
+                              className="w-[36px] bg-transparent text-center text-[15px] font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none placeholder-zinc-400"
+                            />
+                            <select
+                              value={item.unit}
+                              onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, unit: e.target.value as any } : i))}
+                              className="bg-transparent text-[12px] font-semibold text-zinc-500 pr-0.5 focus:outline-none cursor-pointer appearance-none uppercase"
+                              style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                            >
+                              <option value="un">un</option>
+                              <option value="kg">kg</option>
+                              <option value="g">g</option>
+                              <option value="L">L</option>
+                              <option value="ml">ml</option>
+                              <option value="pct">pct</option>
+                            </select>
+                          </div>
                           <button 
-                            onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
-                            className={`mt-0.5 shrink-0 transition-all ${item.isEssential ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600 hover:text-amber-400 opacity-50 hover:opacity-100'}`}
-                            title={item.isEssential ? "Remover prioridade" : "Marcar como prioridade"}
+                              onClick={() => setItems(items.filter(i => i.id !== item.id))}
+                              className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
                           >
-                            <Star size={16} className={item.isEssential ? 'fill-amber-400' : ''} strokeWidth={item.isEssential ? 0 : 2} />
+                              <Trash2 size={18} />
                           </button>
-                        </div>
-                        {context.promotions.find(p => p.itemName === item.name) && (() => {
-                          const promo = context.promotions.find(p => p.itemName === item.name)!;
-                          const market = context.markets.find(m => m.id === promo.marketId);
-                          return (
-                            <div className="text-[11px] font-medium text-soft-primary bg-soft-primary-light dark:bg-soft-primary/10 dark:text-soft-primary px-2 py-0.5 rounded-[12px] mt-1 inline-block border-none whitespace-normal text-wrap max-w-full">
-                              <span>Promoção {market ? `no ${market.name}` : ''}</span>
-                              {promo.notes && (
-                                <div className="opacity-80 mt-0.5 max-w-full text-wrap italic">
-                                  {promo.notes}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                        <div className="flex items-center bg-soft-card dark:bg-zinc-700/50 rounded-full px-2 py-1.5 border-none">
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={item.qty || ""}
-                            onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, qty: parseFloat(e.target.value) || 0 } : i))}
-                            className="w-[40px] bg-transparent text-center text-[15px] font-semibold text-soft-text-main dark:text-zinc-100 focus:outline-none placeholder-zinc-300"
-                          />
-                          <select
-                            value={item.unit}
-                            onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, unit: e.target.value as any } : i))}
-                            className="bg-transparent text-[13px] font-medium text-soft-text-muted pr-1 focus:outline-none cursor-pointer appearance-none outline-none border-none ring-0 focus:ring-0"
-                            style={{ WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent' }}
-                          >
-                            <option value="un">un</option>
-                            <option value="kg">kg</option>
-                            <option value="g">g</option>
-                            <option value="L">L</option>
-                            <option value="ml">ml</option>
-                            <option value="pct">pct</option>
-                          </select>
-                        </div>
-                        <button 
-                            onClick={() => setItems(items.filter(i => i.id !== item.id))}
-                            className="p-1.5 text-zinc-300 hover:text-red-400 dark:text-zinc-600 dark:hover:text-red-400 transition-colors"
-                        >
-                            <Trash2 size={18} />
-                        </button>
-                    </div>
-
-                  </div>
-                ))}
+                      </div>
+  
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </div>
           ))}
