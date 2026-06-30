@@ -285,9 +285,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                       <div className="flex-1 min-w-0">
                           <motion.div 
                             animate={{ color: item.isBought ? '#9ca3af' : 'var(--color-text-main)' }}
-                            className={`font-semibold text-[16px] flex items-start gap-2 leading-snug text-wrap ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}
+                            className={`font-semibold text-[16px] flex items-start gap-2 leading-snug ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}
                            >
-                            <span>{formatItemName(item.name)}</span>
+                            <span className="min-w-0 flex-1 break-words">{formatItemName(item.name)}</span>
                             <button 
                               onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isFavorite: !i.isFavorite } : i)); }}
                               className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 'text-yellow-500' : 'text-zinc-300 hover:text-yellow-400 opacity-50 hover:opacity-100'}`}
@@ -440,7 +440,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                             className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-soft-primary text-white border-soft-primary shadow-sm' : 'bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
                           >
                             {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
-                            <span className="leading-snug text-wrap">{formatItemName(item.name)}</span>
+                            <span className="leading-snug break-words">{formatItemName(item.name)}</span>
                           </button>
                         );
                       })}

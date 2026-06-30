@@ -15,8 +15,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
     const ofertasAtivas = promotions.filter(o => !o.expiryDate || o.expiryDate >= hoje);
 
     const resultadosPorMercado = markets.map(mercado => {
-      let totalEstimado = 0;
-      let totalSemOferta = 0;
+      let totalOfertas = 0;
       let itensCobertos = 0;
       let itensDetalhados: any[] = [];
 
@@ -26,38 +25,27 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           o.itemName.toLowerCase().trim() === item.name.toLowerCase().trim()
         );
 
-        let precoUnitario;
-        let fonte;
-
         if (oferta) {
-          precoUnitario = oferta.price / oferta.qty;
-          fonte = 'oferta';
+          const precoUnitario = oferta.price / oferta.qty;
+          const subtotalItem = precoUnitario * item.qty;
+          totalOfertas += subtotalItem;
           itensCobertos++;
-        } else {
-          // Preço médio ou global (simplificado usando global default por enquanto)
-          precoUnitario = PRECO_MEDIO_PADRAO_GLOBAL;
-          fonte = 'estimado';
-          totalSemOferta += precoUnitario * item.qty;
+
+          itensDetalhados.push({
+            nome: item.name,
+            quantidade: item.qty,
+            unidade: item.unit,
+            precoUnitario: precoUnitario,
+            subtotal: subtotalItem,
+            fonte: 'oferta'
+          });
         }
-
-        const subtotalItem = precoUnitario * item.qty;
-        totalEstimado += subtotalItem;
-
-        itensDetalhados.push({
-          nome: item.name,
-          quantidade: item.qty,
-          unidade: item.unit,
-          precoUnitario: precoUnitario,
-          subtotal: subtotalItem,
-          fonte: fonte
-        });
       });
 
       return {
         mercadoId: mercado.id,
         mercadoNome: mercado.name,
-        totalEstimado: parseFloat(totalEstimado.toFixed(2)),
-        totalSemOferta: parseFloat(totalSemOferta.toFixed(2)),
+        totalEstimado: parseFloat(totalOfertas.toFixed(2)),
         itensCobertos: itensCobertos,
         totalItens: listItems.length,
         percentualCobertura: Math.round((itensCobertos / listItems.length) * 100),
@@ -65,21 +53,22 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
       };
     });
 
-    resultadosPorMercado.sort((a, b) => a.totalEstimado - b.totalEstimado);
+    // Remove mercados que não têm NENHUMA oferta para a lista atual? Ou deixa no fim?
+    // Vamos deixar no fim.
+    resultadosPorMercado.sort((a, b) => {
+       if (b.itensCobertos !== a.itensCobertos) {
+          return b.itensCobertos - a.itensCobertos; // Mais itens cobertos ganha
+       }
+       return a.totalEstimado - b.totalEstimado; // Menor preço ganha no desempate
+    });
 
     const vencedor = resultadosPorMercado[0];
     if (!vencedor) return null;
-
-    const segundo = resultadosPorMercado[1];
-    const economiaEstimada = segundo ? parseFloat((segundo.totalEstimado - vencedor.totalEstimado).toFixed(2)) : 0;
-    const percentualEconomia = segundo ? Math.round((economiaEstimada / segundo.totalEstimado) * 100) : 0;
 
     return {
       destinoVencedor: vencedor.mercadoNome,
       destinoVencedorId: vencedor.mercadoId,
       totalProjetadoVencedor: vencedor.totalEstimado,
-      economiaEstimada: economiaEstimada,
-      percentualEconomia: percentualEconomia,
       rankingCompleto: resultadosPorMercado,
       vencedor
     };
@@ -110,18 +99,12 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           <div className="bg-sky-500 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
             <div className="absolute -right-10 -top-10 opacity-20"><Store size={150} /></div>
             <h3 className="text-[11px] font-bold uppercase tracking-widest text-sky-100 mb-1">Melhor Opção</h3>
-            <div className="text-[32px] font-bold tracking-tight leading-none mb-4">{marketRankings.destinoVencedor}</div>
+            <div className="text-[32px] font-bold tracking-tight leading-none mb-4 break-words">{marketRankings.destinoVencedor}</div>
             <div className="space-y-2">
               <div className="font-semibold text-[16px] bg-white/20 p-3 rounded-2xl flex justify-between">
-                <span>Cesta estimada:</span>
+                <span>Total Ofertas:</span>
                 <span>{formatMoney(marketRankings.totalProjetadoVencedor)}</span>
               </div>
-              {marketRankings.economiaEstimada > 0 && (
-                <div className="text-[14px] font-bold flex items-center gap-2 text-sky-100">
-                  <TrendingDown size={18} className="text-yellow-300" />
-                  Economia: {formatMoney(marketRankings.economiaEstimada)} ({marketRankings.percentualEconomia}%)
-                </div>
-              )}
               <div className="text-[12px] font-medium text-sky-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
                 <BadgePercent size={14} /> 
                 Cobertura: {marketRankings.vencedor.itensCobertos} de {marketRankings.vencedor.totalItens} itens com oferta
@@ -158,42 +141,28 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
 
                 {/* Sublist */}
                 <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
-                   {ranking.itensDetalhados.filter(i => i.fonte === 'oferta').length > 0 && (
+                   {ranking.itensDetalhados.filter(i => i.fonte === 'oferta').length > 0 ? (
                       <div className="mb-2">
                          <span className="text-[10px] font-bold uppercase tracking-widest text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-900/10 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2">
                            <BadgePercent size={12} /> Com Oferta
                          </span>
                          {ranking.itensDetalhados.filter(i => i.fonte === 'oferta').map((item, idx) => (
-                           <div key={idx} className="flex justify-between items-center text-[13px] py-1">
-                             <div className="font-semibold text-zinc-700 dark:text-zinc-300">{formatItemName(item.nome)} ({item.quantidade}{item.unidade})</div>
-                             <div className="font-bold text-green-600 dark:text-green-400">{formatMoney(item.subtotal)}</div>
+                           <div key={idx} className="flex justify-between items-start gap-2 text-[13px] py-1">
+                             <div className="font-semibold text-zinc-700 dark:text-zinc-300 flex-1 min-w-0 break-words">{formatItemName(item.nome)} ({item.quantidade}{item.unidade})</div>
+                             <div className="font-bold text-green-600 dark:text-green-400 shrink-0">{formatMoney(item.subtotal)}</div>
                            </div>
                          ))}
                       </div>
-                   )}
-                   {ranking.itensDetalhados.filter(i => i.fonte === 'estimado').length > 0 && (
-                      <div className="pt-2">
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2">
-                           <AlertCircle size={12} /> Sem oferta — estimado
-                         </span>
-                         {ranking.itensDetalhados.filter(i => i.fonte === 'estimado').map((item, idx) => (
-                           <div key={idx} className="flex justify-between items-center text-[13px] py-1 opacity-70">
-                             <div className="font-medium text-zinc-600 dark:text-zinc-400">{formatItemName(item.nome)}</div>
-                             <div className="font-semibold text-zinc-500">{formatMoney(item.subtotal)}</div>
-                           </div>
-                         ))}
+                   ) : (
+                      <div className="text-[12px] text-zinc-400 font-medium italic">
+                         Nenhum item da sua lista em oferta neste mercado.
                       </div>
                    )}
-                </div>
+                 </div>
 
               </div>
              );
           })}
-
-          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/30 rounded-2xl flex gap-3 text-yellow-800 dark:text-yellow-600">
-             <AlertCircle size={20} className="shrink-0 mt-0.5" />
-             <p className="text-[12px] font-medium">Itens sem oferta foram estimados com preço médio. Valores com fonte "estimado" são aproximações.</p>
-          </div>
 
         </div>
       )}

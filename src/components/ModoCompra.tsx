@@ -340,7 +340,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
                       <div className="flex-1 min-w-0 py-1">
                         <div className="flex items-start justify-between">
-                          <div className={`text-[17px] font-semibold leading-tight pr-2 ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                          <div className={`text-[17px] font-semibold leading-tight pr-2 flex-1 min-w-0 break-words ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-900 dark:text-zinc-100'}`}>
                             {item.name}
                           </div>
                           {!item.isBought && (
@@ -389,6 +389,44 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                             />
                           </div>
                         </div>
+
+                        {/* PROMOTIONS DISPLAY */}
+                        {!item.isBought && promotions.filter(p => p.itemName.toLowerCase().trim() === item.name.toLowerCase().trim()).length > 0 && (
+                           <div className="mt-3 flex flex-col gap-1.5 border-t border-zinc-100 dark:border-zinc-800 pt-2">
+                             {promotions
+                               .filter(p => p.itemName.toLowerCase().trim() === item.name.toLowerCase().trim())
+                               .sort((a, b) => {
+                                 // Sort by shoppingMarketId first, then by price
+                                 if (a.marketId === shoppingMarketId && b.marketId !== shoppingMarketId) return -1;
+                                 if (b.marketId === shoppingMarketId && a.marketId !== shoppingMarketId) return 1;
+                                 return (a.price / a.qty) - (b.price / b.qty);
+                               })
+                               .map((promo, idx) => {
+                                  const market = markets.find(m => m.id === promo.marketId);
+                                  const precoUnitario = promo.price / promo.qty;
+                                  const isCurrentMarket = promo.marketId === shoppingMarketId;
+                                  
+                                  return (
+                                    <div key={idx} className={`flex justify-between items-center px-2.5 py-1.5 rounded-lg border ${
+                                      isCurrentMarket 
+                                        ? 'bg-sky-50 dark:bg-sky-900/10 border-sky-100 dark:border-sky-900/30' 
+                                        : 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-800'
+                                    }`}>
+                                      <div className="flex items-center gap-1.5 overflow-hidden">
+                                        <Store size={12} className={`shrink-0 ${isCurrentMarket ? 'text-sky-500' : 'text-zinc-400'}`} />
+                                        <span className={`text-[11px] font-bold truncate ${isCurrentMarket ? 'text-sky-700 dark:text-sky-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                                          {market?.name || 'Mercado'}
+                                        </span>
+                                      </div>
+                                      <div className={`text-[12px] font-bold shrink-0 ${isCurrentMarket ? 'text-sky-600 dark:text-sky-500' : 'text-zinc-600 dark:text-zinc-400'}`}>
+                                        {formatMoney(precoUnitario)}<span className={`text-[9px] font-medium ${isCurrentMarket ? 'text-sky-400' : 'text-zinc-400'}`}>/{item.unit}</span>
+                                      </div>
+                                    </div>
+                                  );
+                               })
+                             }
+                           </div>
+                        )}
                       </div>
 
                     </div>
@@ -410,10 +448,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                     <button 
                        key={item.id} 
                        onClick={() => setItems(items.map(i => i.id === item.id ? { ...i, notFound: false } : i))}
-                       className="text-[13px] font-medium bg-red-50 text-red-600 dark:bg-red-900/10 dark:text-red-400 px-3 py-1.5 rounded-xl border border-red-100 dark:border-red-900/30 flex items-center gap-2 hover:bg-red-100 transition-colors"
+                       className="text-[13px] font-medium max-w-full bg-red-50 text-red-600 dark:bg-red-900/10 dark:text-red-400 px-3 py-1.5 rounded-xl border border-red-100 dark:border-red-900/30 flex items-center gap-2 hover:bg-red-100 transition-colors"
                     >
-                       <span className="line-through opacity-70">{item.name}</span>
-                       <Plus size={14} />
+                       <span className="line-through opacity-70 flex-1 min-w-0 break-words text-left">{item.name}</span>
+                       <Plus size={14} className="shrink-0" />
                     </button>
                  ))}
               </div>

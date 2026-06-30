@@ -317,7 +317,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                       <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full flex items-center gap-1"><Store size={10} /> {marketName}</span>
                     </div>
 
-                    <h4 className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 leading-snug">{formatItemName(promo.itemName)}</h4>
+                    <h4 className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 leading-snug break-words">{formatItemName(promo.itemName)}</h4>
                     
                     <div className="flex items-end gap-2 mt-1 mb-2">
                       <div className="text-sky-600 dark:text-sky-400 font-bold text-[22px] tracking-tight leading-none">{formatMoney(promo.price)}</div>
