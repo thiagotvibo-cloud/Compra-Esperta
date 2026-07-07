@@ -10,7 +10,7 @@
   --color-soft-primary: #18181b; /* zinc-900 */
   --color-soft-primary-hover: #27272a; /* zinc-800 */
   --color-soft-primary-light: #f4f4f5; /* zinc-100 */
-  --color-soft-accent: #FB7185; /* rose-400 */
+  --color-soft-accent: #0b57d0; /* rose-400 */
 
   --color-soft-text-main: #0F172A; /* slate-900 */
   --color-soft-text-muted: #64748B; /* slate-500 */
@@ -62,7 +62,7 @@
   right: 50px;
   width: 60px;
   height: 60px;
-  background-color: #fb7185; /* rose-400 */
+  background-color: #0b57d0; /* rose-400 */
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;

@@ -222,7 +222,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
       <div className="px-5 -mt-8 relative z-20">
         <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowCatalog(true)}>
-            <div className="w-14 h-14 rounded-full bg-[#f0f4f9] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-300 dark:border-zinc-700/50">
+            <div className="w-14 h-14 rounded-full bg-[#f0f4f9] text-zinc-900 dark:bg-zinc-800 dark:text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-300 dark:border-zinc-700/50">
               <BadgePlus size={24} strokeWidth={2.5} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Adicionar</span>
