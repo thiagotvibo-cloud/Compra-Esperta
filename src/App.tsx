@@ -396,7 +396,7 @@ export default function App() {
   }
 
   if (isLoadingAuth) {
-    return <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans text-zinc-900 flex items-center justify-center p-4"></div>;
+    return <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#1e1e20] font-sans text-zinc-800 flex items-center justify-center p-4"></div>;
   }
 
   if (!session) {
@@ -414,8 +414,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-100 dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
-      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-[#e9eef6] dark:bg-[#000000] font-sans text-soft-text-main dark:text-zinc-200 flex justify-center">
+      <div className="w-full max-w-md bg-white dark:bg-[#131314] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
         <main className="flex-1 relative pb-24">
           <div className="fixed top-[max(env(safe-area-inset-top),16px)] right-4 z-[999] pointer-events-none opacity-80 mix-blend-overlay">
             {isSyncingUI ? (
@@ -434,7 +434,7 @@ export default function App() {
         </main>
 
         {/* BOTTOM NAVIGATION */}
-        <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 w-full max-w-md bg-[#f0f4f9] border-t border-zinc-200 dark:bg-[#1e1e20] dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           <div className="grid grid-cols-5 w-full items-center">
             <NavButton active={activeTab === 'lista'} onClick={() => setActiveTab('lista')} icon={<ListTodo size={24} />} label="Lista" />
             <NavButton active={activeTab === 'roteiro'} onClick={() => setActiveTab('roteiro')} icon={<Map size={24} />} label="Rota" />
@@ -454,7 +454,7 @@ function NavButton({ active, onClick, icon, label }: any) {
       onClick={onClick}
       className={`flex flex-col items-center justify-center w-full gap-1 pt-1.5 pb-1 transition-colors ${
         active 
-          ? 'text-sky-500 font-bold' 
+          ? 'text-zinc-800 dark:text-zinc-200 font-bold' 
           : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 font-medium'
       }`}
     >

@@ -5,11 +5,11 @@
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
 
   /* Market Pro Palette (Aliased mapping to standard tailwind vars for compatibility where still used) */
-  --color-soft-bg: #F8FAFC; /* slate-50 */
+  --color-soft-bg: #f0f4f9; /* slate-50 */
   --color-soft-card: #FFFFFF;
-  --color-soft-primary: #0EA5E9; /* sky-500 */
-  --color-soft-primary-hover: #0284C7; /* sky-600 */
-  --color-soft-primary-light: #E0F2FE; /* sky-100 */
+  --color-soft-primary: #18181b; /* zinc-900 */
+  --color-soft-primary-hover: #27272a; /* zinc-800 */
+  --color-soft-primary-light: #f4f4f5; /* zinc-100 */
   --color-soft-accent: #FB7185; /* rose-400 */
 
   --color-soft-text-main: #0F172A; /* slate-900 */
@@ -17,7 +17,7 @@
 
   /* Shadows */
   --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-primary: 0 4px 6px -1px rgb(14 165 233 / 0.3), 0 2px 4px -2px rgb(14 165 233 / 0.3);
+  --shadow-primary: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
 }
 
 .geometric-bg {
