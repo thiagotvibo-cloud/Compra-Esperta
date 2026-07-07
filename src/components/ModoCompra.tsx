@@ -18,12 +18,12 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   }, [activeItems]);
 
   const toggleBought = (id: string) => {
-    setItems(items.map(item => item.id === id ? { ...item, isBought: !item.isBought } : item));
+    setItems(prevItems => prevItems.map(item => item.id === id ? { ...item, isBought: !item.isBought } : item));
     setDelayedSorting(true);
   };
 
   const markNotFound = (id: string) => {
-    setItems(items.map(item => item.id === id ? { ...item, notFound: true, isBought: false } : item));
+    setItems(prevItems => prevItems.map(item => item.id === id ? { ...item, notFound: true, isBought: false } : item));
   };
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   }, [delayedSorting, items]);
 
   const updatePrice = (id: string, newPrice: number) => {
-    setItems(items.map(item => item.id === id ? { ...item, actualPrice: newPrice } : item));
+    setItems(prevItems => prevItems.map(item => item.id === id ? { ...item, actualPrice: newPrice } : item));
   };
 
   const handlePriceInput = (id: string, inputValue: string) => {
@@ -52,7 +52,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   };
 
   const updateQtyExplicit = (id: string, newQty: number) => {
-    setItems(items.map(item => item.id === id ? { ...item, qty: newQty } : item));
+    setItems(prevItems => prevItems.map(item => item.id === id ? { ...item, qty: newQty } : item));
   };
 
   const handleQtyChange = (id: string, inputValue: string, unit: string) => {
@@ -80,7 +80,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     const newPrice = parseInt(numericStr, 10) / 100;
     if (newPrice <= 0) return;
 
-    setItems([...items, {
+    setItems(prevItems => [...prevItems, {
       id: generateId(), name: `Item Avulso`, category: 'Outros', qty: 1, unit: 'un', actualPrice: newPrice, isBought: true, isEssential: false, onlyPromo: false, notes: ''
     }]);
     setAvulsoVal('');
@@ -150,7 +150,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     
     setHistory([h, ...history]);
     
-    setItems(items.map(i => ({...i, isBought: false, actualPrice: 0, notFound: false})));
+    setItems(prevItems => prevItems.map(i => ({...i, isBought: false, actualPrice: 0, notFound: false})));
     setShowFinishConfirm(false);
     context.setActiveTab('lista');
   };
@@ -187,7 +187,6 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       
       {/* STICKY HEADER */}
       <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
-        <div className="geometric-circle" style={{ top: '15px', right: '15px', width: '45px', height: '45px' }}></div>
         
         {/* MARKET SELECTOR IN HEADER */}
         <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10 w-full">
@@ -440,7 +439,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                  {items.filter(i => i.notFound).map(item => (
                     <button 
                        key={item.id} 
-                       onClick={() => setItems(items.map(i => i.id === item.id ? { ...i, notFound: false } : i))}
+                       onClick={() => setItems(prevItems => prevItems.map(i => i.id === item.id ? { ...i, notFound: false } : i))}
                        className="text-[13px] font-medium max-w-full bg-red-50 text-red-600 dark:bg-red-900/10 dark:text-red-400 px-3 py-1.5 rounded-xl border border-red-100 dark:border-red-900/30 flex items-center gap-2 hover:bg-red-100 transition-colors"
                     >
                        <span className="line-through opacity-70 flex-1 min-w-0 break-words text-left">{item.name}</span>

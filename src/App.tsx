@@ -118,18 +118,23 @@ export default function App() {
         const { data: iData, error: iErr } = await supabase.from('items').select('*').order('created_at');
         if (iErr) handleError('Buscar Itens', iErr);
         else if (iData && !isSyncingItems.current) {
-          setItems(iData.map(i => ({
-            id: i.id,
-            name: i.name,
-            qty: Number(i.qty),
-            unit: i.unit as any,
-            category: i.category as any,
-            isEssential: i.is_essential,
-            onlyPromo: i.only_promo,
-            isBought: i.is_bought,
-            notes: i.notes,
-            actualPrice: i.actual_price ? Number(i.actual_price) : undefined
-          })));
+          setItems(prevItems => iData.map(i => {
+            const prevItem = prevItems.find(p => p.id === i.id);
+            return {
+              id: i.id,
+              name: i.name,
+              qty: Number(i.qty),
+              unit: i.unit as any,
+              category: i.category as any,
+              isEssential: i.is_essential,
+              onlyPromo: i.only_promo,
+              isBought: i.is_bought,
+              notes: i.notes,
+              actualPrice: i.actual_price ? Number(i.actual_price) : undefined,
+              notFound: prevItem?.notFound || false,
+              isFavorite: prevItem?.isFavorite || false
+            };
+          }));
         }
 
         const { data: mData, error: mErr } = await supabase.from('markets').select('*').order('created_at');

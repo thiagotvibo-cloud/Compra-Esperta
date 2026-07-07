@@ -77,7 +77,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   };
 
   const clearBought = () => {
-    setItems(items.map(item => ({ ...item, isBought: false, actualPrice: 0, notFound: false })));
+    setItems(prevItems => prevItems.map(item => ({ ...item, isBought: false, actualPrice: 0, notFound: false })));
     setShowClearConfirm(false);
   };
 
@@ -179,16 +179,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     <div className="pb-28 bg-[#f0f4f9] dark:bg-[#1e1e20] min-h-screen relative">
       
       {/* HEADER MARKET PRO */}
-      <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg">
-         <div className="geometric-circle"></div>
-         <div className="flex justify-between items-center mb-6 relative z-10">
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full px-4 py-2 font-semibold text-xs uppercase tracking-widest flex items-center gap-2">
-              <span>Lista de Compras</span>
-            </div>
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-              <PieChart size={18} />
-            </div>
-         </div>
+      <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
          
          <div className="flex flex-col items-center relative z-10">
             <p className="text-zinc-400 dark:text-zinc-500 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
@@ -228,7 +219,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Adicionar</span>
           </div>
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => context.setActiveTab('compras')}>
-            <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-blue-100 dark:border-blue-800/30">
+            <div className="w-14 h-14 rounded-full bg-[#0b57d0]/10 text-[#0b57d0] dark:bg-[#a8c7fa]/20 dark:text-[#a8c7fa] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-[#0b57d0]/20 dark:border-[#a8c7fa]/30">
               <Calculator size={24} strokeWidth={2.5} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Modo<br/>Compra</span>
@@ -292,7 +283,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                     >
                       
                       <button 
-                        onClick={() => setItems(items.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
+                        onClick={() => setItems(prevItems => prevItems.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
                         className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? 'bg-zinc-200 border-zinc-900 dark:border-zinc-100' : 'border-zinc-300 dark:border-zinc-600'}`}
                       >
                         {item.isBought && <Check size={18} strokeWidth={4} className="text-zinc-900 dark:text-white" />}
@@ -300,19 +291,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                       
                       <div className="flex-1 min-w-0">
                           <motion.div 
-                            animate={{ color: item.isBought ? '#9ca3af' : 'var(--color-text-main)' }}
+                            animate={{ color: item.isBought ? '#9ca3af' : 'var(--color-soft-text-main)' }}
                             className={`font-semibold text-[16px] flex items-start gap-2 leading-snug ${item.isBought ? 'line-through text-zinc-500' : 'text-zinc-800 dark:text-zinc-200'}`}
                            >
                             <span className="min-w-0 flex-1 break-words">{formatItemName(item.name)}</span>
                             <button 
-                              onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isFavorite: !i.isFavorite } : i)); }}
+                              onClick={(e) => { e.stopPropagation(); setItems(prevItems => prevItems.map(i => i.id === item.id ? { ...i, isFavorite: !i.isFavorite } : i)); }}
                               className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 'text-yellow-500' : 'text-zinc-300 hover:text-yellow-400 opacity-50 hover:opacity-100'}`}
                               title={item.isFavorite ? "Remover dos favoritos" : frequentItems[item.name.trim().toLowerCase()] ? "Frequente no seu histórico" : "Marcar como favorito"}
                             >
                               <Star size={16} className={(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 'fill-yellow-500' : ''} strokeWidth={(item.isFavorite || frequentItems[item.name.trim().toLowerCase()]) ? 0 : 2} />
                             </button>
                             <button 
-                              onClick={(e) => { e.stopPropagation(); setItems(items.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
+                              onClick={(e) => { e.stopPropagation(); setItems(prevItems => prevItems.map(i => i.id === item.id ? { ...i, isEssential: !i.isEssential } : i)); }}
                               className={`mt-0.5 shrink-0 transition-transform hover:scale-110 active:scale-90 ${item.isEssential ? 'text-amber-500' : 'text-zinc-300 hover:text-amber-400 opacity-50 hover:opacity-100'}`}
                               title={item.isEssential ? "Remover prioridade" : "Marcar como prioridade"}
                             >
@@ -336,12 +327,12 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                               type="number"
                               step="0.01"
                               value={item.qty || ""}
-                              onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, qty: parseFloat(e.target.value) || 0 } : i))}
+                              onChange={(e) => setItems(prevItems => prevItems.map(i => i.id === item.id ? { ...i, qty: parseFloat(e.target.value) || 0 } : i))}
                               className="w-[36px] bg-transparent text-center text-[15px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none placeholder-zinc-400"
                             />
                             <select
                               value={item.unit}
-                              onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, unit: e.target.value as any } : i))}
+                              onChange={(e) => setItems(prevItems => prevItems.map(i => i.id === item.id ? { ...i, unit: e.target.value as any } : i))}
                               className="bg-transparent text-[12px] font-semibold text-zinc-500 pr-0.5 focus:outline-none cursor-pointer appearance-none uppercase"
                               style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                             >
@@ -354,7 +345,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                             </select>
                           </div>
                           <button 
-                              onClick={() => setItems(items.filter(i => i.id !== item.id))}
+                              onClick={() => setItems(prevItems => prevItems.filter(i => i.id !== item.id))}
                               className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
                           >
                               <Trash2 size={18} />
@@ -453,9 +444,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                           <button
                             key={index}
                             onClick={() => handleAddFromCatalog(item.name, item.category)}
-                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-soft-primary text-zinc-900 dark:text-white border-soft-primary shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
                           >
-                            {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-zinc-900 dark:text-white" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
+                            {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white dark:text-zinc-900" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
                             <span className="leading-snug break-words">{formatItemName(item.name)}</span>
                           </button>
                         );
@@ -521,9 +512,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                                     <button
                                       key={k}
                                       onClick={() => handleAddFromCatalog(itemName, cat.name)}
-                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-soft-primary text-zinc-900 dark:text-white border-soft-primary shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
                                     >
-                                      {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-zinc-900 dark:text-white" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
+                                      {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white dark:text-zinc-900" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
                                       <span className="leading-snug text-wrap">{formatItemName(itemName)}</span>
                                     </button>
                                   );
