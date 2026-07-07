@@ -2,6 +2,7 @@ import React from 'react';
 import { AppContextType } from '../types';
 import { Moon, Sun, History, ShoppingBag, Store, Trash2, Share, AlertTriangle } from 'lucide-react';
 import { formatMoney } from '../utils';
+import { supabase } from '../lib/supabase';
 
 export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { settings, setSettings, items, markets, promotions, setItems, setMarkets, setPromotions, history, setHistory } = context;
@@ -17,8 +18,14 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
     }
   };
 
-  const handleFactoryReset = () => {
-    if (window.confirm("ATENÇÃO: Você perderá TODOS os dados locais (lista, mercados, ofertas, histórico). Tem certeza?")) {
+  const handleFactoryReset = async () => {
+    if (window.confirm("ATENÇÃO: Você perderá TODOS os dados na nuvem e local (lista, mercados, ofertas, histórico). Tem certeza?")) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await supabase.from('items').delete().eq('user_id', session.user.id);
+        await supabase.from('markets').delete().eq('user_id', session.user.id);
+        await supabase.from('promotions').delete().eq('user_id', session.user.id);
+      }
       localStorage.clear();
       window.location.reload();
     }
@@ -31,7 +38,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
   const chartMax = settings.budget > maxHistorySpent ? settings.budget : maxHistorySpent;
 
   return (
-    <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen">
+    <div className="pb-28 bg-soft-bg dark:bg-black h-full">
       
       {/* HEADER */}
       <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 geometric-bg relative">

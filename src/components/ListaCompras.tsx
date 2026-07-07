@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Item, Category, Unit, AppContextType } from '../types';
-import { generateId, formatItemName, formatMoney } from '../utils';
+import { generateId, formatItemName, formatMoney, normalizeStr } from '../utils';
 import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb, ExternalLink } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
 import { motion, AnimatePresence } from 'motion/react';
@@ -18,17 +18,27 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     const essentialItems = items.filter(i => i.isEssential).map(i => i.name);
     if (essentialItems.length === 0) return;
     
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) return; // Silenciosamente ignora se não tem chave
+    
     setIsLoadingTip(true);
     try {
-      const response = await fetch('/api/tip', {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ essentialItems })
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Gere uma pequena dica de economia (máximo 2 frases curtas) para alguém que compra regularmente: ${essentialItems.join(', ')}. Sem markdown, seja direto e útil.`
+            }]
+          }]
+        })
       });
       const data = await response.json();
-      if (data.tip) setTip(data.tip);
+      const tip = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (tip) setTip(tip.trim());
     } catch (error) {
-      console.error('Failed to fetch tip:', error);
+      // Silenciosamente ignora erros de rede
     } finally {
       setIsLoadingTip(false);
     }
@@ -67,14 +77,18 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   };
 
   const clearBought = () => {
-    setItems(items.map(item => ({ ...item, isBought: false })));
+    setItems(items.map(item => ({ ...item, isBought: false, actualPrice: 0, notFound: false })));
     setShowClearConfirm(false);
   };
 
   const getBestOffer = (itemName: string) => {
-    const promos = context.promotions.filter(p => p.itemName.toLowerCase() === itemName.toLowerCase());
+    const promos = context.promotions.filter(p => normalizeStr(p.itemName) === normalizeStr(itemName));
     if (promos.length === 0) return null;
-    return promos.reduce((prev, curr) => (prev.price < curr.price ? prev : curr));
+    return promos.reduce((prev, curr) => {
+      const prevPPU = prev.price / (prev.qty || 1);
+      const currPPU = curr.price / (curr.qty || 1);
+      return prevPPU <= currPPU ? prev : curr;
+    });
   };
 
   const calculateEstimatedTotal = () => {
@@ -190,9 +204,10 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                     <span>Total Estimado: {formatMoney(expectedTotal)}</span>
                     <span className={progOrçamento > 100 ? 'text-red-200' : ''}>{Math.round(progOrçamento)}%</span>
                  </div>
-                 <div className="h-2 rounded-full bg-black/20 overflow-hidden">
+                 <div className="h-2 rounded-full bg-black/20 overflow-hidden mb-1">
                     <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-white'}`} style={{ width: `${progressPercent}%` }} />
                  </div>
+                 <div className="text-[10px] text-sky-100/70 font-medium italic text-right mb-1">Estimativa baseada em ofertas cadastradas</div>
                  {calculateEconomy() > 0 && (
                    <div className="mt-2 text-[11px] font-bold text-sky-100 flex items-center gap-1.5">
                      <span className="bg-green-500/20 text-green-100 px-1.5 py-0.5 rounded-md">Se comprar onde tem oferta, você poupará {formatMoney(calculateEconomy())}.</span>
@@ -258,8 +273,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
 
           {groupedItems.map(group => (
             <div key={group.category} className="mb-6">
-              <div className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1">
-                {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
+              <div className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1 flex items-center min-w-0">
+                <span className="truncate">{group.category}</span>
+                <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full shrink-0">{group.items.length}</span>
               </div>
               
               <div className="flex flex-col gap-3">
@@ -448,7 +464,38 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                   </div>
                 )
               ) : (
-                PRODUCT_CATALOG.map((cat, i) => {
+                <>
+                  {Object.keys(frequentItems).filter(itemName => !normalizedItemNamesForCatalog.has(itemName)).length > 0 && (
+                    <div className="bg-soft-card dark:bg-[#1C1C1E] rounded-[24px] border-none p-5 shadow-sm mb-4">
+                      <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4 flex items-center gap-2"><Star size={14} className="text-yellow-500" /> Comprados Frequentemente</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.keys(frequentItems)
+                          .sort((a, b) => frequentItems[b] - frequentItems[a])
+                          .filter(itemName => !normalizedItemNamesForCatalog.has(itemName))
+                          .slice(0, 6)
+                          .map((itemName, index) => {
+                            // Encontra nome original com maiúsculas do histórico
+                            let originalName = itemName;
+                            context.history.forEach(h => h.items?.forEach(i => {
+                              if (i.nome.trim().toLowerCase() === itemName) originalName = i.nome;
+                            }));
+                            const cat = flatCatalog.find(c => c.name.toLowerCase() === itemName)?.category || 'Outros';
+
+                            return (
+                              <button
+                                key={`freq-${index}`}
+                                onClick={() => handleAddFromCatalog(originalName, cat)}
+                                className="px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none"
+                              >
+                                <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />
+                                <span className="leading-snug break-words">{formatItemName(originalName)}</span>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+                  {PRODUCT_CATALOG.map((cat, i) => {
                   const isExpanded = expandedCategory === cat.name;
                   return (
                     <div key={i} className="bg-soft-card dark:bg-[#1C1C1E] rounded-[24px] border-none overflow-hidden transition-all shadow-sm">
@@ -487,8 +534,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                         </div>
                       )}
                     </div>
-                  )
-                })
+                  );
+                })}
+              </>
               )}
             </div>
           </div>

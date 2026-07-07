@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { AppContextType, Item, HistoryItem } from '../types';
-import { formatMoney, formatItemName, generateId } from '../utils';
+import { formatMoney, formatItemName, generateId, normalizeStr } from '../utils';
 import { Check, AlertTriangle, Plus, Minus, Search, CreditCard, X, Trash2, Store, Ban, ShoppingBag } from 'lucide-react';
 
 export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) => {
@@ -94,7 +94,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     const marketPromos = promotions.filter(p => p.marketId === marketId);
     setItems(prev => prev.map(item => {
        if (item.isBought) return item; // Conserva valor preenchido manualmente
-       const promo = marketPromos.find(p => p.itemName === item.name);
+       const promo = marketPromos.find(p => normalizeStr(p.itemName) === normalizeStr(item.name));
        if (promo) {
          return { ...item, actualPrice: promo.price };
        }
@@ -125,14 +125,15 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   }
 
   const finishPurchase = () => {
+    const PRECO_REFERENCIA = 12.00;
     let economy = 0;
-    if (settings.budget > 0) {
-      economy = settings.budget - totalSpent;
-    } else {
-      // Simplification of economy if no budget
-      const expectedTotal = activeItems.reduce((acc, curr) => acc + (15.00 * curr.qty), 0); // 15 = placeholder
-      economy = expectedTotal - totalSpent;
-    }
+    activeItems.filter(i => i.isBought).forEach(item => {
+      const hasPromo = promotions.some(p => normalizeStr(p.itemName) === normalizeStr(item.name));
+      if (hasPromo && item.actualPrice && item.actualPrice > 0) {
+        const economyPerUnit = Math.max(0, PRECO_REFERENCIA - item.actualPrice);
+        economy += economyPerUnit * item.qty;
+      }
+    });
 
     const h: HistoryItem = {
       id: generateId(),
@@ -182,19 +183,19 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   if (items.length === 0) return <div className="p-10 text-center text-zinc-500 font-medium">Sua lista está vazia. Adicione itens antes de ir às compras.</div>;
 
   return (
-    <div className="pb-36 bg-soft-bg dark:bg-black min-h-screen">
+    <div className="pb-36 bg-soft-bg dark:bg-black">
       
       {/* STICKY HEADER */}
-      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
+      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
         <div className="geometric-circle" style={{ top: '15px', right: '15px', width: '45px', height: '45px' }}></div>
         
         {/* MARKET SELECTOR IN HEADER */}
-        <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10">
+        <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10 w-full">
           <Store className={textColor} size={16} />
           <select 
             value={shoppingMarketId} 
             onChange={e => handleMarketSelect(e.target.value)}
-            className={`flex-1 bg-transparent border-none focus:outline-none font-semibold text-[14px] cursor-pointer appearance-none ${textColor}`}
+            className={`flex-1 min-w-0 bg-transparent border-none focus:outline-none font-semibold text-[14px] cursor-pointer appearance-none truncate ${textColor}`}
           >
             <option value="" className="text-zinc-900">-- Selecione o Mercado --</option>
             {markets.map(m => <option className="text-zinc-900" key={m.id} value={m.id}>{m.name}</option>)}
@@ -252,19 +253,6 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
       <div className="px-4 mt-6">
         
-        {/* MARKET SELECTOR (INJEÇÃO DE PREÇO) */}
-        <div className="mb-6 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
-          <Store className="text-sky-500 shrink-0" size={20} />
-          <select 
-            value={shoppingMarketId} 
-            onChange={e => handleMarketSelect(e.target.value)}
-            className="flex-1 bg-transparent border-none focus:outline-none font-semibold text-zinc-900 dark:text-zinc-100 text-[15px] cursor-pointer"
-          >
-            <option value="">-- Onde você está comprando? --</option>
-            {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </select>
-        </div>
-
         {/* COMPACT SEARCH & AVULSO */}
         <div className="flex gap-2 mb-6">
           <div className="relative flex-1">
@@ -302,7 +290,12 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
         {/* ITEMS LIST */}
         <div className="flex flex-col gap-6">
-          {Object.entries<Item[]>(itemsByCategory)
+          {activeItems.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center">
+              <ShoppingBag size={48} className="text-zinc-300 dark:text-zinc-700 mb-4" strokeWidth={1.5} />
+              <p className="text-zinc-500 font-medium px-6">Todos os itens foram marcados como não encontrados ou a lista está vazia.</p>
+            </div>
+          ) : Object.entries<Item[]>(itemsByCategory)
             .sort(([catA], [catB]) => catA.localeCompare(catB))
             .map(([category, catItems]) => {
               const catSubtotal = catItems.reduce((acc, item) => acc + ((typeof item.actualPrice === 'number' ? item.actualPrice : 0) * (typeof item.qty === 'number' ? item.qty : 1)), 0);
@@ -310,10 +303,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
               return (
               <div key={category} className="space-y-3">
                 <div className="flex items-center gap-3 px-2">
-                  <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 whitespace-nowrap">{category}</h3>
+                  <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 truncate max-w-[50%]">{category}</h3>
                   <div className="flex-1 border-t border-dashed border-zinc-300 dark:border-zinc-700"></div>
                   {catSubtotal > 0 && (
-                     <div className="text-[14px] font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap">
+                     <div className="text-[14px] font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap shrink-0">
                        R$ {catSubtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                      </div>
                   )}
@@ -391,10 +384,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                         </div>
 
                         {/* PROMOTIONS DISPLAY */}
-                        {!item.isBought && promotions.filter(p => p.itemName.toLowerCase().trim() === item.name.toLowerCase().trim()).length > 0 && (
+                        {!item.isBought && promotions.filter(p => normalizeStr(p.itemName) === normalizeStr(item.name)).length > 0 && (
                            <div className="mt-3 flex flex-col gap-1.5 border-t border-zinc-100 dark:border-zinc-800 pt-2">
                              {promotions
-                               .filter(p => p.itemName.toLowerCase().trim() === item.name.toLowerCase().trim())
+                               .filter(p => normalizeStr(p.itemName) === normalizeStr(item.name))
                                .sort((a, b) => {
                                  // Sort by shoppingMarketId first, then by price
                                  if (a.marketId === shoppingMarketId && b.marketId !== shoppingMarketId) return -1;
@@ -460,7 +453,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       </div>
 
       {/* FLOAT BUTTON FINALIZAR COMPRA */}
-      <div className="fixed bottom-20 left-0 w-full flex justify-center z-40 pointer-events-none px-4">
+      <div className="fixed bottom-[90px] left-1/2 -translate-x-1/2 w-full max-w-md flex justify-center z-40 pointer-events-none px-4">
          <button 
             onClick={() => setShowFinishConfirm(true)}
             className="pointer-events-auto bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"

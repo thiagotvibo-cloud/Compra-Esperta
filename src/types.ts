@@ -13,7 +13,7 @@ export interface Item {
   onlyPromo: boolean; // Só comprar se tiver promoção
   isBought: boolean;
   notes: string;
-  actualPrice: number; // Para ser preenchido durante o Modo Compra
+  actualPrice?: number; // Para ser preenchido durante o Modo Compra
   isFavorite?: boolean;
   notFound?: boolean;
 }

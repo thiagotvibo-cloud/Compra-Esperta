@@ -1,3 +1,8 @@
+/*
+  REQUIRED SQL MIGRATION:
+  ALTER TABLE items ADD COLUMN is_bought BOOLEAN DEFAULT false;
+  ALTER TABLE items ADD COLUMN actual_price NUMERIC;
+*/
 import React, { useState, useEffect, useRef } from 'react';
 import { Item, Market, Promotion, Settings, AppContextType, HistoryItem } from './types';
 import { ListaCompras } from './components/ListaCompras';
@@ -8,11 +13,12 @@ import { Roteiro } from './components/Roteiro';
 import { AuthUI } from './components/Auth';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
-import { ListTodo, Tags, ShoppingCart, Settings as SettingsIcon, Map } from 'lucide-react';
+import { ListTodo, Tags, ShoppingCart, Settings as SettingsIcon, Map, Cloud, CloudOff, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isSyncingUI, setIsSyncingUI] = useState(false);
   
   const [items, setItems] = useState<Item[]>([]);
   const [markets, setMarkets] = useState<Market[]>([]);
@@ -25,7 +31,10 @@ export default function App() {
     }
     return [];
   });
-  const [settings, setSettings] = useState<Settings>({ budget: 0, darkMode: false });
+  const [settings, setSettings] = useState<Settings>(() => {
+    const saved = localStorage.getItem('market_pro_settings');
+    return saved ? JSON.parse(saved) : { budget: 0, darkMode: false };
+  });
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     const saved = localStorage.getItem('market_pro_history');
     return saved ? JSON.parse(saved) : [];
@@ -82,6 +91,13 @@ export default function App() {
   const isSyncingItems = useRef(false);
   const isSyncingMarkets = useRef(false);
   const isSyncingPromotions = useRef(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+       setIsSyncingUI(isSyncingItems.current || isSyncingMarkets.current || isSyncingPromotions.current);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   // Sync data with Supabase when session changes
   useEffect(() => {
@@ -225,6 +241,7 @@ export default function App() {
       const next = typeof newSettings === 'function' ? newSettings(prev) : newSettings;
       updateSetting('budget', next.budget);
       updateSetting('dark_mode', next.darkMode);
+      localStorage.setItem('market_pro_settings', JSON.stringify(next));
       return next;
     });
   };
@@ -400,6 +417,13 @@ export default function App() {
     <div className="min-h-[100dvh] bg-zinc-100 dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
       <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
         <main className="flex-1 relative pb-24">
+          <div className="fixed top-[max(env(safe-area-inset-top),16px)] right-4 z-[999] pointer-events-none opacity-80 mix-blend-overlay">
+            {isSyncingUI ? (
+              <Cloud className="text-white animate-pulse drop-shadow-md" size={18} />
+            ) : (
+              <CheckCircle2 className="text-white drop-shadow-md" size={18} />
+            )}
+          </div>
           
           {activeTab === 'lista' && <ListaCompras context={context} />}
           {activeTab === 'roteiro' && <Roteiro context={context} />}

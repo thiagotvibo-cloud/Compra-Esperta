@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { AppContextType, Market } from '../types';
 import { Store, BadgePercent, AlertCircle, TrendingDown } from 'lucide-react';
-import { formatMoney, formatItemName } from '../utils';
+import { formatMoney, formatItemName, normalizeStr } from '../utils';
 
 export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { items, markets, promotions } = context;
@@ -22,7 +22,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
       listItems.forEach(item => {
         const oferta = ofertasAtivas.find(o =>
           o.marketId === mercado.id &&
-          o.itemName.toLowerCase().trim() === item.name.toLowerCase().trim()
+          normalizeStr(o.itemName) === normalizeStr(item.name)
         );
 
         if (oferta) {
@@ -62,6 +62,10 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
        return a.totalEstimado - b.totalEstimado; // Menor preço ganha no desempate
     });
 
+    const itensSemOfertaGlobal = listItems.filter(item => {
+      return !ofertasAtivas.some(o => normalizeStr(o.itemName) === normalizeStr(item.name));
+    });
+
     const vencedor = resultadosPorMercado[0];
     if (!vencedor) return null;
 
@@ -70,17 +74,18 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
       destinoVencedorId: vencedor.mercadoId,
       totalProjetadoVencedor: vencedor.totalEstimado,
       rankingCompleto: resultadosPorMercado,
+      itensSemOfertaGlobal,
       vencedor
     };
   }, [items, markets, promotions]);
 
   return (
-    <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen">
+    <div className="pb-28 bg-soft-bg dark:bg-black h-full">
       {/* HEADER */}
       <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 geometric-bg relative">
          <div className="flex justify-between items-center relative z-10">
             <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
-              Inteligência de Mercado
+              Roteiro de Compras
             </h2>
          </div>
       </div>
@@ -109,6 +114,11 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                 <BadgePercent size={14} /> 
                 Cobertura: {marketRankings.vencedor.itensCobertos} de {marketRankings.vencedor.totalItens} itens com oferta
               </div>
+              {marketRankings.itensSemOfertaGlobal.length > 0 && (
+                <div className="text-[12px] font-medium text-yellow-200 flex items-center gap-2 pt-1">
+                  ⚠️ {marketRankings.itensSemOfertaGlobal.length} itens sem oferta registrada — verifique no local
+                </div>
+              )}
             </div>
           </div>
 
@@ -126,7 +136,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                      <div className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index===0 ? 'bg-sky-100 text-sky-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
                         {index + 1}
                      </div>
-                     <span className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100">{ranking.mercadoNome}</span>
+                     <span className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 truncate flex-1 min-w-0">{ranking.mercadoNome}</span>
                    </div>
                    <div className="font-bold text-[16px] text-sky-600 dark:text-sky-400">
                      {formatMoney(ranking.totalEstimado)}
@@ -156,6 +166,19 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                    ) : (
                       <div className="text-[12px] text-zinc-400 font-medium italic">
                          Nenhum item da sua lista em oferta neste mercado.
+                      </div>
+                   )}
+                   {marketRankings.itensSemOfertaGlobal.length > 0 && (
+                      <div className="pt-2">
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2">
+                           <AlertCircle size={12} /> Sem oferta registrada
+                         </span>
+                         {marketRankings.itensSemOfertaGlobal.map((item, idx) => (
+                           <div key={idx} className="flex justify-between items-center text-[13px] py-1 opacity-70">
+                             <div className="font-medium text-zinc-600 dark:text-zinc-400">{formatItemName(item.name)}</div>
+                             <div className="font-semibold text-zinc-400 text-[10px] uppercase">Compre onde preferir</div>
+                           </div>
+                         ))}
                       </div>
                    )}
                  </div>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Market, Promotion, Unit, AppContextType } from '../types';
-import { generateId, formatMoney, getPricePerBaseUnit, convertToBaseUnit, formatItemName } from '../utils';
+import { generateId, formatMoney, getPricePerBaseUnit, convertToBaseUnit, formatItemName, normalizeStr } from '../utils';
 import { Store, Plus, Calendar, Trash2, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
 
@@ -21,13 +21,20 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   const [notes, setNotes] = useState('');
   const [editingPromoId, setEditingPromoId] = useState<string | null>(null);
 
+  const [showToast, setShowToast] = useState(false);
+  const [showPasteModal, setShowPasteModal] = useState(false);
+  const [pasteText, setPasteText] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzedPromos, setAnalyzedPromos] = useState<{produto: string, preco: number, por: number, unidade: string}[]>([]);
+  const [pasteMarketId, setPasteMarketId] = useState<string>('');
+
   // States para o modal de catálogo
   const [showCatalog, setShowCatalog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   // Filtro
-  const [promoFilter, setPromoFilter] = useState<'all' | 'today' | 'tomorrow'>('all');
+  const [promoFilter, setPromoFilter] = useState<'on_list' | 'all' | 'today' | 'tomorrow'>('on_list');
 
   const flatCatalog = useMemo(() => {
     return PRODUCT_CATALOG.flatMap(cat => 
@@ -105,6 +112,8 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
         notes: notes.trim()
       };
       setPromotions([newPromo, ...promotions]);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
     }
 
     setItemName('');
@@ -146,16 +155,89 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
+  const handleAnalyzeText = async () => {
+    if (!pasteText.trim()) return;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      alert("Chave VITE_GEMINI_API_KEY não configurada.");
+      return;
+    }
+    
+    setIsAnalyzing(true);
+    setAnalyzedPromos([]);
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: {
+             parts: [{
+                text: "Você é um extrator de dados de promoções de supermercado. Analise o texto e identifique todos os produtos com preço. Retorne SOMENTE um array JSON válido, sem markdown, sem texto extra. Formato obrigatório por item: {\"produto\": \"string\", \"preco\": number, \"por\": number, \"unidade\": \"string (kg|g|L|ml|un|pct)\"}. Se não encontrar nenhum produto claro, retorne []."
+             }]
+          },
+          contents: [{
+            parts: [{ text: pasteText }]
+          }]
+        })
+      });
+      const data = await response.json();
+      const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (txt) {
+         try {
+            const parsed = JSON.parse(txt);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+               setAnalyzedPromos(parsed);
+            } else {
+               alert("Não encontrei promoções no texto. Tente escrever de outra forma.");
+            }
+         } catch(e) {
+            alert("Não encontrei promoções no texto. Tente escrever de outra forma.");
+         }
+      } else {
+         alert("Não encontrei promoções no texto. Tente escrever de outra forma.");
+      }
+    } catch (e) {
+       alert("Erro ao conectar com a API.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleSaveAnalyzed = () => {
+    if (!pasteMarketId) { alert("Selecione um mercado!"); return; }
+    
+    const newPromos: Promotion[] = analyzedPromos.map(item => ({
+      id: generateId(),
+      marketId: pasteMarketId,
+      itemName: item.produto,
+      price: item.preco,
+      qty: item.por || 1,
+      unit: item.unidade as Unit,
+      expiryDate: '',
+      notes: 'Importado por IA'
+    }));
+
+    setPromotions([...newPromos, ...promotions]);
+    setShowPasteModal(false);
+    setPasteText('');
+    setAnalyzedPromos([]);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
+
   const filteredPromos = useMemo(() => {
     return promotions.filter(p => {
+       if (promoFilter === 'on_list') {
+         return context.items.some(item => normalizeStr(item.name) === normalizeStr(p.itemName));
+       }
        if (promoFilter === 'today') return p.expiryDate === todayStr;
        if (promoFilter === 'tomorrow') return p.expiryDate === tomorrowStr;
        return true;
     });
-  }, [promotions, promoFilter, todayStr, tomorrowStr]);
+  }, [promotions, promoFilter, todayStr, tomorrowStr, context.items]);
 
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-black min-h-screen">
+    <div className="pb-28 bg-zinc-50 dark:bg-black h-full">
       
       {/* HEADER */}
       <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 geometric-bg relative">
@@ -163,6 +245,9 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
             <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
               Ofertas & Mercados
             </h2>
+            <button onClick={() => setShowPasteModal(true)} className="bg-white/20 text-white border border-white/30 px-3 py-1.5 rounded-full text-[12px] font-semibold flex items-center gap-1.5 backdrop-blur-md">
+              📋 Colar texto
+            </button>
          </div>
          <p className="text-sky-50 mt-2 text-[13px] font-medium relative z-10 pr-10 mb-5">
            Gerencie as ofertas que encontrou e organize por supermercado.
@@ -276,8 +361,14 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
         
         <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
            <button 
+             onClick={() => setPromoFilter('on_list')} 
+             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'on_list' ? 'bg-sky-500 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}
+           >
+              Na Lista
+           </button>
+           <button 
              onClick={() => setPromoFilter('all')} 
-             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'all' ? 'bg-sky-500 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}
+             className={`px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-wider transition-colors shrink-0 ${promoFilter === 'all' ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}
            >
               Todas Ofertas
            </button>
@@ -297,7 +388,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
 
         {filteredPromos.length === 0 ? (
            <div className="text-center py-10 text-zinc-400 font-medium bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
-             Não há promoções nesta aba.
+             {promoFilter === 'today' ? 'Nenhuma oferta vence hoje.' : promoFilter === 'tomorrow' ? 'Nenhuma oferta vence amanhã.' : promoFilter === 'on_list' ? 'Nenhum item da sua lista está com oferta cadastrada.' : 'Não há promoções nesta aba.'}
            </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -313,8 +404,8 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
                 <div key={promo.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex justify-between items-center gap-4 transition-all cursor-pointer active:scale-95" onClick={() => handleEditPromo(promo)}>
                   <div className="flex-1 min-w-0 pointer-events-none">
                     
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full flex items-center gap-1"><Store size={10} /> {marketName}</span>
+                    <div className="flex items-center gap-2 mb-1 min-w-0">
+                      <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full flex items-center gap-1 min-w-0"><Store size={10} className="shrink-0" /> <span className="truncate">{marketName}</span></span>
                     </div>
 
                     <h4 className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 leading-snug break-words">{formatItemName(promo.itemName)}</h4>
@@ -461,6 +552,113 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
               )}
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* MODAL DE IMPORTAÇÃO POR IA */}
+      {showPasteModal && (
+        <div className="fixed inset-0 z-[100] flex justify-center items-end bg-black/40 backdrop-blur-[2px] animate-in fade-in" onClick={() => setShowPasteModal(false)}>
+          <div className="w-full max-w-lg bg-soft-bg dark:bg-[#1C1C1E] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-soft-bg dark:bg-[#1C1C1E] z-10">
+              <h2 className="text-lg font-semibold text-soft-text-main dark:text-zinc-100 tracking-tight">Importar Ofertas</h2>
+              <button onClick={() => setShowPasteModal(false)} className="p-2 bg-soft-card dark:bg-zinc-800 rounded-full text-zinc-500 hover:text-soft-text-main dark:hover:text-zinc-200 transition-colors flex items-center justify-center -mr-2">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-5">
+               {analyzedPromos.length === 0 ? (
+                 <>
+                   <textarea
+                     className="w-full h-40 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 text-[14px] font-medium resize-none focus:outline-none focus:ring-2 focus:ring-sky-500 placeholder-zinc-400 mb-4"
+                     placeholder="Cole aqui o texto das ofertas — pode ser do WhatsApp, newsletter ou digitado. Ex: Acém R$ 15/kg, Frango 8,90 o kg, Arroz 5kg por R$ 22"
+                     value={pasteText}
+                     onChange={(e) => setPasteText(e.target.value)}
+                   />
+                   <button 
+                     onClick={handleAnalyzeText} 
+                     disabled={isAnalyzing || !pasteText.trim()}
+                     className="w-full bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold py-3.5 rounded-2xl transition-colors shadow-sm"
+                   >
+                     {isAnalyzing ? "Analisando..." : "Analisar com IA"}
+                   </button>
+                 </>
+               ) : (
+                 <>
+                   <label className="block text-[12px] font-semibold uppercase tracking-wider mb-2 text-zinc-500 dark:text-zinc-400">
+                     Vincular ao Mercado:
+                   </label>
+                   <select 
+                     value={pasteMarketId} 
+                     onChange={e => setPasteMarketId(e.target.value)}
+                     className="w-full px-4 py-3 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl mb-6 font-semibold focus:outline-none"
+                   >
+                     <option value="" disabled>-- Selecione --</option>
+                     {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                   </select>
+
+                   <h3 className="text-[13px] font-bold uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2">
+                      <Store size={14} /> Ofertas Encontradas ({analyzedPromos.length})
+                   </h3>
+
+                   <div className="space-y-3">
+                     {analyzedPromos.map((item, idx) => (
+                       <div key={idx} className="bg-white dark:bg-zinc-800 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col gap-2">
+                         <input
+                           type="text"
+                           value={item.produto}
+                           onChange={(e) => {
+                             const novo = [...analyzedPromos];
+                             novo[idx].produto = e.target.value;
+                             setAnalyzedPromos(novo);
+                           }}
+                           className="font-bold text-[15px] bg-transparent border-b border-zinc-100 dark:border-zinc-700 pb-1 focus:outline-none focus:border-sky-500"
+                         />
+                         <div className="flex gap-2">
+                            <div className="flex-1">
+                               <span className="text-[10px] uppercase font-bold text-zinc-400">Preço</span>
+                               <input type="number" step="0.01" value={item.preco} onChange={(e) => {
+                                  const novo = [...analyzedPromos];
+                                  novo[idx].preco = Number(e.target.value);
+                                  setAnalyzedPromos(novo);
+                               }} className="w-full bg-zinc-50 dark:bg-zinc-900 rounded p-1.5 font-bold focus:outline-none" />
+                            </div>
+                            <div className="w-16">
+                               <span className="text-[10px] uppercase font-bold text-zinc-400">Por</span>
+                               <input type="number" step="0.01" value={item.por || 1} onChange={(e) => {
+                                  const novo = [...analyzedPromos];
+                                  novo[idx].por = Number(e.target.value);
+                                  setAnalyzedPromos(novo);
+                               }} className="w-full bg-zinc-50 dark:bg-zinc-900 rounded p-1.5 font-bold focus:outline-none" />
+                            </div>
+                            <div className="w-16">
+                               <span className="text-[10px] uppercase font-bold text-zinc-400">Un</span>
+                               <input type="text" value={item.unidade} onChange={(e) => {
+                                  const novo = [...analyzedPromos];
+                                  novo[idx].unidade = e.target.value;
+                                  setAnalyzedPromos(novo);
+                               }} className="w-full bg-zinc-50 dark:bg-zinc-900 rounded p-1.5 font-bold focus:outline-none uppercase" />
+                            </div>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                   
+                   <div className="mt-6">
+                     <button onClick={handleSaveAnalyzed} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-2xl transition-colors shadow-sm">
+                       Salvar Todas as Ofertas
+                     </button>
+                   </div>
+                 </>
+               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showToast && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-zinc-900 text-white text-[13px] font-semibold px-5 py-3 rounded-full shadow-lg animate-in fade-in">
+          ✅ Oferta salva com sucesso
         </div>
       )}
     </div>
