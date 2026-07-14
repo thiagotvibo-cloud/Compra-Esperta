@@ -176,12 +176,12 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const progressPercentage = totalItems > 0 ? (boughtItems / totalItems) * 100 : 0;
 
   return (
-    <div className="pb-28 bg-[#f0f4f9] dark:bg-[#1e1e20] min-h-screen relative">
+    <div className="pb-28 bg-soft-bg dark:bg-zinc-900 min-h-screen relative">
       
       {/* HEADER MARKET PRO */}
-      <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
+      <div className="bg-soft-bg dark:bg-zinc-900 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
          
-         <div className="flex flex-col items-center relative z-10">
+         <div className="geometric-circle"></div>         <div className="flex flex-col items-center relative z-10">
             <p className="text-zinc-400 dark:text-zinc-500 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
             <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3">
               {formatMoney(settings.budget)}
@@ -196,7 +196,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                     <span className={progOrçamento > 100 ? 'text-red-200' : ''}>{Math.round(progOrçamento)}%</span>
                  </div>
                  <div className="h-2 rounded-full bg-black/20 overflow-hidden mb-1">
-                    <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-[#f0f4f9]'}`} style={{ width: `${progressPercent}%` }} />
+                    <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-soft-bg'}`} style={{ width: `${progressPercent}%` }} />
                  </div>
                  <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium italic text-right mb-1">Estimativa baseada em ofertas cadastradas</div>
                  {calculateEconomy() > 0 && (
@@ -211,21 +211,21 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
 
       {/* OVERLAP SHORTCUT CARDS */}
       <div className="px-5 -mt-8 relative z-20">
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 grid grid-cols-3 gap-2">
+        <div className="bg-soft-bg dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowCatalog(true)}>
-            <div className="w-14 h-14 rounded-full bg-[#f0f4f9] text-zinc-900 dark:bg-zinc-800 dark:text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-300 dark:border-zinc-700/50">
+            <div className="w-14 h-14 rounded-full bg-soft-bg text-zinc-900 dark:bg-zinc-800 dark:text-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-300 dark:border-zinc-700/50">
               <BadgePlus size={24} strokeWidth={2.5} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Adicionar</span>
           </div>
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => context.setActiveTab('compras')}>
-            <div className="w-14 h-14 rounded-full bg-[#0b57d0]/10 text-[#0b57d0] dark:bg-[#a8c7fa]/20 dark:text-[#a8c7fa] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-[#0b57d0]/20 dark:border-[#a8c7fa]/30">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-500 dark:bg-emerald-400/20 dark:text-emerald-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-emerald-500/20 dark:border-emerald-400/30">
               <Calculator size={24} strokeWidth={2.5} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Modo<br/>Compra</span>
           </div>
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowClearConfirm(true)}>
-             <div className="w-14 h-14 rounded-full bg-[#f0f4f9] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-100 dark:border-zinc-700/50">
+             <div className="w-14 h-14 rounded-full bg-soft-bg text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-zinc-100 dark:border-zinc-700/50">
               <Check strokeWidth={3} size={24} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 text-center leading-tight">Limpar</span>
@@ -279,7 +279,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                       animate={{ opacity: item.isBought ? 0.6 : 1, y: 0, scale: item.isBought ? 0.98 : 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.2 }}
-                      className={`flex items-center gap-3.5 p-3.5 rounded-2xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-[#131314] border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-[#f0f4f9] dark:bg-[#1e1e20] border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
+                      className={`flex items-center gap-3.5 p-3.5 rounded-2xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-soft-bg dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
                     >
                       
                       <button 
@@ -364,7 +364,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
       {/* CLEAR CONFIRM MODAL */}
       {showClearConfirm && (
         <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowClearConfirm(false)}>
-          <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
+          <div className="bg-soft-bg dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
             <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Trash2 size={32} />
             </div>
@@ -398,11 +398,11 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
       {showCatalog && (
         <div className="fixed inset-0 z-[100] flex justify-center items-end bg-black/40 backdrop-blur-[2px] animate-in fade-in" onClick={() => setShowCatalog(false)}>
           <div 
-            className="w-full max-w-lg bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom border-none"
+            className="w-full max-w-lg bg-soft-bg dark:bg-zinc-900 rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom border-none"
             style={{ maxHeight: '85vh' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-[#f0f4f9] dark:bg-[#1e1e20] z-10">
+            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-soft-bg dark:bg-zinc-900 z-10">
               <h2 className="text-lg font-semibold text-soft-text-main dark:text-zinc-200 tracking-tight">Adicionar Produto</h2>
               <button 
                 onClick={() => { setShowCatalog(false); setSearchQuery(''); }} 
@@ -412,7 +412,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
               </button>
             </div>
             
-            <div className="px-4 pt-4 pb-2 bg-[#f0f4f9] dark:bg-[#1e1e20] sticky top-[73px] z-10">
+            <div className="px-4 pt-4 pb-2 bg-soft-bg dark:bg-zinc-900 sticky top-[73px] z-10">
               <div className="relative">
                 <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input 
@@ -423,19 +423,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                   className="w-full pl-11 pr-4 py-4 bg-soft-card dark:bg-zinc-800 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-soft-primary text-[15px] dark:text-zinc-200 transition-colors placeholder-zinc-400"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-soft-primary dark:hover:text-zinc-200 bg-[#f0f4f9] dark:bg-zinc-700 rounded-full p-1.5">
+                  <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-soft-primary dark:hover:text-zinc-200 bg-soft-bg dark:bg-zinc-700 rounded-full p-1.5">
                      <X size={14} />
                   </button>
                 )}
               </div>
             </div>
 
-            <div className="overflow-y-auto p-4 space-y-4 bg-[#f0f4f9] dark:bg-[#1e1e20]">
+            <div className="overflow-y-auto p-4 space-y-4 bg-soft-bg dark:bg-zinc-900">
               {searchQuery ? (
                 searchResults.length === 0 ? (
                   <div className="text-center py-10 text-zinc-500">Nenhum produto encontrado.</div>
                 ) : (
-                  <div className="bg-soft-card dark:bg-[#131314] rounded-[24px] border-none p-5">
+                  <div className="bg-soft-card dark:bg-zinc-800 rounded-[24px] border-none p-5">
                     <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4">Resultados da Busca</h4>
                     <div className="flex flex-wrap gap-2">
                       {searchResults.map((item, index) => {
@@ -444,7 +444,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                           <button
                             key={index}
                             onClick={() => handleAddFromCatalog(item.name, item.category)}
-                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
                           >
                             {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white dark:text-zinc-900" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
                             <span className="leading-snug break-words">{formatItemName(item.name)}</span>
@@ -457,7 +457,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
               ) : (
                 <>
                   {Object.keys(frequentItems).filter(itemName => !normalizedItemNamesForCatalog.has(itemName)).length > 0 && (
-                    <div className="bg-soft-card dark:bg-[#131314] rounded-[24px] border-none p-5 shadow-sm mb-4">
+                    <div className="bg-soft-card dark:bg-zinc-800 rounded-[24px] border-none p-5 shadow-sm mb-4">
                       <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4 flex items-center gap-2"><Star size={14} className="text-yellow-500" /> Comprados Frequentemente</h4>
                       <div className="flex flex-wrap gap-2">
                         {Object.keys(frequentItems)
@@ -476,7 +476,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                               <button
                                 key={`freq-${index}`}
                                 onClick={() => handleAddFromCatalog(originalName, cat)}
-                                className="px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none"
+                                className="px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none"
                               >
                                 <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />
                                 <span className="leading-snug break-words">{formatItemName(originalName)}</span>
@@ -489,7 +489,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                   {PRODUCT_CATALOG.map((cat, i) => {
                   const isExpanded = expandedCategory === cat.name;
                   return (
-                    <div key={i} className="bg-soft-card dark:bg-[#131314] rounded-[24px] border-none overflow-hidden transition-all shadow-sm">
+                    <div key={i} className="bg-soft-card dark:bg-zinc-800 rounded-[24px] border-none overflow-hidden transition-all shadow-sm">
                       <button 
                         onClick={() => setExpandedCategory(isExpanded ? null : cat.name)}
                         className="w-full px-5 py-5 flex items-center justify-between text-left focus:outline-none"
@@ -512,7 +512,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                                     <button
                                       key={k}
                                       onClick={() => handleAddFromCatalog(itemName, cat.name)}
-                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-[#f0f4f9] hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
+                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-95 text-left max-w-full border ${isAdded ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-sm' : 'bg-soft-bg hover:bg-soft-primary-light dark:bg-zinc-800 dark:hover:bg-soft-primary/20 text-soft-text-muted dark:text-zinc-300 hover:text-soft-primary dark:hover:text-soft-primary border-zinc-100 dark:border-none'}`}
                                     >
                                       {isAdded ? <Check size={14} strokeWidth={3} className="shrink-0 mt-0.5 text-white dark:text-zinc-900" /> : <Plus size={14} className="opacity-50 shrink-0 mt-0.5" />} 
                                       <span className="leading-snug text-wrap">{formatItemName(itemName)}</span>

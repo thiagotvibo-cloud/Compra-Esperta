@@ -104,7 +104,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
   const budgetPercent = settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
   
-  let headerColor = 'bg-[#f0f4f9] dark:bg-[#1e1e20]';
+  let headerColor = 'bg-soft-bg dark:bg-zinc-900';
   let textColor = 'text-white';
   let subTextColor = 'text-zinc-400 dark:text-zinc-500';
   let pulseClass = '';
@@ -183,7 +183,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
   if (items.length === 0) return <div className="p-10 text-center text-zinc-500 font-medium">Sua lista está vazia. Adicione itens antes de ir às compras.</div>;
 
   return (
-    <div className="pb-36 bg-[#f0f4f9] dark:bg-[#1e1e20]">
+    <div className="pb-56 min-h-screen bg-soft-bg dark:bg-zinc-900">
       
       {/* STICKY HEADER */}
       <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
@@ -242,7 +242,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
           <div className="mt-3 relative z-10">
             <div className={`h-2.5 rounded-full overflow-hidden bg-black/10 border border-white/10 shadow-inner`}>
               <div 
-                className={`h-full rounded-full transition-all duration-300 ease-out ${budgetPercent >= 90 ? 'bg-red-500' : 'bg-[#f0f4f9]'}`}
+                className={`h-full rounded-full transition-all duration-300 ease-out ${budgetPercent >= 90 ? 'bg-red-500' : 'bg-soft-bg'}`}
                 style={{ width: `${Math.min(budgetPercent, 100)}%` }} 
               />
             </div>
@@ -258,16 +258,16 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
             <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input 
               type="text" placeholder="Buscar no carrinho..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:ring-zinc-100 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
+              className="w-full bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:ring-zinc-100 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
             />
           </div>
-          <button onClick={() => setShowAvulso(!showAvulso)} className={`shrink-0 p-3.5 rounded-2xl border flex items-center justify-center transition-colors ${showAvulso ? 'bg-[#f0f4f9] dark:bg-[#1e1e20] text-zinc-900 dark:text-white border-zinc-900 dark:border-zinc-100' : 'bg-[#f0f4f9] dark:bg-[#1e1e20] border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm'}`}>
+          <button onClick={() => setShowAvulso(!showAvulso)} className={`shrink-0 p-3.5 rounded-2xl border flex items-center justify-center transition-colors ${showAvulso ? 'bg-soft-bg dark:bg-zinc-900 text-zinc-900 dark:text-white border-zinc-900 dark:border-zinc-100' : 'bg-soft-bg dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm'}`}>
             <Plus size={22} />
           </button>
         </div>
 
         {showAvulso && (
-          <div className="mb-6 p-4 bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
+          <div className="mb-6 p-4 bg-soft-bg dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
             <div className="bg-zinc-100 dark:bg-zinc-800 p-3 rounded-full text-zinc-800 dark:text-zinc-200"><CreditCard size={20} /></div>
             <div className="relative flex-1">
               <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[14px] font-semibold text-zinc-400">R$</span>
@@ -283,14 +283,14 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                 onKeyDown={(e) => e.key === 'Enter' && handleAvulsoAdd()}
               />
             </div>
-            <button onClick={handleAvulsoAdd} className="bg-[#f0f4f9] dark:bg-[#1e1e20] text-zinc-900 dark:text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-95">Adicionar</button>
+            <button onClick={handleAvulsoAdd} className="bg-soft-bg dark:bg-zinc-900 text-zinc-900 dark:text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-95">Adicionar</button>
           </div>
         )}
 
         {/* ITEMS LIST */}
         <div className="flex flex-col gap-6">
           {activeItems.length === 0 ? (
-            <div className="text-center py-12 bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center">
+            <div className="text-center py-12 bg-soft-bg dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center">
               <ShoppingBag size={48} className="text-zinc-300 dark:text-zinc-700 mb-4" strokeWidth={1.5} />
               <p className="text-zinc-500 font-medium px-6">Todos os itens foram marcados como não encontrados ou a lista está vazia.</p>
             </div>
@@ -316,15 +316,15 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                       key={item.id} 
                       className={`p-3.5 rounded-2xl border transition-all duration-500 ease-out flex gap-3 items-center ${
                         item.isBought 
-                          ? 'bg-zinc-100 dark:bg-[#131314] border-dashed border-zinc-300 dark:border-zinc-700 opacity-40 scale-[0.98]' 
-                          : 'bg-[#f0f4f9] dark:bg-[#1e1e20] border-zinc-200 dark:border-zinc-700 shadow-sm opacity-100 scale-100'
+                          ? 'bg-zinc-100 dark:bg-zinc-800 border-dashed border-zinc-300 dark:border-zinc-700 opacity-40 scale-[0.98]' 
+                          : 'bg-soft-bg dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm opacity-100 scale-100'
                       }`}
                     >
                       {/* HUGE CHECK TARGET */}
                       <button 
                         onClick={() => toggleBought(item.id)} 
                         className={`w-[52px] h-[52px] shrink-0 rounded-full flex items-center justify-center transition-all ${
-                          item.isBought ? 'bg-[#f0f4f9] dark:bg-[#1e1e20] border-none' : 'bg-transparent border-[3px] border-zinc-300 dark:border-zinc-600'
+                          item.isBought ? 'bg-soft-bg dark:bg-zinc-900 border-none' : 'bg-transparent border-[3px] border-zinc-300 dark:border-zinc-600'
                         }`}
                       >
                         {item.isBought && <Check size={28} strokeWidth={4} className="text-white" />}
@@ -336,7 +336,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                             {item.name}
                           </div>
                           {!item.isBought && (
-                            <button onClick={() => markNotFound(item.id)} className="text-zinc-400 hover:text-red-500 p-1 shrink-0 bg-[#f0f4f9] dark:bg-zinc-800 rounded-lg" title="Não Encontrado na Prateleira">
+                            <button type="button" onClick={() => markNotFound(item.id)} className="text-zinc-400 hover:text-red-500 p-1 shrink-0 bg-soft-bg dark:bg-zinc-800 rounded-lg" title="Não Encontrado na Prateleira">
                                <Ban size={16} />
                             </button>
                           )}
@@ -354,13 +354,13 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                                 />
                             ) : (
                               <>
-                                <button disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-1 text-zinc-500 active:bg-[#f0f4f9] dark:active:bg-zinc-700 rounded-lg"><Minus size={14}/></button>
+                                <button type="button" disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, Math.max(0, item.qty - 1))} className="p-1 text-zinc-500 active:bg-soft-bg dark:active:bg-zinc-700 rounded-lg"><Minus size={14}/></button>
                                 <input 
                                   disabled={item.isBought}
                                   type="tel" value={getQtyDisplayValue(item.qty, item.unit)} onChange={(e) => handleQtyChange(item.id, e.target.value, item.unit)}
                                   className="w-6 bg-transparent text-center text-[15px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none"
                                 />
-                                <button disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-1 text-zinc-500 active:bg-[#f0f4f9] dark:active:bg-zinc-700 rounded-lg"><Plus size={14}/></button>
+                                <button type="button" disabled={item.isBought} onClick={() => updateQtyExplicit(item.id, item.qty + 1)} className="p-1 text-zinc-500 active:bg-soft-bg dark:active:bg-zinc-700 rounded-lg"><Plus size={14}/></button>
                               </>
                             )}
                             <span className="text-[10px] font-semibold text-zinc-400 uppercase pr-1">{item.unit}</span>
@@ -402,7 +402,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                                     <div key={idx} className={`flex justify-between items-center px-2.5 py-1.5 rounded-lg border ${
                                       isCurrentMarket 
                                         ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700' 
-                                        : 'bg-[#f0f4f9] dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-800'
+                                        : 'bg-soft-bg dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-800'
                                     }`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
                                         <Store size={12} className={`shrink-0 ${isCurrentMarket ? 'text-zinc-800 dark:text-zinc-200' : 'text-zinc-400'}`} />
@@ -455,7 +455,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       <div className="fixed bottom-[90px] left-1/2 -translate-x-1/2 w-full max-w-md flex justify-center z-40 pointer-events-none px-4">
          <button 
             onClick={() => setShowFinishConfirm(true)}
-            className="pointer-events-auto bg-[#f0f4f9] dark:bg-[#1e1e20] text-zinc-900 dark:text-white px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"
+            className="pointer-events-auto bg-soft-bg dark:bg-zinc-900 text-zinc-900 dark:text-white px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"
          >
             <ShoppingBag size={18} /> Finalizar Compra
          </button>
@@ -464,15 +464,15 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       {/* CONFIRM FINISH PURCHASE MODAL */}
       {showFinishConfirm && (
         <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowFinishConfirm(false)}>
-          <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
+          <div className="bg-soft-bg dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
             <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag size={32} />
             </div>
             <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-200 mb-2">Finalizar e Salvar?</h3>
             <p className="text-zinc-500 dark:text-zinc-400 mb-6 text-sm">Sua compra será salva no histórico e os itens do carrinho atual serão desmarcados.</p>
             <div className="flex gap-3">
-               <button onClick={() => setShowFinishConfirm(false)} className="flex-1 py-3 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Voltar</button>
-               <button onClick={finishPurchase} className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#0b57d0] hover:bg-[#0b57d0]/90 dark:bg-[#a8c7fa] dark:hover:bg-[#a8c7fa]/90 text-white dark:text-[#062e6f]">Sim, Finalizar</button>
+               <button type="button" onClick={() => setShowFinishConfirm(false)} className="flex-1 py-3 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Voltar</button>
+               <button type="button" onClick={finishPurchase} className="flex-1 py-3 rounded-2xl font-bold text-white bg-emerald-500 hover:bg-emerald-500/90 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white dark:text-white">Sim, Finalizar</button>
             </div>
           </div>
         </div>

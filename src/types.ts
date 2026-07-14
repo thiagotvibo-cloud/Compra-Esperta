@@ -10,10 +10,10 @@ export interface Item {
   unit: Unit;
   category: Category;
   isEssential: boolean;
-  onlyPromo: boolean; // Só comprar se tiver promoção
+  onlyPromo: boolean;
   isBought: boolean;
   notes: string;
-  actualPrice?: number; // Para ser preenchido durante o Modo Compra
+  actualPrice: number;
   isFavorite?: boolean;
   notFound?: boolean;
 }
@@ -63,4 +63,3 @@ export interface AppContextType {
   setShoppingMarketId: React.Dispatch<React.SetStateAction<string>>;
   setActiveTab: (tab: 'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras') => void;
 }
-

@@ -80,9 +80,9 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   }, [items, markets, promotions]);
 
   return (
-    <div className="pb-28 bg-[#f0f4f9] dark:bg-[#1e1e20] h-full">
+    <div className="pb-28 bg-soft-bg dark:bg-zinc-900 h-full">
       {/* HEADER */}
-      <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
+      <div className="bg-soft-bg dark:bg-zinc-900 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
          <div className="flex justify-between items-center relative z-10">
             <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
               Roteiro de Compras
@@ -93,7 +93,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
       <div className="px-4 lg:px-6 -mt-10 relative z-20">
 
       {!marketRankings ? (
-        <div className="text-center py-12 bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 rounded-3xl text-zinc-400 shadow-sm flex flex-col items-center">
+        <div className="text-center py-12 bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-zinc-400 shadow-sm flex flex-col items-center">
           <Store size={48} className="opacity-20 mb-4" strokeWidth={1.5} />
           <p className="font-semibold text-[15px] max-w-[200px]">Cadastre promoções na aba Ofertas para ver o comparativo de preços.</p>
         </div>
@@ -101,7 +101,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
         <div className="space-y-6">
           
           {/* BEST OPTION BENTO BOX */}
-          <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-3xl p-6 text-zinc-900 dark:text-white shadow-lg overflow-hidden relative">
+          <div className="bg-soft-bg dark:bg-zinc-900 rounded-3xl p-6 text-zinc-900 dark:text-white shadow-lg overflow-hidden relative">
             <div className="absolute -right-10 -top-10 opacity-20"><Store size={150} /></div>
             <h3 className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Melhor Opção</h3>
             <div className="text-[32px] font-bold tracking-tight leading-none mb-4 break-words">{marketRankings.destinoVencedor}</div>
@@ -130,7 +130,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
              const width = mx > 0 ? (ranking.totalEstimado / mx) * 100 : 100;
 
              return (
-              <div key={ranking.mercadoId} className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-4 rounded-3xl shadow-sm mb-4">
+              <div key={ranking.mercadoId} className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-3xl shadow-sm mb-4">
                 <div className="flex justify-between items-center mb-2">
                    <div className="flex items-center gap-3">
                      <div className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index===0 ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
@@ -144,7 +144,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                 </div>
                 <div className="flex items-center gap-3">
                    <div className="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                     <div className={`h-full rounded-full ${index===0 ? 'bg-[#f0f4f9] dark:bg-[#1e1e20]' : 'bg-zinc-400 dark:bg-zinc-600'}`} style={{ width: `${width}%` }} />
+                     <div className={`h-full rounded-full ${index===0 ? 'bg-soft-bg dark:bg-zinc-900' : 'bg-zinc-400 dark:bg-zinc-600'}`} style={{ width: `${width}%` }} />
                    </div>
                    <span className="text-[11px] font-bold text-zinc-400">{Math.round(width)}%</span>
                 </div>

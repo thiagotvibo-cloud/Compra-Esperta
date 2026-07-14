@@ -38,10 +38,10 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
   const chartMax = settings.budget > maxHistorySpent ? settings.budget : maxHistorySpent;
 
   return (
-    <div className="pb-28 bg-[#f0f4f9] dark:bg-[#1e1e20] h-full">
+    <div className="pb-28 bg-soft-bg dark:bg-zinc-900 h-full">
       
       {/* HEADER */}
-      <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
+      <div className="bg-soft-bg dark:bg-zinc-900 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
          <div className="flex justify-between items-center relative z-10">
             <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
               Ajustes & Dados
@@ -55,14 +55,14 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
       <div className="px-4 lg:px-6 -mt-8 relative z-20 flex flex-col space-y-5">
         
         {/* COMPARTILHAR */}
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm text-center">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm text-center">
             <button onClick={handleShareList} className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-95 shadow-sm">
               <Share size={20} /> Compartilhar Lista em Texto
             </button>
         </div>
 
         {/* AJUSTES GERAIS */}
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
           <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-800 dark:text-zinc-200 mb-2">Preferências de Compra</h3>
           
           <div>
@@ -85,14 +85,14 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
         </div>
 
         {/* MEUS MERCADOS */}
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
           <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
             <Store size={16} /> Meus Mercados
           </h3>
           {markets.length === 0 && <p className="text-[13px] text-zinc-400 text-center py-4">Nenhum mercado cadastrado.</p>}
           <div className="space-y-2">
             {markets.map(m => (
-              <div key={m.id} className="flex justify-between items-center p-3 bg-[#f0f4f9] dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+              <div key={m.id} className="flex justify-between items-center p-3 bg-soft-bg dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                  <span className="font-bold text-[14px] text-zinc-800 dark:text-zinc-200">{m.name}</span>
                  <button onClick={() => {
                    setMarkets(markets.filter(x => x.id !== m.id));
@@ -106,7 +106,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
         </div>
 
         {/* HISTÓRICO DE COMPRAS COM GRÁFICO */}
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
           <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
             <History size={16} /> Histórico de Compras (Últimas 5)
           </h3>
@@ -118,7 +118,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
           ) : (
             <>
               {/* Gráfico Visual */}
-              <div className="h-32 bg-[#f0f4f9] dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-3 flex items-end gap-2 relative mt-4">
+              <div className="h-32 bg-soft-bg dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-3 flex items-end gap-2 relative mt-4">
                 {settings.budget > 0 && chartMax > 0 && (
                    <div 
                       className="absolute inset-x-0 border-t border-dashed border-red-400/50 dark:border-red-500/50 z-0 flex items-end"
@@ -138,7 +138,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
                           {formatMoney(item.totalSpent)}
                         </span>
                         <div 
-                          className={`w-full rounded-t-lg transition-all ${isOver ? 'bg-red-400 dark:bg-red-500' : 'bg-[#f0f4f9] dark:bg-[#1e1e20]'}`}
+                          className={`w-full rounded-t-lg transition-all ${isOver ? 'bg-red-400 dark:bg-red-500' : 'bg-soft-bg dark:bg-zinc-900'}`}
                           style={{ height: `${Math.max(hPercent, 5)}%` }} // Min 5% height
                         ></div>
                         <span className="text-[9px] font-bold text-zinc-400 mt-1">{new Date(item.date).getDate()}/{new Date(item.date).getMonth()+1}</span>
@@ -151,7 +151,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
                 {chartData.slice().reverse().map(item => {
                    const m = markets.find(x => x.id === item.marketId);
                    return (
-                      <div key={item.id} className="p-3 bg-[#f0f4f9] dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                      <div key={item.id} className="p-3 bg-soft-bg dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                          <div className="flex justify-between items-center mb-1">
                             <span className="font-bold text-zinc-800 dark:text-zinc-200 text-[14px]">
                                {m ? m.name : 'Mercado não selecionado'}
@@ -188,7 +188,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
         </div>
 
         {/* CONTROLES DE DADOS LOCAIS */}
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm text-center">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm text-center">
             <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2 justify-center">
                <AlertTriangle size={16} /> Zona de Perigo
             </h3>
@@ -200,7 +200,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
             </p>
         </div>
 
-        <div className="bg-[#f0f4f9] dark:bg-[#1e1e20] border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm">
+        <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm">
           <button 
             onClick={async () => {
               const { supabase } = await import('../lib/supabase');
