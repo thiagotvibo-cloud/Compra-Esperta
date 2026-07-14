@@ -10,35 +10,23 @@ import ConnectPgSimple from "connect-pg-simple";
 
 dotenv.config();
 
-let pool: Pool | null = null;
-let PgSession: any = null;
-
-if (process.env.DATABASE_URL) {
-  if (process.env.DATABASE_URL.startsWith("postgres://") || process.env.DATABASE_URL.startsWith("postgresql://")) {
-    pool = new Pool({ 
-      connectionString: process.env.DATABASE_URL,
-      connectionTimeoutMillis: 5000,
-      query_timeout: 5000,
-      statement_timeout: 5000
-    });
-    PgSession = ConnectPgSimple(session);
-  } else {
-    console.warn("⚠️ DATABASE_URL inválida. Deve começar com 'postgres://' ou 'postgresql://'. Você pode ter colocado a URL da API do Supabase em vez da URL de conexão do banco.");
-  }
-} else {
-  console.warn("⚠️ DATABASE_URL não definida. O banco de dados não funcionará até que você adicione esta variável.");
+if (!process.env.DATABASE_URL) {
+  console.error("❌ DATABASE_URL não definida. Configure o banco de dados do Replit.");
+  process.exit(1);
 }
-
 if (!process.env.SESSION_SECRET) {
-  console.warn("⚠️ SESSION_SECRET não definida. Usando um segredo temporário para desenvolvimento.");
+  console.error("❌ SESSION_SECRET não definida. Adicione este secret no painel do Replit.");
+  process.exit(1);
 }
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const PgSession = ConnectPgSimple(session);
 
 declare module "express-session" {
   interface SessionData { userId: string; userEmail: string; }
 }
 
 async function initDb() {
-  if (!pool) return;
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -95,39 +83,18 @@ async function initDb() {
 }
 
 async function startServer() {
-  try {
-    await initDb();
-  } catch (err) {
-    console.error("Failed to init DB:", err);
-  }
+  await initDb();
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
-  
-  const sessionConfig: any = {
-    secret: process.env.SESSION_SECRET || 'dev-secret-key-12345',
+  app.use(session({
+    store: new PgSession({ pool, tableName: "sessions" }),
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 },
-  };
-  
-  if (pool && PgSession) {
-     sessionConfig.store = new PgSession({ pool, tableName: "sessions" });
-  }
-  
-  app.use(session(sessionConfig));
-
-  // Require DB middleware
-  const requireDb = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (!pool) {
-      if (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith("postgres")) {
-        return res.status(400).json({ error: "A URL do banco de dados (DATABASE_URL) está incorreta. Certifique-se de usar a 'Connection String' do PostgreSQL que começa com postgres:// e não a URL da API." });
-      }
-      return res.status(400).json({ error: "Banco de dados não configurado. Adicione DATABASE_URL nas variáveis de ambiente." });
-    }
-    next();
-  };
+  }));
 
   const requireAuth = (
     req: express.Request,
@@ -140,19 +107,19 @@ async function startServer() {
 
   // ── AUTH ──────────────────────────────────────────────────────────────────────
 
-  app.post("/api/auth/register", requireDb, async (req, res) => {
+  app.post("/api/auth/register", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: "Email e senha são obrigatórios" });
     try {
-      const existing = await pool!.query("SELECT id FROM users WHERE email = $1", [email.toLowerCase()]);
+      const existing = await pool.query("SELECT id FROM users WHERE email = $1", [email.toLowerCase()]);
       if (existing.rows.length > 0) return res.status(400).json({ error: "Este email já está cadastrado" });
       const hash = await bcrypt.hash(password, 10);
-      const result = await pool!.query(
+      const result = await pool.query(
         "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
         [email.toLowerCase(), hash]
       );
       const user = result.rows[0];
-      await pool!.query(
+      await pool.query(
         "INSERT INTO settings (user_id, budget, dark_mode) VALUES ($1, 0, false) ON CONFLICT DO NOTHING",
         [user.id]
       );
@@ -165,11 +132,11 @@ async function startServer() {
     }
   });
 
-  app.post("/api/auth/login", requireDb, async (req, res) => {
+  app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: "Email e senha são obrigatórios" });
     try {
-      const result = await pool!.query(
+      const result = await pool.query(
         "SELECT id, email, password_hash FROM users WHERE email = $1",
         [email.toLowerCase()]
       );
@@ -190,21 +157,21 @@ async function startServer() {
     req.session.destroy(() => res.json({ ok: true }));
   });
 
-  app.get("/api/auth/me", requireDb, (req, res) => {
+  app.get("/api/auth/me", (req, res) => {
     if (!req.session.userId) return res.status(401).json({ user: null });
     res.json({ user: { id: req.session.userId, email: req.session.userEmail } });
   });
 
   // ── SETTINGS ──────────────────────────────────────────────────────────────────
 
-  app.get("/api/settings", requireDb, requireAuth, async (req, res) => {
+  app.get("/api/settings", requireAuth, async (req, res) => {
     try {
-      const result = await pool!.query(
+      const result = await pool.query(
         "SELECT budget, dark_mode FROM settings WHERE user_id = $1",
         [req.session.userId]
       );
       if (result.rows.length === 0) {
-        await pool!.query(
+        await pool.query(
           "INSERT INTO settings (user_id, budget, dark_mode) VALUES ($1, 0, false)",
           [req.session.userId]
         );
@@ -214,10 +181,10 @@ async function startServer() {
     } catch (err) { res.status(500).json({ error: "Erro ao buscar configurações" }); }
   });
 
-  app.put("/api/settings", requireDb, requireAuth, async (req, res) => {
+  app.put("/api/settings", requireAuth, async (req, res) => {
     const { budget, dark_mode } = req.body;
     try {
-      await pool!.query(
+      await pool.query(
         "UPDATE settings SET budget = $1, dark_mode = $2 WHERE user_id = $3",
         [budget ?? 0, dark_mode ?? false, req.session.userId]
       );
@@ -227,9 +194,9 @@ async function startServer() {
 
   // ── ITEMS ──────────────────────────────────────────────────────────────────────
 
-  app.get("/api/items", requireDb, requireAuth, async (req, res) => {
+  app.get("/api/items", requireAuth, async (req, res) => {
     try {
-      const result = await pool!.query(
+      const result = await pool.query(
         "SELECT * FROM items WHERE user_id = $1 ORDER BY created_at",
         [req.session.userId]
       );
@@ -237,22 +204,22 @@ async function startServer() {
     } catch (err) { res.status(500).json({ error: "Erro ao buscar itens" }); }
   });
 
-  app.post("/api/items/sync", requireDb, requireAuth, async (req, res) => {
+  app.post("/api/items/sync", requireAuth, async (req, res) => {
     const { items } = req.body;
     const userId = req.session.userId;
     try {
-      const existing = await pool!.query("SELECT id FROM items WHERE user_id = $1", [userId]);
+      const existing = await pool.query("SELECT id FROM items WHERE user_id = $1", [userId]);
       const existingIds = existing.rows.map((r: any) => r.id);
       const newIds = items.map((i: any) => i.id);
       const toDelete = existingIds.filter((id: string) => !newIds.includes(id));
       if (toDelete.length > 0) {
-        await pool!.query(
+        await pool.query(
           "DELETE FROM items WHERE id = ANY($1::uuid[]) AND user_id = $2",
           [toDelete, userId]
         );
       }
       for (const item of items) {
-        await pool!.query(
+        await pool.query(
           `INSERT INTO items (id, user_id, name, qty, unit, category, is_essential, only_promo, is_bought, notes, actual_price)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
            ON CONFLICT (id) DO UPDATE SET
@@ -274,9 +241,9 @@ async function startServer() {
 
   // ── MARKETS ───────────────────────────────────────────────────────────────────
 
-  app.get("/api/markets", requireDb, requireAuth, async (req, res) => {
+  app.get("/api/markets", requireAuth, async (req, res) => {
     try {
-      const result = await pool!.query(
+      const result = await pool.query(
         "SELECT * FROM markets WHERE user_id = $1 ORDER BY created_at",
         [req.session.userId]
       );
@@ -284,22 +251,22 @@ async function startServer() {
     } catch (err) { res.status(500).json({ error: "Erro ao buscar mercados" }); }
   });
 
-  app.post("/api/markets/sync", requireDb, requireAuth, async (req, res) => {
+  app.post("/api/markets/sync", requireAuth, async (req, res) => {
     const { markets } = req.body;
     const userId = req.session.userId;
     try {
-      const existing = await pool!.query("SELECT id FROM markets WHERE user_id = $1", [userId]);
+      const existing = await pool.query("SELECT id FROM markets WHERE user_id = $1", [userId]);
       const existingIds = existing.rows.map((r: any) => r.id);
       const newIds = markets.map((m: any) => m.id);
       const toDelete = existingIds.filter((id: string) => !newIds.includes(id));
       if (toDelete.length > 0) {
-        await pool!.query(
+        await pool.query(
           "DELETE FROM markets WHERE id = ANY($1::uuid[]) AND user_id = $2",
           [toDelete, userId]
         );
       }
       for (const market of markets) {
-        await pool!.query(
+        await pool.query(
           `INSERT INTO markets (id, user_id, name) VALUES ($1, $2, $3)
            ON CONFLICT (id) DO UPDATE SET name = $3 WHERE markets.user_id = $2`,
           [market.id, userId, market.name]
@@ -314,9 +281,9 @@ async function startServer() {
 
   // ── PROMOTIONS ────────────────────────────────────────────────────────────────
 
-  app.get("/api/promotions", requireDb, requireAuth, async (req, res) => {
+  app.get("/api/promotions", requireAuth, async (req, res) => {
     try {
-      const result = await pool!.query(
+      const result = await pool.query(
         "SELECT * FROM promotions WHERE user_id = $1 ORDER BY created_at",
         [req.session.userId]
       );
@@ -324,22 +291,22 @@ async function startServer() {
     } catch (err) { res.status(500).json({ error: "Erro ao buscar promoções" }); }
   });
 
-  app.post("/api/promotions/sync", requireDb, requireAuth, async (req, res) => {
+  app.post("/api/promotions/sync", requireAuth, async (req, res) => {
     const { promotions } = req.body;
     const userId = req.session.userId;
     try {
-      const existing = await pool!.query("SELECT id FROM promotions WHERE user_id = $1", [userId]);
+      const existing = await pool.query("SELECT id FROM promotions WHERE user_id = $1", [userId]);
       const existingIds = existing.rows.map((r: any) => r.id);
       const newIds = promotions.map((p: any) => p.id);
       const toDelete = existingIds.filter((id: string) => !newIds.includes(id));
       if (toDelete.length > 0) {
-        await pool!.query(
+        await pool.query(
           "DELETE FROM promotions WHERE id = ANY($1::uuid[]) AND user_id = $2",
           [toDelete, userId]
         );
       }
       for (const promo of promotions) {
-        await pool!.query(
+        await pool.query(
           `INSERT INTO promotions (id, user_id, market_id, item_name, price, qty, unit, expiry_date, notes)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
            ON CONFLICT (id) DO UPDATE SET

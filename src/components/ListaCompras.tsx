@@ -179,29 +179,29 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     <div className="pb-28 bg-soft-bg dark:bg-zinc-900 min-h-screen relative">
       
       {/* HEADER MARKET PRO */}
-      <div className="bg-soft-bg dark:bg-zinc-900 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-zinc-900 dark:text-white shadow-primary z-10 geometric-bg relative">
+      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 relative">
          
-         <div className="geometric-circle"></div>         <div className="flex flex-col items-center relative z-10">
-            <p className="text-zinc-400 dark:text-zinc-500 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
-            <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3">
+         <div className="flex flex-col items-center relative z-10">
+            <p className="text-white/80 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
+            <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3 text-white">
               {formatMoney(settings.budget)}
             </h1>
-            <div className="bg-white/20 backdrop-blur rounded-full px-4 py-1.5 text-[13px] font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+            <div className="bg-black/10 backdrop-blur rounded-full px-4 py-1.5 text-[13px] font-semibold text-white flex items-center gap-2">
               {boughtItems} de {totalItems} itens no carrinho
             </div>
             {settings.budget > 0 && expectedTotal > 0 && (
               <div className="w-full mt-5 bg-black/10 rounded-2xl p-3 border border-white/10 text-left">
-                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-2 text-zinc-400 dark:text-zinc-500">
+                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-2 text-white/80">
                     <span>Total Estimado: {formatMoney(expectedTotal)}</span>
                     <span className={progOrçamento > 100 ? 'text-red-200' : ''}>{Math.round(progOrçamento)}%</span>
                  </div>
                  <div className="h-2 rounded-full bg-black/20 overflow-hidden mb-1">
                     <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-soft-bg'}`} style={{ width: `${progressPercent}%` }} />
                  </div>
-                 <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium italic text-right mb-1">Estimativa baseada em ofertas cadastradas</div>
+                 <div className="text-[10px] text-white/80 font-medium italic text-right mb-1">Estimativa baseada em ofertas cadastradas</div>
                  {calculateEconomy() > 0 && (
-                   <div className="mt-2 text-[11px] font-bold text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5">
-                     <span className="bg-green-500/20 text-green-100 px-1.5 py-0.5 rounded-md">Se comprar onde tem oferta, você poupará {formatMoney(calculateEconomy())}.</span>
+                   <div className="mt-2 text-[11px] font-bold text-white/90 flex items-center gap-1.5">
+                     <span className="bg-white/20 text-white px-1.5 py-0.5 rounded-md">Se comprar onde tem oferta, você poupará {formatMoney(calculateEconomy())}.</span>
                    </div>
                  )}
               </div>

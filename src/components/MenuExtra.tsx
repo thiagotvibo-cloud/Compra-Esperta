@@ -2,7 +2,7 @@ import React from 'react';
 import { AppContextType } from '../types';
 import { Moon, Sun, History, ShoppingBag, Store, Trash2, Share, AlertTriangle } from 'lucide-react';
 import { formatMoney } from '../utils';
-import { supabase } from '../lib/supabase';
+
 
 export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { settings, setSettings, items, markets, promotions, setItems, setMarkets, setPromotions, history, setHistory } = context;
@@ -20,12 +20,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
 
   const handleFactoryReset = async () => {
     if (window.confirm("ATENÇÃO: Você perderá TODOS os dados na nuvem e local (lista, mercados, ofertas, histórico). Tem certeza?")) {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await supabase.from('items').delete().eq('user_id', session.user.id);
-        await supabase.from('markets').delete().eq('user_id', session.user.id);
-        await supabase.from('promotions').delete().eq('user_id', session.user.id);
-      }
+      // In a real app we'd call an API to delete data. For now just clear local.
       localStorage.clear();
       window.location.reload();
     }
@@ -203,8 +198,8 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
         <div className="bg-soft-bg dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm">
           <button 
             onClick={async () => {
-              const { supabase } = await import('../lib/supabase');
-              await supabase.auth.signOut();
+              
+              
             }}
             className="w-full p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors font-semibold rounded-2xl active:scale-95"
           >

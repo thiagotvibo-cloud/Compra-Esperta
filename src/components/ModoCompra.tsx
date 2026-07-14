@@ -104,9 +104,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
   const budgetPercent = settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
   
-  let headerColor = 'bg-soft-bg dark:bg-zinc-900';
+  let headerColor = 'bg-gradient-to-br from-emerald-500 to-teal-400';
   let textColor = 'text-white';
-  let subTextColor = 'text-zinc-400 dark:text-zinc-500';
+  let subTextColor = 'text-white/80';
   let pulseClass = '';
 
   if (budgetPercent > 100) {
@@ -115,9 +115,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
      subTextColor = 'text-red-100';
      pulseClass = 'animate-pulse';
   } else if (budgetPercent >= 90) {
-     headerColor = 'bg-red-200';
-     textColor = 'text-red-800';
-     subTextColor = 'text-red-700';
+     headerColor = 'bg-red-400';
+     textColor = 'text-white';
+     subTextColor = 'text-red-100';
   } else if (budgetPercent >= 70) {
      headerColor = 'bg-orange-500';
      textColor = 'text-white';
@@ -186,7 +186,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     <div className="pb-56 min-h-screen bg-soft-bg dark:bg-zinc-900">
       
       {/* STICKY HEADER */}
-      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
+      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 ${headerColor} ${pulseClass}`}>
         
         {/* MARKET SELECTOR IN HEADER */}
         <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10 w-full">

@@ -75,7 +75,7 @@ export default function App() {
   useEffect(() => {
     if (settings.darkMode) {
       document.documentElement.classList.add('dark');
-      document.body.style.backgroundColor = '#18181b';
+      document.body.style.backgroundColor = '#1C1C1E';
     } else {
       document.documentElement.classList.remove('dark');
       document.body.style.backgroundColor = '#F7F8F8';
@@ -162,7 +162,7 @@ export default function App() {
 
   return (
     <div className="min-h-[100dvh] bg-zinc-100 dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
-      <div className="w-full max-w-md bg-soft-bg dark:bg-zinc-900 min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
         <main className="flex-1 relative pb-24">
           {activeTab === 'lista' && <ListaCompras context={context} />}
           {activeTab === 'roteiro' && <Roteiro context={context} />}
