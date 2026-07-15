@@ -216,7 +216,7 @@ export default function App() {
       document.body.style.backgroundColor = '#1C1C1E';
     } else {
       document.documentElement.classList.remove('dark');
-      document.body.style.backgroundColor = '#F7F8F8'; // Cinza Gelo
+      document.body.style.backgroundColor = '#F0FDF4'; // Cinza Gelo
     }
   }, [settings.darkMode]);
 
@@ -397,8 +397,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-100 dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
-      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">        {showInstallBanner && (          <div className="bg-sky-500 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">            <div className="text-sm font-medium">Instalar Compra Esperta no seu dispositivo</div>            <div className="flex gap-2">              <button onClick={() => setShowInstallBanner(false)} className="text-sky-100 hover:text-white px-2 py-1 text-sm font-semibold">Agora não</button>              <button onClick={handleInstallClick} className="bg-white text-sky-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform">Instalar</button>            </div>          </div>        )}        <main className="flex-1 relative pb-24">
+    <div className="min-h-[100dvh] bg-soft-bg dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
+      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">        {showInstallBanner && (          <div className="bg-emerald-500 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">            <div className="text-sm font-medium">Instalar Compra Esperta no seu dispositivo</div>            <div className="flex gap-2">              <button onClick={() => setShowInstallBanner(false)} className="text-emerald-100 hover:text-white px-2 py-1 text-sm font-semibold">Agora não</button>              <button onClick={handleInstallClick} className="bg-white text-emerald-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform">Instalar</button>            </div>          </div>        )}        <main className="flex-1 relative pb-24">
           
           {activeTab === 'lista' && <ListaCompras context={context} />}
           {activeTab === 'roteiro' && <Roteiro context={context} />}
@@ -429,7 +429,7 @@ function NavButton({ active, onClick, icon, label }: any) {
       onClick={onClick}
       className={`flex flex-col items-center justify-center w-full gap-1 pt-1.5 pb-1 transition-colors ${
         active 
-          ? 'text-sky-500 font-bold' 
+          ? 'text-emerald-500 font-bold' 
           : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 font-medium'
       }`}
     >

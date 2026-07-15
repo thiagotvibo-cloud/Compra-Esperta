@@ -36,7 +36,7 @@ export const AuthUI: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-soft-bg dark:bg-zinc-900 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-[24px] p-8 shadow-soft">
+      <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-3xl p-8 shadow-soft">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-soft-primary rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
             <ShoppingCart size={40} strokeWidth={2.5} />

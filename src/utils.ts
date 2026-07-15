@@ -37,3 +37,32 @@ export const generateId = () => {
     return v.toString(16);
   });
 };
+
+export const CATEGORY_EMOJI: Record<string, string> = {
+  'Açougue e Peixaria': '🥩',
+  'Frios e Laticínios': '🧀',
+  'Hortifruti': '🥦',
+  'Bebidas': '🥤',
+  'Mercearia': '🍚',
+  'Limpeza': '🧼',
+  'Higiene e Perfumaria': '🧴',
+  'Padaria': '🍞',
+  'Congelados': '🧊',
+  'Pet Shop': '🐾',
+  'Outros': '🛒'
+};
+
+export const CATEGORY_EMOJI_UPDATED: Record<string, string> = {
+  'Açougue': '🥩',
+  'Peixaria': '🐟',
+  'Hortifruti': '🥦',
+  'Laticínios e Frios': '🧀',
+  'Congelados': '🧊',
+  'Mercearia': '🍚',
+  'Padaria, Biscoitos e Doces': '🥖',
+  'Bebidas': '🧃',
+  'Higiene e Limpeza': '🧼',
+  'Bebês': '🍼',
+  'Pet Shop': '🐾',
+  'Outros': '🛒'
+};

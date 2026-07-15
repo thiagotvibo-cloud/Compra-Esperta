@@ -1,23 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
-
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
   /* Market Pro Palette (Aliased mapping to standard tailwind vars for compatibility where still used) */
-  --color-soft-bg: #F8FAFC; /* slate-50 */
+  --color-soft-bg: #F0FDF4; /* green-50 */
   --color-soft-card: #FFFFFF;
-  --color-soft-primary: #0EA5E9; /* sky-500 */
-  --color-soft-primary-hover: #0284C7; /* sky-600 */
-  --color-soft-primary-light: #E0F2FE; /* sky-100 */
-  --color-soft-accent: #FB7185; /* rose-400 */
-
-  --color-soft-text-main: #0F172A; /* slate-900 */
-  --color-soft-text-muted: #64748B; /* slate-500 */
+  --color-soft-primary: #10B981; /* emerald-500 */
+  --color-soft-primary-hover: #059669; /* emerald-600 */
+  --color-soft-primary-light: #D1FAE5; /* emerald-100 */
+  --color-soft-accent: #0D9488; /* teal-600 */
+  --color-soft-text-main: #064E3B; /* emerald-900 */
+  --color-soft-text-muted: #10B981; /* emerald-500 */
 
   /* Shadows */
   --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-primary: 0 4px 6px -1px rgb(14 165 233 / 0.3), 0 2px 4px -2px rgb(14 165 233 / 0.3);
+  --shadow-primary: 0 4px 6px -1px rgb(16 185 129 / 0.3), 0 2px 4px -2px rgb(16 185 129 / 0.3);
 }
 
 .geometric-bg {
@@ -62,7 +61,7 @@
   right: 50px;
   width: 60px;
   height: 60px;
-  background-color: #fb7185; /* rose-400 */
+  background-color: #0D9488; /* teal-600 */
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
@@ -86,4 +85,3 @@ input, textarea, select {
   -webkit-user-select: auto;
   user-select: auto;
 }
-

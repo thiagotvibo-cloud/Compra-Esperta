@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { AppContextType, Item, HistoryItem } from '../types';
-import { formatMoney, formatItemName, generateId } from '../utils';
+import { formatMoney, formatItemName, generateId, CATEGORY_EMOJI_UPDATED } from '../utils';
 import { Check, AlertTriangle, Plus, Minus, Search, CreditCard, X, Trash2, Store, Ban, ShoppingBag } from 'lucide-react';
 
 export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) => {
@@ -104,9 +104,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
   const budgetPercent = settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
   
-  let headerColor = 'bg-sky-500';
+  let headerColor = 'bg-emerald-500';
   let textColor = 'text-white';
-  let subTextColor = 'text-sky-100';
+  let subTextColor = 'text-emerald-100';
   let pulseClass = '';
 
   if (budgetPercent > 100) {
@@ -189,7 +189,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
         <div className="geometric-circle" style={{ top: '15px', right: '15px', width: '45px', height: '45px' }}></div>
         
         {/* MARKET SELECTOR IN HEADER */}
-        <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10">
+        <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-3xl flex items-center gap-2 px-3 py-2 border border-white/10">
           <Store className={textColor} size={16} />
           <select 
             value={shoppingMarketId} 
@@ -254,7 +254,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
         
         {/* MARKET SELECTOR (INJEÇÃO DE PREÇO) */}
         <div className="mb-6 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
-          <Store className="text-sky-500 shrink-0" size={20} />
+          <Store className="text-emerald-500 shrink-0" size={20} />
           <select 
             value={shoppingMarketId} 
             onChange={e => handleMarketSelect(e.target.value)}
@@ -271,17 +271,17 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
             <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input 
               type="text" placeholder="Buscar no carrinho..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
             />
           </div>
-          <button onClick={() => setShowAvulso(!showAvulso)} className={`shrink-0 p-3.5 rounded-2xl border flex items-center justify-center transition-colors ${showAvulso ? 'bg-sky-600 text-white border-sky-600' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm'}`}>
+          <button onClick={() => setShowAvulso(!showAvulso)} className={`shrink-0 p-3.5 rounded-3xl border flex items-center justify-center transition-colors ${showAvulso ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm'}`}>
             <Plus size={22} />
           </button>
         </div>
 
         {showAvulso && (
-          <div className="mb-6 p-4 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
-            <div className="bg-sky-50 dark:bg-sky-900/30 p-3 rounded-full text-sky-600 dark:text-sky-400"><CreditCard size={20} /></div>
+          <div className="mb-6 p-4 bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
+            <div className="bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-full text-emerald-600 dark:text-emerald-400"><CreditCard size={20} /></div>
             <div className="relative flex-1">
               <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[14px] font-semibold text-zinc-400">R$</span>
               <input 
@@ -296,7 +296,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                 onKeyDown={(e) => e.key === 'Enter' && handleAvulsoAdd()}
               />
             </div>
-            <button onClick={handleAvulsoAdd} className="bg-sky-600 text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-95">Adicionar</button>
+            <button onClick={handleAvulsoAdd} className="bg-emerald-600 text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-95">Adicionar</button>
           </div>
         )}
 
@@ -310,10 +310,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
               return (
               <div key={category} className="space-y-3">
                 <div className="flex items-center gap-3 px-2">
-                  <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 whitespace-nowrap">{category}</h3>
+                  <h3 className="text-[14px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 whitespace-nowrap">{CATEGORY_EMOJI_UPDATED[category] || '🛒'} {category}</h3>
                   <div className="flex-1 border-t border-dashed border-zinc-300 dark:border-zinc-700"></div>
                   {catSubtotal > 0 && (
-                     <div className="text-[14px] font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap">
+                     <div className="text-[14px] font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                        R$ {catSubtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                      </div>
                   )}
@@ -322,7 +322,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                   {catItems.map(item => (
                     <div 
                       key={item.id} 
-                      className={`p-3.5 rounded-2xl border transition-all duration-500 ease-out flex gap-3 items-center ${
+                      className={`p-3.5 rounded-3xl border transition-all duration-500 ease-out flex gap-3 items-center ${
                         item.isBought 
                           ? 'bg-zinc-100 dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 opacity-40 scale-[0.98]' 
                           : 'bg-white dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-700 shadow-sm opacity-100 scale-100'
@@ -332,7 +332,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                       <button 
                         onClick={() => toggleBought(item.id)} 
                         className={`w-[52px] h-[52px] shrink-0 rounded-full flex items-center justify-center transition-all ${
-                          item.isBought ? 'bg-sky-500 border-none' : 'bg-transparent border-[3px] border-zinc-300 dark:border-zinc-600'
+                          item.isBought ? 'bg-emerald-500 border-none' : 'bg-transparent border-[3px] border-zinc-300 dark:border-zinc-600'
                         }`}
                       >
                         {item.isBought && <Check size={28} strokeWidth={4} className="text-white" />}
@@ -383,8 +383,8 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                               disabled={item.isBought}
                               type="tel" value={getPriceDisplayValue(item.actualPrice || 0)} onChange={(e) => handlePriceInput(item.id, e.target.value)}
                               placeholder="0,00"
-                              className={`w-full pl-6 pr-2 py-2 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 text-[14px] transition-colors ${
-                                item.isBought ? 'bg-transparent text-zinc-600 dark:text-zinc-400' : 'bg-zinc-100 dark:bg-zinc-800 text-sky-600 dark:text-sky-400'
+                              className={`w-full pl-6 pr-2 py-2 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-[14px] transition-colors ${
+                                item.isBought ? 'bg-transparent text-zinc-600 dark:text-zinc-400' : 'bg-zinc-100 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400'
                               }`}
                             />
                           </div>
@@ -409,17 +409,17 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                                   return (
                                     <div key={idx} className={`flex justify-between items-center px-2.5 py-1.5 rounded-lg border ${
                                       isCurrentMarket 
-                                        ? 'bg-sky-50 dark:bg-sky-900/10 border-sky-100 dark:border-sky-900/30' 
+                                        ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30' 
                                         : 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-800'
                                     }`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
-                                        <Store size={12} className={`shrink-0 ${isCurrentMarket ? 'text-sky-500' : 'text-zinc-400'}`} />
-                                        <span className={`text-[11px] font-bold truncate ${isCurrentMarket ? 'text-sky-700 dark:text-sky-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                                        <Store size={12} className={`shrink-0 ${isCurrentMarket ? 'text-emerald-500' : 'text-zinc-400'}`} />
+                                        <span className={`text-[11px] font-bold truncate ${isCurrentMarket ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
                                           {market?.name || 'Mercado'}
                                         </span>
                                       </div>
-                                      <div className={`text-[12px] font-bold shrink-0 ${isCurrentMarket ? 'text-sky-600 dark:text-sky-500' : 'text-zinc-600 dark:text-zinc-400'}`}>
-                                        {formatMoney(precoUnitario)}<span className={`text-[9px] font-medium ${isCurrentMarket ? 'text-sky-400' : 'text-zinc-400'}`}>/{item.unit}</span>
+                                      <div className={`text-[12px] font-bold shrink-0 ${isCurrentMarket ? 'text-emerald-600 dark:text-emerald-500' : 'text-zinc-600 dark:text-zinc-400'}`}>
+                                        {formatMoney(precoUnitario)}<span className={`text-[9px] font-medium ${isCurrentMarket ? 'text-emerald-400' : 'text-zinc-400'}`}>/{item.unit}</span>
                                       </div>
                                     </div>
                                   );
@@ -473,14 +473,14 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
       {showFinishConfirm && (
         <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowFinishConfirm(false)}>
           <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
-            <div className="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag size={32} />
             </div>
             <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Finalizar e Salvar?</h3>
             <p className="text-zinc-500 dark:text-zinc-400 mb-6 text-sm">Sua compra será salva no histórico e os itens do carrinho atual serão desmarcados.</p>
             <div className="flex gap-3">
-               <button onClick={() => setShowFinishConfirm(false)} className="flex-1 py-3 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Voltar</button>
-               <button onClick={finishPurchase} className="flex-1 py-3 rounded-2xl font-bold text-white bg-sky-500 hover:bg-sky-600">Sim, Finalizar</button>
+               <button onClick={() => setShowFinishConfirm(false)} className="flex-1 py-3 rounded-3xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Voltar</button>
+               <button onClick={finishPurchase} className="flex-1 py-3 rounded-3xl font-bold text-white bg-emerald-500 hover:bg-emerald-600">Sim, Finalizar</button>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Item, Category, Unit, AppContextType } from '../types';
-import { generateId, formatItemName, formatMoney } from '../utils';
+import { generateId, formatItemName, formatMoney, CATEGORY_EMOJI_UPDATED } from '../utils';
 import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb, ExternalLink } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
 import { motion, AnimatePresence } from 'motion/react';
@@ -165,19 +165,11 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen relative">
       
       {/* HEADER MARKET PRO */}
-      <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 geometric-bg">
+      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 geometric-bg">
          <div className="geometric-circle"></div>
-         <div className="flex justify-between items-center mb-6 relative z-10">
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full px-4 py-2 font-semibold text-xs uppercase tracking-widest flex items-center gap-2">
-              <span>Lista de Compras</span>
-            </div>
-            <div className="bg-white/20 border border-white/20 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-              <PieChart size={18} />
-            </div>
-         </div>
          
          <div className="flex flex-col items-center relative z-10">
-            <p className="text-sky-50 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
+            <p className="text-emerald-50 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
             <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3">
               {formatMoney(settings.budget)}
             </h1>
@@ -185,8 +177,8 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
               {boughtItems} de {totalItems} itens no carrinho
             </div>
             {settings.budget > 0 && expectedTotal > 0 && (
-              <div className="w-full mt-5 bg-black/10 rounded-2xl p-3 border border-white/10 text-left">
-                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-2 text-sky-100">
+              <div className="w-full mt-5 bg-black/10 rounded-3xl p-3 border border-white/10 text-left">
+                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest mb-2 text-emerald-100">
                     <span>Total Estimado: {formatMoney(expectedTotal)}</span>
                     <span className={progOrçamento > 100 ? 'text-red-200' : ''}>{Math.round(progOrçamento)}%</span>
                  </div>
@@ -194,7 +186,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                     <div className={`h-full rounded-full transition-all duration-300 ${progOrçamento > 100 ? 'bg-red-400' : 'bg-white'}`} style={{ width: `${progressPercent}%` }} />
                  </div>
                  {calculateEconomy() > 0 && (
-                   <div className="mt-2 text-[11px] font-bold text-sky-100 flex items-center gap-1.5">
+                   <div className="mt-2 text-[11px] font-bold text-emerald-100 flex items-center gap-1.5">
                      <span className="bg-green-500/20 text-green-100 px-1.5 py-0.5 rounded-md">Se comprar onde tem oferta, você poupará {formatMoney(calculateEconomy())}.</span>
                    </div>
                  )}
@@ -207,7 +199,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
       <div className="px-5 -mt-8 relative z-20">
         <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center justify-start gap-2 cursor-pointer" onClick={() => setShowCatalog(true)}>
-            <div className="w-14 h-14 rounded-full bg-sky-50 text-sky-500 dark:bg-sky-900/30 dark:text-sky-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-sky-100 dark:border-sky-800/30">
+            <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-sm border border-emerald-100 dark:border-emerald-800/30">
               <BadgePlus size={24} strokeWidth={2.5} />
             </div>
             <span className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 text-center leading-tight">Adicionar</span>
@@ -235,11 +227,11 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                initial={{ opacity: 0, y: -20, height: 0 }}
                animate={{ opacity: 1, y: 0, height: 'auto' }}
                exit={{ opacity: 0, y: -20, height: 0 }}
-               className="bg-sky-50 dark:bg-sky-900/20 p-4 rounded-2xl border border-sky-200 dark:border-sky-800 flex items-start gap-3"
+               className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-3xl border border-emerald-200 dark:border-emerald-800 flex items-start gap-3"
             >
-              <Lightbulb className="text-sky-500 shrink-0 mt-0.5" size={20} />
+              <Lightbulb className="text-emerald-500 shrink-0 mt-0.5" size={20} />
               <div>
-                <h4 className="text-[12px] font-semibold text-sky-700 dark:text-sky-400 mb-1 uppercase tracking-wider">Dica da IA</h4>
+                <h4 className="text-[12px] font-semibold text-emerald-700 dark:text-emerald-400 mb-1 uppercase tracking-wider">Dica da IA</h4>
                 <p className="text-[13px] text-zinc-800 dark:text-zinc-200 font-medium leading-snug">{tip}</p>
               </div>
             </motion.div>
@@ -259,7 +251,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
           {groupedItems.map(group => (
             <div key={group.category} className="mb-6">
               <div className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1">
-                {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
+                {CATEGORY_EMOJI_UPDATED[group.category] || '🛒'} {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
               </div>
               
               <div className="flex flex-col gap-3">
@@ -272,12 +264,12 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                       animate={{ opacity: item.isBought ? 0.6 : 1, y: 0, scale: item.isBought ? 0.98 : 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.2 }}
-                      className={`flex items-center gap-3.5 p-3.5 rounded-2xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
+                      className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
                     >
                       
                       <button 
                         onClick={() => setItems(items.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
-                        className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? 'bg-sky-500 border-sky-500' : 'border-zinc-300 dark:border-zinc-600'}`}
+                        className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? 'bg-emerald-500 border-emerald-500' : 'border-zinc-300 dark:border-zinc-600'}`}
                       >
                         {item.isBought && <Check size={18} strokeWidth={4} className="text-white" />}
                       </button>
@@ -366,19 +358,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
             <div className="flex flex-col gap-3">
                <button 
                  onClick={() => { clearBought(); setShowClearConfirm(false); }} 
-                 className="w-full py-3.5 rounded-2xl font-bold text-white bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all shadow-sm"
+                 className="w-full py-3.5 rounded-3xl font-bold text-white bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all shadow-sm"
                >
                  Desmarcar Itens (Limpar Carrinho)
                </button>
                <button 
                  onClick={() => { setItems([]); setShowClearConfirm(false); }} 
-                 className="w-full py-3.5 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all shadow-sm"
+                 className="w-full py-3.5 rounded-3xl font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all shadow-sm"
                >
                  Apagar Tudo (Limpar Lista)
                </button>
                <button 
                  onClick={() => setShowClearConfirm(false)} 
-                 className="w-full py-3.5 mt-2 rounded-2xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 active:scale-95 transition-all"
+                 className="w-full py-3.5 mt-2 rounded-3xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 active:scale-95 transition-all"
                >
                  Cancelar
                </button>
@@ -428,7 +420,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                 searchResults.length === 0 ? (
                   <div className="text-center py-10 text-zinc-500">Nenhum produto encontrado.</div>
                 ) : (
-                  <div className="bg-soft-card dark:bg-[#1C1C1E] rounded-[24px] border-none p-5">
+                  <div className="bg-soft-card dark:bg-[#1C1C1E] rounded-3xl border-none p-5">
                     <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4">Resultados da Busca</h4>
                     <div className="flex flex-wrap gap-2">
                       {searchResults.map((item, index) => {
@@ -451,7 +443,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                 PRODUCT_CATALOG.map((cat, i) => {
                   const isExpanded = expandedCategory === cat.name;
                   return (
-                    <div key={i} className="bg-soft-card dark:bg-[#1C1C1E] rounded-[24px] border-none overflow-hidden transition-all shadow-sm">
+                    <div key={i} className="bg-soft-card dark:bg-[#1C1C1E] rounded-3xl border-none overflow-hidden transition-all shadow-sm">
                       <button 
                         onClick={() => setExpandedCategory(isExpanded ? null : cat.name)}
                         className="w-full px-5 py-5 flex items-center justify-between text-left focus:outline-none"

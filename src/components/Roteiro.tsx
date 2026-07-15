@@ -77,7 +77,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   return (
     <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen">
       {/* HEADER */}
-      <div className="bg-sky-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 geometric-bg relative">
+      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 geometric-bg relative">
          <div className="flex justify-between items-center relative z-10">
             <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
               Inteligência de Mercado
@@ -96,16 +96,16 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
         <div className="space-y-6">
           
           {/* BEST OPTION BENTO BOX */}
-          <div className="bg-sky-500 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+          <div className="bg-emerald-500 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
             <div className="absolute -right-10 -top-10 opacity-20"><Store size={150} /></div>
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-sky-100 mb-1">Melhor Opção</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-emerald-100 mb-1">Melhor Opção</h3>
             <div className="text-[32px] font-bold tracking-tight leading-none mb-4 break-words">{marketRankings.destinoVencedor}</div>
             <div className="space-y-2">
-              <div className="font-semibold text-[16px] bg-white/20 p-3 rounded-2xl flex justify-between">
+              <div className="font-semibold text-[16px] bg-white/20 p-3 rounded-3xl flex justify-between">
                 <span>Total Ofertas:</span>
                 <span>{formatMoney(marketRankings.totalProjetadoVencedor)}</span>
               </div>
-              <div className="text-[12px] font-medium text-sky-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
+              <div className="text-[12px] font-medium text-emerald-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
                 <BadgePercent size={14} /> 
                 Cobertura: {marketRankings.vencedor.itensCobertos} de {marketRankings.vencedor.totalItens} itens com oferta
               </div>
@@ -123,18 +123,18 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
               <div key={ranking.mercadoId} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-3xl shadow-sm mb-4">
                 <div className="flex justify-between items-center mb-2">
                    <div className="flex items-center gap-3">
-                     <div className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index===0 ? 'bg-sky-100 text-sky-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
+                     <div className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index===0 ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
                         {index + 1}
                      </div>
                      <span className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100">{ranking.mercadoNome}</span>
                    </div>
-                   <div className="font-bold text-[16px] text-sky-600 dark:text-sky-400">
+                   <div className="font-bold text-[16px] text-emerald-600 dark:text-emerald-400">
                      {formatMoney(ranking.totalEstimado)}
                    </div>
                 </div>
                 <div className="flex items-center gap-3">
                    <div className="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                     <div className={`h-full rounded-full ${index===0 ? 'bg-sky-500' : 'bg-zinc-400 dark:bg-zinc-600'}`} style={{ width: `${width}%` }} />
+                     <div className={`h-full rounded-full ${index===0 ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600'}`} style={{ width: `${width}%` }} />
                    </div>
                    <span className="text-[11px] font-bold text-zinc-400">{Math.round(width)}%</span>
                 </div>

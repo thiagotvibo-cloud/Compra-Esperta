@@ -4,8 +4,8 @@
   "description": "Lista de Compras Inteligente",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F8F8",
-  "theme_color": "#0ea5e9",
+  "background_color": "#F0FDF4",
+  "theme_color": "#10b981",
   "orientation": "portrait",
   "icons": [
     {
