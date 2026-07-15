@@ -179,8 +179,9 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     <div className="pb-28 bg-soft-bg dark:bg-zinc-900 min-h-screen relative">
       
       {/* HEADER MARKET PRO */}
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 relative">
+      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+20px)] pb-14 px-6 text-center text-white shadow-primary z-10 geometric-bg relative">
          
+         <div className="geometric-circle"></div>
          <div className="flex flex-col items-center relative z-10">
             <p className="text-white/80 font-semibold text-[11px] uppercase tracking-widest mb-1.5">Orçamento Planejado</p>
             <h1 className="text-[44px] font-bold tracking-tight leading-none mb-3 text-white">

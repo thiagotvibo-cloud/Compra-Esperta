@@ -11,22 +11,23 @@ import ConnectPgSimple from "connect-pg-simple";
 dotenv.config();
 
 if (!process.env.DATABASE_URL) {
-  console.error("❌ DATABASE_URL não definida. Configure o banco de dados do Replit.");
-  process.exit(1);
+  console.error("❌ DATABASE_URL não definida. Adicione nos Secrets para persistência real.");
 }
 if (!process.env.SESSION_SECRET) {
-  console.error("❌ SESSION_SECRET não definida. Adicione este secret no painel do Replit.");
-  process.exit(1);
+  console.error("❌ SESSION_SECRET não definida. Adicione nos Secrets para sessões seguras.");
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const isDbConfigured = !!process.env.DATABASE_URL;
+const pool = isDbConfigured ? new Pool({ connectionString: process.env.DATABASE_URL }) : { query: async () => { throw new Error("DATABASE_URL não configurada nos Secrets."); } } as any;
 const PgSession = ConnectPgSimple(session);
+const sessionStore = isDbConfigured ? new PgSession({ pool, tableName: 'session' }) : new session.MemoryStore();
 
 declare module "express-session" {
   interface SessionData { userId: string; userEmail: string; }
 }
 
 async function initDb() {
+  if (!isDbConfigured) return;
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -128,7 +129,7 @@ async function startServer() {
       res.json({ user: { id: user.id, email: user.email } });
     } catch (err) {
       console.error("Register error:", err);
-      res.status(500).json({ error: "Erro ao criar conta" });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 
@@ -149,7 +150,7 @@ async function startServer() {
       res.json({ user: { id: user.id, email: user.email } });
     } catch (err) {
       console.error("Login error:", err);
-      res.status(500).json({ error: "Erro ao fazer login" });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 
@@ -178,7 +179,7 @@ async function startServer() {
         return res.json({ budget: 0, dark_mode: false });
       }
       res.json(result.rows[0]);
-    } catch (err) { res.status(500).json({ error: "Erro ao buscar configurações" }); }
+    } catch (err) { res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" }); }
   });
 
   app.put("/api/settings", requireAuth, async (req, res) => {
@@ -189,7 +190,7 @@ async function startServer() {
         [budget ?? 0, dark_mode ?? false, req.session.userId]
       );
       res.json({ ok: true });
-    } catch (err) { res.status(500).json({ error: "Erro ao salvar configurações" }); }
+    } catch (err) { res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" }); }
   });
 
   // ── ITEMS ──────────────────────────────────────────────────────────────────────
@@ -201,7 +202,7 @@ async function startServer() {
         [req.session.userId]
       );
       res.json(result.rows);
-    } catch (err) { res.status(500).json({ error: "Erro ao buscar itens" }); }
+    } catch (err) { res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" }); }
   });
 
   app.post("/api/items/sync", requireAuth, async (req, res) => {
@@ -235,7 +236,7 @@ async function startServer() {
       res.json({ ok: true });
     } catch (err) {
       console.error("Sync items error:", err);
-      res.status(500).json({ error: "Erro ao sincronizar itens" });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 
@@ -248,7 +249,7 @@ async function startServer() {
         [req.session.userId]
       );
       res.json(result.rows);
-    } catch (err) { res.status(500).json({ error: "Erro ao buscar mercados" }); }
+    } catch (err) { res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" }); }
   });
 
   app.post("/api/markets/sync", requireAuth, async (req, res) => {
@@ -275,7 +276,7 @@ async function startServer() {
       res.json({ ok: true });
     } catch (err) {
       console.error("Sync markets error:", err);
-      res.status(500).json({ error: "Erro ao sincronizar mercados" });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 
@@ -288,7 +289,7 @@ async function startServer() {
         [req.session.userId]
       );
       res.json(result.rows);
-    } catch (err) { res.status(500).json({ error: "Erro ao buscar promoções" }); }
+    } catch (err) { res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" }); }
   });
 
   app.post("/api/promotions/sync", requireAuth, async (req, res) => {
@@ -320,7 +321,7 @@ async function startServer() {
       res.json({ ok: true });
     } catch (err) {
       console.error("Sync promotions error:", err);
-      res.status(500).json({ error: "Erro ao sincronizar promoções" });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 
@@ -338,9 +339,9 @@ async function startServer() {
       const prompt = `Gere uma pequena dica de economia diária (máximo 2 frases curtas) baseada nos seguintes itens essenciais: ${essentialItems.join(", ")}. Não use markdown, seja direto e útil.`;
       const response = await ai.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
       res.json({ tip: response.text });
-    } catch (error) {
+    } catch (err: any) {
       console.error("Gemini tip error:", error);
-      res.status(500).json({ error: "Erro ao gerar dica de economia." });
+      res.status(500).json({ error: err.message === "DATABASE_URL não configurada nos Secrets." ? err.message : "Erro no servidor" });
     }
   });
 

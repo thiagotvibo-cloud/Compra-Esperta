@@ -186,7 +186,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
     <div className="pb-56 min-h-screen bg-soft-bg dark:bg-zinc-900">
       
       {/* STICKY HEADER */}
-      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 ${headerColor} ${pulseClass}`}>
+      <div className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-4 sm:px-5 pb-6 rounded-b-[40px] shadow-lg transition-colors duration-500 geometric-bg ${headerColor} ${pulseClass}`}>
         
         {/* MARKET SELECTOR IN HEADER */}
         <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 px-3 py-2 border border-white/10 w-full">
@@ -314,7 +314,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
                   {catItems.map(item => (
                     <div 
                       key={item.id} 
-                      className={`p-3.5 rounded-2xl border transition-all duration-500 ease-out flex gap-3 items-center ${
+                      className={`p-3.5 rounded-2xl border transition-all duration-500 geometric-bg ease-out flex gap-3 items-center ${
                         item.isBought 
                           ? 'bg-zinc-100 dark:bg-zinc-800 border-dashed border-zinc-300 dark:border-zinc-700 opacity-40 scale-[0.98]' 
                           : 'bg-soft-bg dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 shadow-sm opacity-100 scale-100'

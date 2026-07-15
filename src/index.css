@@ -33,3 +33,34 @@ input, textarea, select {
   -webkit-user-select: auto;
   user-select: auto;
 }
+.geometric-bg { position: relative; overflow: hidden; }
+.geometric-bg > * { position: relative; z-index: 10; }
+.geometric-bg::before {
+  content: '';
+  position: absolute;
+  top: -20px; left: -20px;
+  width: 140px; height: 140px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.geometric-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -20px;
+  width: 180px; height: 180px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.geometric-circle {
+  position: absolute;
+  top: -10px; right: 20px; opacity: 0.3;
+  width: 60px; height: 60px;
+  background-color: #fb7185;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
