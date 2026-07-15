@@ -240,32 +240,47 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
 
         {/* LISTA DE ITENS */}
         <div className="overflow-y-auto">
-          {items.length === 0 && (
-            <div className="text-center text-zinc-500 py-12 flex flex-col items-center">
-              <span className="text-5xl block mb-3 opacity-50">📋</span>
-              <p className="font-semibold text-lg text-zinc-800 dark:text-zinc-200">Sua lista está vazia.</p>
-              <p className="text-sm mt-1 font-medium text-zinc-500">Adicione itens para planejar a ida ao mercado.</p>
-            </div>
-          )}
+          <AnimatePresence mode="popLayout">
+            {items.length === 0 && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="text-center text-zinc-500 py-12 flex flex-col items-center"
+              >
+                <span className="text-5xl block mb-3 opacity-50">📋</span>
+                <p className="font-semibold text-lg text-zinc-800 dark:text-zinc-200">Sua lista está vazia.</p>
+                <p className="text-sm mt-1 font-medium text-zinc-500">Adicione itens para planejar a ida ao mercado.</p>
+              </motion.div>
+            )}
 
-          {groupedItems.map(group => (
-            <div key={group.category} className="mb-6">
-              <div className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1">
-                {CATEGORY_EMOJI_UPDATED[group.category] || '🛒'} {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                <AnimatePresence>
-                  {group.items.map((item) => (
-                    <motion.div 
-                      key={item.id} 
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: item.isBought ? 0.6 : 1, y: 0, scale: item.isBought ? 0.98 : 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.2 }}
-                      className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
-                    >
+            {groupedItems.map(group => (
+              <motion.div 
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+                transition={{ duration: 0.3 }}
+                key={group.category} 
+                className="mb-6"
+              >
+                <motion.div layout className="text-[13px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mt-2 mb-3 tracking-widest pl-1">
+                  {CATEGORY_EMOJI_UPDATED[group.category] || '🛒'} {group.category} <span className="lowercase text-[11px] ml-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{group.items.length}</span>
+                </motion.div>
+                
+                <motion.div layout className="flex flex-col gap-3">
+                  <AnimatePresence mode="popLayout">
+                    {group.items.map((item) => (
+                      <motion.div 
+                        key={item.id} 
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                        animate={{ opacity: item.isBought ? 0.6 : 1, x: 0, scale: item.isBought ? 0.98 : 1 }}
+                        exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                        transition={{ duration: 0.25, type: 'spring', bounce: 0.2 }}
+                        className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? 'bg-zinc-100/50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 border-dashed' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm'}`}
+                      >
                       
                       <button 
                         onClick={() => setItems(items.map(i => i.id === item.id ? {...i, isBought: !i.isBought} : i))}
@@ -340,9 +355,10 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                     </motion.div>
                   ))}
                 </AnimatePresence>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
+          </AnimatePresence>
         </div>
       </div>
 
