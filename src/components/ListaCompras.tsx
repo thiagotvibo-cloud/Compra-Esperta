@@ -418,7 +418,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
             <div className="overflow-y-auto p-4 space-y-4 bg-soft-bg dark:bg-[#1C1C1E]">
               {searchQuery ? (
                 searchResults.length === 0 ? (
-                  <div className="text-center py-10 text-zinc-500">Nenhum produto encontrado.</div>
+                  <div className="text-center py-10 text-zinc-500"><p className="mb-4">Nenhum produto encontrado.</p><button onClick={() => handleAddFromCatalog(searchQuery, 'Outros')} className="px-6 py-3 bg-soft-primary text-white font-semibold rounded-full shadow-sm hover:bg-soft-primary-hover transition-colors">Adicionar "{searchQuery}"</button></div>
                 ) : (
                   <div className="bg-soft-card dark:bg-[#1C1C1E] rounded-3xl border-none p-5">
                     <h4 className="text-[12px] font-semibold uppercase tracking-wider text-soft-text-muted mb-4">Resultados da Busca</h4>
@@ -436,6 +436,10 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
                           </button>
                         );
                       })}
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-center">
+                      <p className="text-zinc-500 text-[13px] mb-3">Não encontrou o que queria?</p>
+                      <button onClick={() => { handleAddFromCatalog(searchQuery, 'Outros'); setSearchQuery(''); }} className="px-5 py-2.5 bg-soft-bg dark:bg-zinc-800 text-soft-text-main dark:text-zinc-200 text-[14px] font-semibold rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">Adicionar "{searchQuery}" como item avulso</button>
                     </div>
                   </div>
                 )

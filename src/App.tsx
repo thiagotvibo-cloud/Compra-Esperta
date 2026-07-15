@@ -47,9 +47,14 @@ export default function App() {
       if (error) {
         console.error('Session error:', error);
         // If there's an error fetching the session (e.g. Invalid Refresh Token), clear the auth state
-        supabase.auth.signOut();
+        supabase.auth.signOut().catch(console.error);
       }
       setSession(session);
+      setIsLoadingAuth(false);
+    }).catch(err => {
+      console.error('Session promise error:', err);
+      supabase.auth.signOut().catch(console.error);
+      setSession(null);
       setIsLoadingAuth(false);
     });
 
@@ -70,9 +75,9 @@ export default function App() {
     console.error(`❌ Erro Supabase (${context}):`, error?.message, error?.details, error);
     
     // Ignore auth/JWT/Refresh token errors quietly instead of alerting the user, and sign out automatically.
-    const msg = error?.message || '';
+    const msg = typeof error === 'string' ? error : (error?.message || JSON.stringify(error) || '');
     if (msg.includes('JWT') || msg.includes('Refresh Token') || msg.includes('token') || error?.code === '401' || error?.code === '403') {
-      supabase.auth.signOut();
+      supabase.auth.signOut().catch(console.error);
       return;
     }
 
@@ -143,7 +148,7 @@ export default function App() {
           if (validPromos.length < loadedPromos.length) {
             const expiredIds = loadedPromos.filter(p => p.expiryDate && p.expiryDate < today).map(p => p.id);
             if (expiredIds.length > 0) {
-              supabase.from('promotions').delete().in('id', expiredIds).then();
+              supabase.from('promotions').delete().in('id', expiredIds).then().catch(console.error);
             }
           }
         }
