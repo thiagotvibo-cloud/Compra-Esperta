@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { ShoppingCart } from 'lucide-react';
 
 export const AuthUI: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -29,22 +30,24 @@ export const AuthUI: React.FC = () => {
     }
   };
 
-  const isConfigured = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_URL.startsWith('http') && import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const url = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const isConfigured = url && url.startsWith('http') && key;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-[#050B14] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl p-8 shadow-xl border border-zinc-100 dark:border-zinc-800">
+    <div className="min-h-screen bg-soft-bg dark:bg-zinc-900 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-[24px] p-8 shadow-soft">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">
-            E
+          <div className="w-20 h-20 bg-soft-primary rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
+            <ShoppingCart size={40} strokeWidth={2.5} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-500">Compra Esperta</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2">Entre para sincronizar suas listas</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-soft-text-main dark:text-soft-text-main">Compra Esperta</h1>
+          <p className="text-soft-text-muted text-sm mt-2">Entre para sincronizar suas listas</p>
         </div>
         
         {!isConfigured && (
           <div className="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-4 rounded-xl mb-6 text-sm font-medium border border-orange-200 dark:border-orange-500/20">
-            <strong>Atenção:</strong> Configure as variáveis <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_URL</code> e <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_ANON_KEY</code> nas configurações de Secrets/Environment Variables para usar a autenticação.
+            <strong>Atenção:</strong> Configure as variáveis <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_URL</code> e <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_ANON_KEY</code> no menu Settings (ícone de engrenagem) aqui no AI Studio para usar a autenticação no modo Preview. Na Vercel, configure-as nas Environment Variables.
           </div>
         )}
 
@@ -56,25 +59,25 @@ export const AuthUI: React.FC = () => {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-soft-text-main mb-1">Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-zinc-100 placeholder-zinc-400"
+              className="w-full bg-soft-card dark:bg-zinc-700/50 rounded-[20px] px-4 py-3 focus:outline-none ring-0 dark:text-zinc-100 placeholder-soft-text-muted"
               placeholder="Seu email"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Senha</label>
+            <label className="block text-sm font-medium text-soft-text-main mb-1">Senha</label>
             <input
               type="password"
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-zinc-100 placeholder-zinc-400"
+              className="w-full bg-soft-card dark:bg-zinc-700/50 rounded-[20px] px-4 py-3 focus:outline-none ring-0 dark:text-zinc-100 placeholder-soft-text-muted"
               placeholder="Sua senha"
             />
           </div>
@@ -82,7 +85,7 @@ export const AuthUI: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white font-semibold rounded-xl py-3 mt-2 disabled:opacity-50"
+            className="w-full bg-soft-primary hover:bg-soft-primary-hover text-white font-semibold rounded-full py-4 mt-4 disabled:opacity-50 transition-colors shadow-primary"
           >
             {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
           </button>
@@ -92,7 +95,7 @@ export const AuthUI: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
+            className="text-sm font-medium text-soft-primary hover:text-soft-primary-hover transition-colors"
           >
             {isLogin ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Entre'}
           </button>

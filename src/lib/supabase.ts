@@ -1,15 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-let supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '').trim();
 
-if (!supabaseUrl || !supabaseUrl.startsWith('http')) {
-  console.warn('Supabase credentials missing or invalid. Conexão não será estabelecida, adicione as credenciais no arquivo .env');
-  supabaseUrl = 'https://placeholder.supabase.co';
+let finalUrl = supabaseUrl;
+let finalKey = supabaseAnonKey;
+
+if (!finalUrl || !finalUrl.startsWith('http') || !finalKey) {
+  console.warn("As variáveis de ambiente do Supabase estão ausentes. Verifique o painel do Vercel e adicione VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
+  finalUrl = 'https://placeholder.supabase.co';
+  finalKey = 'placeholder';
 }
 
-if (!supabaseAnonKey) {
-  supabaseAnonKey = 'placeholder';
-}
+export const supabase = createClient(finalUrl, finalKey);
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);

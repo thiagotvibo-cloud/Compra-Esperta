@@ -1,13 +1,16 @@
-import {StrictMode} from 'react';
-import {createRoot} from 'react-dom/client';
-import App from './App.tsx';
+import { StrictMode, Suspense, lazy } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';
-import { setupPWA } from './pwa';
 
-setupPWA();
+const App = lazy(() => import('./App.tsx'));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Carregando...</div>}>
+        <App />
+      </Suspense>
+    </ErrorBoundary>
   </StrictMode>,
 );

@@ -1,5 +1,5 @@
 -- 1. Cria a tabela de configurações
-CREATE TABLE IF NOT EXISTS public.settings (
+CREATE TABLE IF NOT EXISTS settings (
   user_id UUID PRIMARY KEY,
   budget NUMERIC DEFAULT 0,
   dark_mode BOOLEAN DEFAULT false,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.settings (
 );
 
 -- 2. Cria a tabela de itens (Lista de Compras)
-CREATE TABLE IF NOT EXISTS public.items (
+CREATE TABLE IF NOT EXISTS items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   name TEXT NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.items (
 );
 
 -- 3. Cria a tabela de mercados
-CREATE TABLE IF NOT EXISTS public.markets (
+CREATE TABLE IF NOT EXISTS markets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   name TEXT NOT NULL,
@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS public.markets (
 );
 
 -- 4. Cria a tabela de promoções
-CREATE TABLE IF NOT EXISTS public.promotions (
+CREATE TABLE IF NOT EXISTS promotions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
-  market_id UUID REFERENCES public.markets(id) ON DELETE CASCADE,
+  market_id UUID REFERENCES markets(id) ON DELETE CASCADE,
   item_name TEXT NOT NULL,
   price NUMERIC DEFAULT 0,
   qty NUMERIC DEFAULT 1,
@@ -45,10 +45,10 @@ CREATE TABLE IF NOT EXISTS public.promotions (
 );
 
 -- 5. Habilitar RLS (Row Level Security) nas tabelas
-ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.markets ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.promotions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE markets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE promotions ENABLE ROW LEVEL SECURITY;
 
 -- 6. Habilitar o SUPABASE REALTIME em todas as tabelas (Importante para sincronizar 2 celulares instantaneamente)
 DO $$
@@ -79,18 +79,13 @@ BEGIN
 END $$;
 
 -- 7. Limpar políticas antigas se existirem para evitar o erro "policy already exists"
-DROP POLICY IF EXISTS "Users can manage their own markets" ON public.markets;
-DROP POLICY IF EXISTS "Users can manage their own items" ON public.items;
-DROP POLICY IF EXISTS "Users can manage their own promotions" ON public.promotions;
-DROP POLICY IF EXISTS "Users can manage their own settings" ON public.settings;
-DROP POLICY IF EXISTS "Acesso Settings" ON public.settings;
-DROP POLICY IF EXISTS "Acesso Items" ON public.items;
-DROP POLICY IF EXISTS "Acesso Markets" ON public.markets;
-DROP POLICY IF EXISTS "Acesso Promotions" ON public.promotions;
+DROP POLICY IF EXISTS "Acesso Settings" ON settings;
+DROP POLICY IF EXISTS "Acesso Items" ON items;
+DROP POLICY IF EXISTS "Acesso Markets" ON markets;
+DROP POLICY IF EXISTS "Acesso Promotions" ON promotions;
 
 -- 8. Recriar Políticas de Segurança (O usuário só vê e edita os próprios dados)
-CREATE POLICY "Acesso Settings" ON public.settings FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Acesso Items" ON public.items FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Acesso Markets" ON public.markets FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Acesso Promotions" ON public.promotions FOR ALL USING (auth.uid() = user_id);
-
+CREATE POLICY "Acesso Settings" ON settings FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Acesso Items" ON items FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Acesso Markets" ON markets FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Acesso Promotions" ON promotions FOR ALL USING (auth.uid() = user_id);
