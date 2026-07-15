@@ -15,21 +15,14 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
     icon: "🥩",
     subcategories: [
       {
-        name: "Açougue - Bovinos",
+        name: "Carnes e Aves",
         items: [
-          "Acém", "Alcatra", "Bife Ancho", "Bife de Chorizo", "Capa de Filé", "Carne Moída (1ª e 2ª)", "Chuleta", "Contrafilé", "Costela Minga", "Costela Ripa", "Coxão Duro (Chã de Fora)", "Coxão Mole (Chã de Dentro)", "Cupim", "Fígado Bovino", "Filé Mignon", "Fraldinha", "Lagarto", "Maminha", "Músculo", "Paleta", "Patinho", "Peito Bovino", "Picanha", "Rabada", "T-Bone", "Hambúrguer (Fresco)"
-        ]
-      },
-      {
-        name: "Açougue - Suínos",
-        items: [
-          "Bacon", "Barriga (Panceta)", "Bisteca Suína", "Copa Lombo", "Costelinha Suína", "Filé Mignon Suíno", "Joelho", "Linguiça Calabresa", "Linguiça de Pernil", "Linguiça Toscana", "Lombo Suíno", "Orelha/Pé/Rabo (Pertences para Feijoada)", "Pernil Suíno", "Picanha Suína", "Toucinho"
-        ]
-      },
-      {
-        name: "Açougue - Aves e Outros",
-        items: [
-          "Asa de Frango", "Codorna", "Coração de Frango", "Coxa de Frango", "Coxinha da Asa (Drumet)", "Fígado de Frango", "Filé de Peito de Frango", "Frango a Passarinho", "Frango Inteiro", "Meio da Asa (Tulipa)", "Moela", "Pato", "Peito de Frango com osso", "Peru", "Sassami (Filezinho)", "Sobrecoxa"
+          "Acém", "Alcatra", "Ancho", "Assado de Tira", "Bacon", "Bisteca Bov.", "Bisteca Suína",
+          "Carne Moída (1ª/2ª)", "Chorizo", "Chuleta", "Contrafilé", "Coração de Frango", "Costela Bov.",
+          "Costelinha Suína", "Coxa/Sobrecoxa", "Coxão Duro", "Coxão Mole", "Cupim", "Fígado",
+          "Filé de Peito", "Filé Mignon", "Fraldinha", "Frango Inteiro", "Lagarto",
+          "Linguiça (Calabresa/Toscana/Pernil)", "Lombo Suíno", "Maminha", "Músculo", "Panceta",
+          "Patinho", "Peito Bov.", "Pernil", "Picanha (Bov./Suína)", "Sassami", "T-Bone"
         ]
       }
     ]
@@ -39,9 +32,10 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
     icon: "🐟",
     subcategories: [
       {
-        name: "Peixaria e Frutos do Mar",
+        name: "Peixes e Frutos do Mar",
         items: [
-          "Atum", "Bacalhau", "Cação", "Calamar/Lula", "Camarão", "Caranguejo/Siri", "Corvina", "Dourada", "Filé de Merluza", "Filé de Pescada", "Filé de Tilápia", "Mexilhão/Marisco", "Pintado", "Polvo", "Salmão", "Sardinha Fresca", "Tambaqui"
+          "Atum", "Bacalhau", "Cação", "Camarão", "Dourada", "Filé de Merluza",
+          "Filé de Pescada", "Filé de Tilápia", "Lula", "Polvo", "Salmão", "Sardinha"
         ]
       }
     ]
@@ -51,81 +45,108 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
     icon: "🥦",
     subcategories: [
       {
-        name: "Hortifruti - Frutas",
+        name: "Frutas",
         items: [
-          "Abacate", "Abacaxi", "Ameixa", "Banana (Maçã/Nanica/Prata/da Terra)", "Caqui", "Coco (Seco/Verde)", "Figo", "Goiaba", "Kiwi", "Laranja (Lima/Pera)", "Limão (Siciliano/Tahiti)", "Maçã (Fuji/Gala/Verde)", "Mamão (Formosa/Papaya)", "Manga (Palmer/Tommy)", "Maracujá", "Melancia", "Melão", "Morango", "Pera", "Pêssego", "Tangerina/Mexerica", "Uva (Niágara/Rubi/Thompson)"
+          "Abacate", "Abacaxi", "Ameixa", "Banana (Prata/Nanica/da Terra)", "Caqui", "Coco", "Figo",
+          "Goiaba", "Kiwi", "Laranja (Pera/Lima)", "Limão (Tahiti/Siciliano)", "Maçã (Gala/Fuji/Verde)",
+          "Mamão (Formosa/Papaya)", "Manga (Palmer/Tommy)", "Maracujá", "Melancia", "Melão", "Morango",
+          "Pera", "Pêssego", "Tangerina (Mexerica/Ponkan)", "Uva (Niágara/Rubi/Thompson)"
         ]
       },
       {
-        name: "Hortifruti - Legumes, Verduras e Ovos",
+        name: "Legumes, Verduras e Ovos",
         items: [
-          "Abóbora", "Abobrinha", "Alface (Americana/Crespa/Lisa)", "Alho", "Alho-poró", "Batata (Asterix/Doce/Inglesa/Salsa)", "Berinjela", "Beterraba", "Brócolis", "Cebola (Branca/Roxa)", "Cenoura", "Cheiro-Verde (Salsa/Cebolinha)", "Chuchu", "Couve", "Couve-flor", "Espinafre", "Gengibre", "Inhame", "Mandioca (Macaxeira)", "Milho Verde", "Ovos (Brancos/Caipira/Codorna)", "Pepino", "Pimentão (Amarelo/Vermelho/Verde)", "Quiabo", "Repolho", "Rúcula", "Tomate (Carmem/Cereja/Italiano)", "Vagem"
+          "Abóbora", "Abobrinha", "Alface (Crespa/Americana)", "Alho", "Batata (Inglesa/Doce/Salsa/Asterix)",
+          "Berinjela", "Beterraba", "Brócolis", "Cebola (Branca/Roxa)", "Cenoura", "Cheiro-Verde", "Chuchu",
+          "Couve", "Couve-flor", "Gengibre", "Inhame", "Mandioca", "Milho Verde", "Ovos (Branco/Vermelho/Codorna)",
+          "Pepino", "Pimentão (Verde/Amarelo/Vermelho)", "Quiabo", "Repolho", "Rúcula",
+          "Tomate (Carmem/Cereja/Italiano)", "Vagem"
         ]
       }
     ]
   },
   {
-    name: "Laticínios e Frios",
+    name: "Laticínios",
     icon: "🧀",
     subcategories: [
       {
-        name: "Laticínios e Frios",
+        name: "Leites, Queijos e Derivados",
         items: [
-          "Creme de Leite", "Iogurte (Grego/Natural/Saborizado)", "Leite (Desnatado/Integral/Sem Lactose)", "Leite Condensado", "Leite Fermentado", "Leite Vegetal (Amêndoas/Aveia/Soja)", "Manteiga (Com/Sem Sal)", "Margarina", "Nata", "Queijo Brie/Camembert", "Queijo Coalho", "Queijo Gorgonzola", "Queijo Minas Frescal/Padrão", "Queijo Mussarela", "Queijo Parmesão (Inteiro/Ralado)", "Queijo Prato", "Queijo Provolone", "Requeijão", "Apresuntado", "Copa", "Linguiça Calabresa", "Mortadela", "Patê", "Peito de Peru", "Presunto", "Salame", "Salsicha", "Massa de Pastel", "Massa de Lasanha", "Massa de Pizza"
+          "Creme de Leite (Fresquinho/Caixinha)", "Iogurte (Natural/Sabor/Grego)", 
+          "Leite (Integral/Desnatado/Sem Lactose)", "Leite Condensado", "Leite Fermentado", 
+          "Manteiga (Com/Sem Sal)", "Margarina", "Nata", 
+          "Queijo (Mussarela/Prato/Minas/Parmesão/Provolone/Gorgonzola/Brie)", "Requeijão"
         ]
       }
     ]
   },
   {
-    name: "Congelados",
-    icon: "🧊",
+    name: "Frios e Embutidos",
+    icon: "🥓",
     subcategories: [
       {
-        name: "Congelados - Salgados e Refeições",
+        name: "Embutidos",
         items: [
-          "Batata Frita Congelada", "Cebola Congelada", "Empanados (Nuggets)", "Esfirra Congelada", "Hambúrguer", "Lasanha Congelada", "Mandioca Congelada", "Misto Quente Congelado", "Pão de Queijo Congelado", "Pizza Congelada", "Polenta Congelada", "Pratos Prontos Congelados", "Salgadinhos de Festa"
-        ]
-      },
-      {
-        name: "Congelados - Massas e Outros",
-        items: [
-          "Açaí", "Carne Seca Desfiada (Congelada)", "Ervilha Congelada", "Frutas Vermelhas Congeladas", "Legumes Congelados", "Polpa de Fruta", "Sorvete"
+          "Apresuntado", "Copa", "Mortadela (Defumada/Italiana)", "Patê", "Peito de Peru",
+          "Presunto (Magro/Parma)", "Salame (Hamburguês/Italiano)", "Salsicha (Viena/Frango/Tradicional)"
         ]
       }
     ]
   },
   {
-    name: "Mercearia",
+    name: "Mercearia Básica",
     icon: "🍚",
     subcategories: [
       {
-        name: "Mercearia - Grãos e Farináceos",
+        name: "Grãos e Farináceos",
         items: [
-          "Açúcar (Cristal/Mascavo/Refinado)", "Adoçante", "Arroz (Arbóreo/Branco/Integral/Parboilizado)", "Aveia (Flocos/Farinha)", "Azeite de Oliva", "Farinha de Mandioca", "Farinha de Milho (Fubá)", "Farinha de Rosca", "Farinha de Trigo", "Feijão (Branco/Carioca/Fradinho/Preto)", "Milho para Pipoca", "Óleo (Canola/Girassol/Milho/Soja)", "Polenta", "Sal (Grosso/Himalaia/Refinado)", "Tapioca"
-        ]
-      },
-      {
-        name: "Mercearia - Massas e Molhos",
-        items: [
-          "Extrato de Tomate", "Macarrão (Espaguete/Lasanha/Ninho/Parafuso/Penne)", "Macarrão Instantâneo", "Massa Fresca (Nhoque/Ravioli)", "Molho Branco", "Molho de Tomate Pronto"
-        ]
-      },
-      {
-        name: "Mercearia - Condimentos e Conservas",
-        items: [
-          "Azeitona", "Caldo em Cubos", "Ketchup", "Champignon", "Cominho", "Ervilha em Conserva", "Louro", "Maionese", "Milho em Conserva", "Molho de Alho", "Molho de Pimenta", "Molho Inglês", "Molho Shoyu", "Mostarda", "Orégano", "Palmito", "Picles", "Pimenta-do-reino", "Sardinha/Atum em Lata", "Vinagre (Álcool/Balsâmico/Maçã)"
+          "Açúcar (Refinado/Cristal/Mascavo)", "Adoçante", "Arroz (Branco/Parboilizado/Integral/Arbóreo)",
+          "Aveia", "Azeite", "Farinha de Mandioca", "Farinha de Milho (Fubá)", "Farinha de Rosca",
+          "Farinha de Trigo", "Feijão (Carioca/Preto/Branco/Fradinho)", "Milho para Pipoca",
+          "Óleo (Soja/Girassol/Milho)", "Sal (Refinado/Grosso/Himalaia)", "Tapioca"
         ]
       }
     ]
   },
   {
-    name: "Padaria, Biscoitos e Doces",
+    name: "Mercearia Complementar",
+    icon: "🍝",
+    subcategories: [
+      {
+        name: "Massas e Molhos",
+        items: [
+          "Extrato de Tomate", "Macarrão (Espaguete/Penne/Parafuso/Lasanha/Ninho)", "Macarrão Instantâneo",
+          "Molho Branco", "Molho de Tomate (Pronto/Bolonhesa/Manjericão)", "Massa Fresca (Ravioli/Nhoque)"
+        ]
+      },
+      {
+        name: "Condimentos",
+        items: [
+          "Caldo em Cubos", "Catchup", "Cominho", "Louro", "Maionese", "Molho de Alho", 
+          "Molho de Pimenta", "Molho Inglês", "Molho Shoyu", "Mostarda", "Orégano", 
+          "Pimenta-do-reino", "Vinagre (Álcool/Maçã/Balsâmico)"
+        ]
+      },
+      {
+        name: "Enlatados e Conservas",
+        items: [
+          "Azeitona", "Atum em Lata", "Champignon", "Ervilha", "Milho Verde em Lata",
+          "Palmito", "Picles", "Sardinha em Lata", "Seleta de Legumes"
+        ]
+      }
+    ]
+  },
+  {
+    name: "Padaria e Biscoitos",
     icon: "🥖",
     subcategories: [
       {
-        name: "Padaria, Biscoitos e Doces",
+        name: "Pães e Lanches",
         items: [
-          "Achocolatado em Pó", "Amendoim", "Biscoito Água e Sal", "Biscoito de Polvilho", "Biscoito Maisena/Maria", "Biscoito Recheado", "Biscoito Waffer", "Bolo Pronto", "Café (Cápsula/Grão/Pó/Solúvel)", "Castanhas/Nozes", "Cereal Matinal", "Chá (Caixa/Sachê)", "Chocolate (Barra/Caixa)", "Creme de Avelã", "Doce de Leite", "Fermento Biológico", "Fermento em Pó", "Gelatina", "Granola", "Granulado", "Leite Condensado", "Mistura para Bolo", "Pão (de Forma/Francês/Integral/Hot Dog)", "Pão de Hambúrguer", "Pão de Queijo", "Salgadinhos (Snacks/Chips)", "Torrada"
+          "Achocolatado", "Amendoim", "Biscoito Água e Sal", "Biscoito Maisena", "Biscoito Recheado",
+          "Bolo Pronto", "Café (Pó/Grão/Cápsula)", "Castanhas", "Cereal Matinal", "Chá (Caixa/Pronto)",
+          "Chocolate (Barra/Caixa)", "Creme de Avelã", "Doce de Leite", "Gelatina", "Granola",
+          "Pão (Francês/Forma/Integral/Hambúrguer/Hot Dog)", "Pão de Queijo", "Salgadinhos (Snacks)", "Torrada"
         ]
       }
     ]
@@ -137,25 +158,38 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
       {
         name: "Bebidas",
         items: [
-          "Água de Coco", "Água Mineral (Com/Sem Gás)", "Bebida Energética", "Cachaça", "Cerveja", "Espumante", "Gin", "Refrigerante", "Suco (Caixa/Concentrado/Pó)", "Vinho (Branco/Seco/Suave/Tinto)", "Vodca", "Whisky"
+          "Água (Com/Sem Gás)", "Água de Coco", "Bebida Energética", "Cachaça", "Cerveja (Pilsen/IPA/Puro Malte)",
+          "Espumante", "Gin", "Refrigerante (Cola/Guaraná/Laranja/Limão)", "Suco (Caixa/Lata/Pó/Concentrado)",
+          "Vinho (Tinto/Branco/Seco/Suave)", "Vodca", "Whisky"
         ]
       }
     ]
   },
   {
-    name: "Higiene e Limpeza",
+    name: "Limpeza",
     icon: "🧼",
     subcategories: [
       {
-        name: "Limpeza e Utilidades Domésticas",
+        name: "Limpeza",
         items: [
-          "Água Sanitária", "Álcool (Gel/Líquido)", "Amaciante", "Cera", "Desengordurante", "Desinfetante", "Detergente", "Esponja de Aço", "Esponja Sintética", "Fósforo", "Inseticida", "Limpa Vidros", "Limpador Multiuso", "Pano de Chão/Pano de Prato", "Purificador de Ar", "Rodo", "Sabão em Barra", "Sabão em Pó", "Sabão Líquido", "Saco de Lixo", "Vassoura", "Copo/Prato/Talher Descartável", "Filme de PVC", "Guardanapo", "Papel Alumínio", "Papel Manteiga", "Papel Toalha"
+          "Água Sanitária", "Álcool (Líquido/Gel)", "Amaciante", "Cera", "Desengordurante", "Desinfetante",
+          "Detergente", "Esponja", "Inseticida", "Limpa Vidros", "Limpador Multiuso", "Pano de Chão",
+          "Purificador de Ar", "Rodo", "Sabão em Barra", "Sabão em Pó", "Sabão Líquido", "Saco de Lixo", "Vassoura"
         ]
-      },
+      }
+    ]
+  },
+  {
+    name: "Higiene Pessoal e Perfumaria",
+    icon: "🧴",
+    subcategories: [
       {
         name: "Higiene Pessoal",
         items: [
-          "Absorvente", "Algodão", "Aparelho de Barbear", "Condicionador", "Cotonete", "Creme de Barbear", "Creme Dental", "Desodorante (Aerosol/Roll-on)", "Enxaguante Bucal", "Escova de Dentes", "Fio Dental", "Hidratante Corporal", "Papel Higiênico (Folha Dupla/Simples)", "Preservativo", "Protetor Solar", "Sabonete (Barra/Líquido)", "Shampoo"
+          "Absorvente", "Algodão", "Aparelho de Barbear", "Condicionador", "Cotonete", "Creme de Barbear",
+          "Creme Dental", "Desodorante (Aerosol/Roll-on)", "Enxaguante Bucal", "Escova de Dentes", "Fio Dental",
+          "Hidratante", "Lenço Umedecido Íntimo", "Papel Higiênico (Folha Simples/Dupla)", "Preservativo",
+          "Protetor Solar", "Sabonete (Barra/Líquido)", "Shampoo"
         ]
       }
     ]
@@ -165,9 +199,10 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
     icon: "🍼",
     subcategories: [
       {
-        name: "Bebês",
+        name: "Itens Infantis",
         items: [
-          "Fralda Descartável", "Fórmula Infantil (Leite em Pó)", "Lenço Umedecido Infantil", "Pomada para Assaduras", "Sabonete Infantil", "Shampoo Infantil"
+          "Fórmula Infantil", "Fralda Descartável", "Lenço Umedecido Infantil", "Pomada para Assaduras",
+          "Sabonete Infantil", "Shampoo Infantil"
         ]
       }
     ]
@@ -177,9 +212,23 @@ export const PRODUCT_CATALOG: CatalogCategory[] = [
     icon: "🐾",
     subcategories: [
       {
-        name: "Pet Shop",
+        name: "Animais",
         items: [
-          "Areia Higiênica para Gatos", "Ossos/Petiscos", "Ração para Cães (Seca/Úmida)", "Ração para Gatos (Seca/Úmida)", "Tapete Higiênico"
+          "Areia Higiênica", "Ossos/Petiscos", "Ração para Cães (Seca/Úmida)", 
+          "Ração para Gatos (Seca/Úmida)", "Tapete Higiênico"
+        ]
+      }
+    ]
+  },
+  {
+    name: "Descartáveis e Utilidades",
+    icon: "🍽️",
+    subcategories: [
+      {
+        name: "Utilidades",
+        items: [
+          "Copo Plástico", "Filme de PVC", "Fósforo", "Guardanapo", "Papel Alumínio",
+          "Papel Manteiga", "Papel Toalha", "Prato Descartável", "Talher Descartável"
         ]
       }
     ]

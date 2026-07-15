@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
-import { apiLogin, apiRegister, User } from '../lib/api';
+import { supabase } from '../lib/supabase';
 
-interface Props { onAuth: (user: User) => void; }
-
-export const AuthUI: React.FC<Props> = ({ onAuth }) => {
+export const AuthUI: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
@@ -12,47 +9,91 @@ export const AuthUI: React.FC<Props> = ({ onAuth }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setError(null);
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
-      const user = isLogin ? await apiLogin(email, password) : await apiRegister(email, password);
-      onAuth(user);
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        alert('Verifique seu email para o link de confirmação!');
+      }
     } catch (err: any) {
       setError(err.message || 'Ocorreu um erro na autenticação.');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const isConfigured = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_URL.startsWith('http') && import.meta.env.VITE_SUPABASE_ANON_KEY;
+
   return (
-    <div className="min-h-screen bg-soft-bg dark:bg-zinc-900 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-[24px] p-8 shadow-soft">
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#050B14] flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl p-8 shadow-xl border border-zinc-100 dark:border-zinc-800">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-soft-primary rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
-            <ShoppingCart size={40} strokeWidth={2.5} />
+          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">
+            E
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-soft-text-main">Compra Esperta</h1>
-          <p className="text-soft-text-muted text-sm mt-2">Entre para sincronizar suas listas</p>
+          <h1 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-500">Compra Esperta</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2">Entre para sincronizar suas listas</p>
         </div>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-sm font-medium">{error}</div>}
+        
+        {!isConfigured && (
+          <div className="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-4 rounded-xl mb-6 text-sm font-medium border border-orange-200 dark:border-orange-500/20">
+            <strong>Atenção:</strong> Configure as variáveis <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_URL</code> e <code className="bg-orange-100 dark:bg-orange-900/50 px-1 py-0.5 rounded">VITE_SUPABASE_ANON_KEY</code> nas configurações de Secrets/Environment Variables para usar a autenticação.
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-sm font-medium">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-soft-text-main mb-1">Email</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full bg-soft-card dark:bg-zinc-700/50 rounded-[20px] px-4 py-3 focus:outline-none dark:text-zinc-100 placeholder-soft-text-muted"
-              placeholder="Seu email" />
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Email</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-zinc-100 placeholder-zinc-400"
+              placeholder="Seu email"
+            />
           </div>
+          
           <div>
-            <label className="block text-sm font-medium text-soft-text-main mb-1">Senha</label>
-            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full bg-soft-card dark:bg-zinc-700/50 rounded-[20px] px-4 py-3 focus:outline-none dark:text-zinc-100 placeholder-soft-text-muted"
-              placeholder="Mínimo 6 caracteres" />
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Senha</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-zinc-100 placeholder-zinc-400"
+              placeholder="Sua senha"
+            />
           </div>
-          <button type="submit" disabled={loading}
-            className="w-full bg-soft-primary hover:bg-soft-primary-hover text-white font-semibold rounded-full py-4 mt-4 disabled:opacity-50 transition-colors shadow-primary">
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white font-semibold rounded-xl py-3 mt-2 disabled:opacity-50"
+          >
             {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
           </button>
         </form>
+
         <div className="mt-6 text-center">
-          <button type="button" onClick={() => { setIsLogin(!isLogin); setError(null); }}
-            className="text-sm font-medium text-soft-primary hover:text-soft-primary-hover transition-colors">
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
+          >
             {isLogin ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Entre'}
           </button>
         </div>

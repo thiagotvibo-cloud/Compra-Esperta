@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type Category = string;
 export type Unit = 'kg' | 'g' | 'L' | 'ml' | 'un' | 'pct';
 
@@ -10,12 +8,10 @@ export interface Item {
   unit: Unit;
   category: Category;
   isEssential: boolean;
-  onlyPromo: boolean;
+  onlyPromo: boolean; // Só comprar se tiver promoção
   isBought: boolean;
   notes: string;
-  actualPrice: number;
-  isFavorite?: boolean;
-  notFound?: boolean;
+  actualPrice: number; // Para ser preenchido durante o Modo Compra
 }
 
 export interface Market {
@@ -39,15 +35,6 @@ export interface Settings {
   darkMode: boolean;
 }
 
-export interface HistoryItem {
-  id: string;
-  date: string;
-  marketId: string | null;
-  totalSpent: number;
-  economyGenerated: number;
-  items: { nome: string; quantidade: number; subtotal: number }[];
-}
-
 export interface AppContextType {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
@@ -57,9 +44,5 @@ export interface AppContextType {
   setPromotions: React.Dispatch<React.SetStateAction<Promotion[]>>;
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  history: HistoryItem[];
-  setHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
-  shoppingMarketId: string;
-  setShoppingMarketId: React.Dispatch<React.SetStateAction<string>>;
   setActiveTab: (tab: 'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras') => void;
 }
