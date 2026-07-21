@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Item, Category, Unit, AppContextType } from '../types';
 import { generateId, formatItemName, formatMoney, CATEGORY_EMOJI_UPDATED } from '../utils';
-import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, PieChart, BadgePlus, Star, Lightbulb, ExternalLink } from 'lucide-react';
+import { Trash2, Check, ChevronDown, ChevronUp, Plus, X, Search, ChevronRight, Calculator, BadgePlus, Star, Lightbulb, ExternalLink } from 'lucide-react';
 import { PRODUCT_CATALOG } from '../data/catalog';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -25,10 +25,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ essentialItems })
       });
+      if (!response.ok) {
+        if (response.status === 404) {
+          // If the endpoint doesn't exist (e.g. in production), silently ignore it and mark as 'fetched' to avoid retries
+          setTip('');
+          return;
+        }
+        throw new Error('Failed to fetch tip');
+      }
       const data = await response.json();
       if (data.tip) setTip(data.tip);
     } catch (error) {
       console.error('Failed to fetch tip:', error);
+      setTip(''); // Store empty string on error to prevent constant retries
     } finally {
       setIsLoadingTip(false);
     }
@@ -79,7 +88,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
 
   const calculateEstimatedTotal = () => {
     let total = 0;
-    const globalDefault = 12.00;
+    const globalDefault = 15.00;
     items.forEach(item => {
       const bestOffer = getBestOffer(item.name);
       if (bestOffer) {
@@ -94,7 +103,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
   const calculateEconomy = () => {
     let totalWithoutOffers = 0;
     let totalWithOffers = 0;
-    const globalDefault = 12.00;
+    const globalDefault = 15.00;
 
     items.forEach(item => {
       const bestOffer = getBestOffer(item.name);
@@ -158,8 +167,6 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({ context })
     const query = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     return flatCatalog.filter(i => i.searchKey.includes(query));
   }, [searchQuery, flatCatalog]);
-
-  const progressPercentage = totalItems > 0 ? (boughtItems / totalItems) * 100 : 0;
 
   return (
     <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen relative">

@@ -252,19 +252,6 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({ context }) =
 
       <div className="px-4 mt-6">
         
-        {/* MARKET SELECTOR (INJEÇÃO DE PREÇO) */}
-        <div className="mb-6 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
-          <Store className="text-emerald-500 shrink-0" size={20} />
-          <select 
-            value={shoppingMarketId} 
-            onChange={e => handleMarketSelect(e.target.value)}
-            className="flex-1 bg-transparent border-none focus:outline-none font-semibold text-zinc-900 dark:text-zinc-100 text-[15px] cursor-pointer"
-          >
-            <option value="">-- Onde você está comprando? --</option>
-            {markets.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </select>
-        </div>
-
         {/* COMPACT SEARCH & AVULSO */}
         <div className="flex gap-2 mb-6">
           <div className="relative flex-1">

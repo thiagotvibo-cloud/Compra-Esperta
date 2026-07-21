@@ -6,6 +6,8 @@ import { formatMoney } from '../utils';
 export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) => {
   const { settings, setSettings, items, markets, promotions, setItems, setMarkets, setPromotions, history, setHistory } = context;
 
+  const [showResetConfirm, setShowResetConfirm] = React.useState(false);
+
   const handleShareList = async () => {
     if (items.length === 0) return alert('Sua lista está vazia.');
     const text = "Lista de Compras:\n" + items.map(i => `- ${i.qty}${(i.unit && i.unit !== 'un') ? i.unit : ''} ${i.name}`).join("\n");
@@ -17,11 +19,9 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
     }
   };
 
-  const handleFactoryReset = () => {
-    if (window.confirm("ATENÇÃO: Você perderá TODOS os dados locais (lista, mercados, ofertas, histórico). Tem certeza?")) {
-      localStorage.clear();
-      window.location.reload();
-    }
+  const executeFactoryReset = () => {
+    localStorage.clear();
+    window.location.reload();
   };
 
   const hasHistory = history.length > 0;
@@ -185,7 +185,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
             <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2 justify-center">
                <AlertTriangle size={16} /> Zona de Perigo
             </h3>
-            <button onClick={handleFactoryReset} className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold py-4 rounded-3xl transition-all active:scale-95 border border-red-100 dark:border-red-900/30">
+            <button onClick={() => setShowResetConfirm(true)} className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold py-4 rounded-3xl transition-all active:scale-95 border border-red-100 dark:border-red-900/30">
               <Trash2 size={20} /> Factory Reset (Apagar Tudo)
             </button>
             <p className="text-[10px] mt-3 font-medium text-zinc-400">
@@ -206,6 +206,24 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({ context }) =>
         </div>
 
       </div>
+
+      {/* RESET CONFIRM MODAL */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-[110] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setShowResetConfirm(false)}>
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Atenção!</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 mb-6 text-sm">Você perderá TODOS os dados locais (lista, mercados, ofertas, histórico). Tem certeza?</p>
+            <div className="flex gap-3">
+               <button onClick={() => setShowResetConfirm(false)} className="flex-1 py-3 rounded-3xl font-bold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300">Cancelar</button>
+               <button onClick={executeFactoryReset} className="flex-1 py-3 rounded-3xl font-bold text-white bg-red-500 hover:bg-red-600">Sim, Apagar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

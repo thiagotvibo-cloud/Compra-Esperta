@@ -155,7 +155,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({ context }) =>
   }, [promotions, promoFilter, todayStr, tomorrowStr]);
 
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-black min-h-screen">
+    <div className="pb-28 bg-soft-bg dark:bg-black min-h-screen">
       
       {/* HEADER */}
       <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 geometric-bg relative">

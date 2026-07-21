@@ -16,30 +16,17 @@ export default function App() {
   
   const [items, setItems] = useState<Item[]>([]);
   const [markets, setMarkets] = useState<Market[]>([]);
-  const [promotions, setPromotions] = useState<Promotion[]>(() => {
-    const saved = localStorage.getItem('market_pro_promotions');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const today = new Date().toISOString().split('T')[0];
-      return parsed.filter((p: Promotion) => !p.expiryDate || p.expiryDate >= today);
-    }
-    return [];
-  });
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [settings, setSettings] = useState<Settings>({ budget: 0, darkMode: false });
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    const saved = localStorage.getItem('market_pro_history');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [shoppingMarketId, setShoppingMarketId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'lista' | 'roteiro' | 'promocoes' | 'compras' | 'extras'>('lista');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    localStorage.setItem('market_pro_history', JSON.stringify(history));
-  }, [history]);
-
-  useEffect(() => {
-    localStorage.setItem('market_pro_promotions', JSON.stringify(promotions));
-  }, [promotions]);
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
 
   useEffect(() => {
@@ -81,12 +68,13 @@ export default function App() {
       return;
     }
 
-    alert(`Erro Supabase: ${context}\nDetalhes: ${error?.message || JSON.stringify(error)}`);
+    showToast(`Erro: ${context}. ${error?.message || ''}`);
   };
 
   const isSyncingItems = useRef(false);
   const isSyncingMarkets = useRef(false);
   const isSyncingPromotions = useRef(false);
+  const isSyncingHistory = useRef(false);
 
   // Sync data with Supabase when session changes
   useEffect(() => {
@@ -152,6 +140,19 @@ export default function App() {
             }
           }
         }
+
+        const { data: hData, error: hErr } = await supabase.from('history').select('*').order('date', { ascending: false });
+        if (hErr && hErr.code !== '42P01' && hErr.code !== 'PGRST205' && !hErr.message?.includes('schema cache')) handleError('Buscar Histórico', hErr); // 42P01/PGRST205 is table undefined, handle gracefully if user hasn't created it yet
+        else if (hData && !isSyncingHistory.current) {
+          setHistory(hData.map(h => ({
+            id: h.id,
+            date: h.date,
+            marketId: h.market_id,
+            totalSpent: Number(h.total_spent),
+            economyGenerated: Number(h.economy_generated),
+            items: h.items
+          })));
+        }
       } catch (err) {
         handleError('Exceção no Fetch API', err);
       }
@@ -171,6 +172,7 @@ export default function App() {
           .on('postgres_changes', { event: '*', schema: 'public', table: 'markets' }, fetchData)
           .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, fetchData)
           .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchData)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'history' }, fetchData)
           .subscribe((status, err: any) => {
             console.log(`🔌 Supabase Realtime Status: ${status}`);
             if (status === 'SUBSCRIBED') {
@@ -383,7 +385,83 @@ export default function App() {
     });
   }
 
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);  const [showInstallBanner, setShowInstallBanner] = useState(false);  useEffect(() => {    const handleBeforeInstallPrompt = (e: Event) => {      e.preventDefault();      setDeferredPrompt(e);      setShowInstallBanner(true);    };    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);    return () => {      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);    };  }, []);  const handleInstallClick = async () => {    if (deferredPrompt) {      deferredPrompt.prompt();      const { outcome } = await deferredPrompt.userChoice;      if (outcome === 'accepted') {        setShowInstallBanner(false);      }      setDeferredPrompt(null);    }  };  if (isLoadingAuth) {
+  const syncHistory = async (newHistory: typeof history) => {
+    if (!session?.user) return;
+    try {
+      const historyToUpsert = newHistory.map(h => ({
+        id: h.id,
+        user_id: session.user.id,
+        date: h.date,
+        market_id: h.marketId || null,
+        total_spent: h.totalSpent,
+        economy_generated: h.economyGenerated,
+        items: h.items || []
+      }));
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const validHistoryToUpsert = historyToUpsert.filter(h => uuidRegex.test(h.id));
+      const currentIds = newHistory.map(h => h.id);
+      
+      const { data: existingIds, error: selectErr } = await supabase.from('history').select('id');
+      if (selectErr && selectErr.code !== '42P01' && selectErr.code !== 'PGRST205' && !selectErr.message?.includes('schema cache')) return handleError('Listar Histórico para Sincronização', selectErr);
+
+      const idsToDelete = existingIds?.map(e => e.id).filter(id => !currentIds.includes(id)) || [];
+      
+      if (validHistoryToUpsert.length > 0) {
+        const { error: upErr } = await supabase.from('history').upsert(validHistoryToUpsert);
+        if (upErr && upErr.code !== '42P01' && upErr.code !== 'PGRST205' && !upErr.message?.includes('schema cache')) handleError('Salvar/Atualizar Histórico', upErr);
+      }
+      if (idsToDelete.length > 0) {
+        const { error: delErr } = await supabase.from('history').delete().in('id', idsToDelete);
+        if (delErr && delErr.code !== '42P01' && delErr.code !== 'PGRST205' && !delErr.message?.includes('schema cache')) handleError('Excluir Histórico', delErr);
+      }
+    } catch (err) {
+      handleError('Exceção ao Sincronizar Histórico', err);
+    }
+  };
+
+  const historySyncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSetHistory = (newHistoryOrCb: React.SetStateAction<HistoryItem[]>) => {
+    isSyncingHistory.current = true;
+    setHistory((prev) => {
+      const next = typeof newHistoryOrCb === 'function' ? newHistoryOrCb(prev) : newHistoryOrCb;
+      if (historySyncTimeoutRef.current) clearTimeout(historySyncTimeoutRef.current);
+      historySyncTimeoutRef.current = setTimeout(() => {
+        syncHistory(next).finally(() => {
+          setTimeout(() => { isSyncingHistory.current = false; }, 2000);
+        });
+      }, 800);
+      return next;
+    });
+  }
+
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowInstallBanner(false);
+      }
+      setDeferredPrompt(null);
+    }
+  };
+
+  if (isLoadingAuth) {
     return <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans text-zinc-900 flex items-center justify-center p-4"></div>;
   }
 
@@ -396,14 +474,31 @@ export default function App() {
     markets, setMarkets: handleSetMarkets, 
     promotions, setPromotions: handleSetPromotions, 
     settings, setSettings: handleSetSettings, 
-    history, setHistory,
+    history, setHistory: handleSetHistory,
     shoppingMarketId, setShoppingMarketId,
     setActiveTab 
   };
 
   return (
     <div className="min-h-[100dvh] bg-soft-bg dark:bg-black font-sans text-soft-text-main dark:text-zinc-100 flex justify-center">
-      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">        {showInstallBanner && (          <div className="bg-emerald-500 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">            <div className="text-sm font-medium">Instalar Compra Esperta no seu dispositivo</div>            <div className="flex gap-2">              <button onClick={() => setShowInstallBanner(false)} className="text-emerald-100 hover:text-white px-2 py-1 text-sm font-semibold">Agora não</button>              <button onClick={handleInstallClick} className="bg-white text-emerald-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform">Instalar</button>            </div>          </div>        )}        <main className="flex-1 relative pb-24">
+      <div className="w-full max-w-md bg-soft-bg dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+        {showInstallBanner && (
+          <div className="bg-emerald-500 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">
+            <div className="text-sm font-medium">Instalar Compra Esperta no seu dispositivo</div>
+            <div className="flex gap-2">
+              <button onClick={() => setShowInstallBanner(false)} className="text-emerald-100 hover:text-white px-2 py-1 text-sm font-semibold">Agora não</button>
+              <button onClick={handleInstallClick} className="bg-white text-emerald-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform">Instalar</button>
+            </div>
+          </div>
+        )}
+        
+        {toastMessage && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-red-500 text-white px-4 py-2 rounded-xl shadow-lg font-medium text-sm transition-opacity duration-300">
+            {toastMessage}
+          </div>
+        )}
+        
+        <main className="flex-1 relative pb-24">
           
           {activeTab === 'lista' && <ListaCompras context={context} />}
           {activeTab === 'roteiro' && <Roteiro context={context} />}

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { AppContextType, Market } from '../types';
-import { Store, BadgePercent, AlertCircle, TrendingDown } from 'lucide-react';
+import { Store, BadgePercent } from 'lucide-react';
 import { formatMoney, formatItemName } from '../utils';
 
 export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
