@@ -89,3 +89,33 @@ CREATE POLICY "Acesso Settings" ON settings FOR ALL USING (auth.uid() = user_id)
 CREATE POLICY "Acesso Items" ON items FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Acesso Markets" ON markets FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Acesso Promotions" ON promotions FOR ALL USING (auth.uid() = user_id);
+
+-- 9. Cria a tabela de histórico de compras
+CREATE TABLE IF NOT EXISTS public.history (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
+  market_id UUID REFERENCES public.markets(id) ON DELETE SET NULL,
+  total_spent NUMERIC DEFAULT 0,
+  economy_generated NUMERIC DEFAULT 0,
+  items JSONB DEFAULT '[]',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+ALTER TABLE public.history ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Acesso History" ON public.history FOR ALL USING (auth.uid() = user_id);
+
+-- 10. Habilitar Realtime para history
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'history'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE history;
+  END IF;
+END $$;
+
+-- Atualização tabela settings (Gamification)
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS streak integer default 0;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS total_saved numeric default 0;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS last_active_date date;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS purchase_count integer default 0;
