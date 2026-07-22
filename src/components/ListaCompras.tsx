@@ -200,18 +200,19 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
     return flatCatalog.filter((i) => i.searchKey.includes(query));
   }, [searchQuery, flatCatalog]);
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E] min-h-screen relative">
+    <div className="pb-28 bg-transparent min-h-screen relative">
       {" "}
       {/* HEADER MARKET PRO */}{" "}
       <div
-        className={`bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] overflow-hidden relative px-6 text-center text-white shadow-primary z-10 transition-all duration-300 ${scrolled ? "pt-[calc(env(safe-area-inset-top)+8px)] pb-3" : "pt-[calc(env(safe-area-inset-top)+20px)] pb-14"}`}
+        className={`bg-gradient-to-br from-green-600 to-green-500 rounded-b-[40px] overflow-hidden relative px-6 text-center text-white shadow-primary z-10 transition-all duration-300 ${scrolled ? "pt-[calc(env(safe-area-inset-top)+8px)] pb-3" : "pt-[calc(env(safe-area-inset-top)+20px)] pb-14"}`}
       >
         {" "}
-        <div className="absolute rounded-full bg-white/10" style={{ width: 120, height: 120, top: -20, right: -20 }}></div>
-        <div className="absolute rounded-full" style={{ width: 80, height: 80, bottom: 20, right: 40, backgroundColor: "rgba(255,255,255,0.05)" }}></div>{" "}
+        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
+        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>{" "}
         <div className="flex flex-col items-center relative z-10">
           {" "}
-          <p className="text-emerald-50 font-semibold text-[11px] mb-1.5">
+          <p className="text-green-50 font-semibold text-[11px] mb-1.5">
             {" "}
             Orçamento Planejado{" "}
           </p>{" "}
@@ -228,7 +229,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
           {settings.budget > 0 && expectedTotal > 0 && (
             <div className="w-full mt-5 bg-black/10 rounded-3xl p-3 border border-white/10 text-left">
               {" "}
-              <div className="flex justify-between text-[11px] font-bold mb-2 text-emerald-100">
+              <div className="flex justify-between text-[11px] font-bold mb-2 text-green-100">
                 {" "}
                 <span>
                   {" "}
@@ -251,7 +252,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                 />{" "}
               </div>{" "}
               {calculateEconomy() > 0 && (
-                <div className="mt-2 text-[11px] font-bold text-emerald-100 flex items-center gap-1.5">
+                <div className="mt-2 text-[11px] font-bold text-green-100 flex items-center gap-1.5">
                   {" "}
                   <span className="bg-green-500/20 text-green-100 px-1.5 py-0.5 rounded-md">
                     {" "}
@@ -278,7 +279,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
             onClick={() => setShowCatalog(true)}
           >
             {" "}
-            <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 dark:text-emerald-400 /30 flex items-center justify-center transition-transform hover:scale-105 active:scale-[0.97] transition-transform duration-150 shadow-sm border border-emerald-100 /30">
+            <div className="w-14 h-14 rounded-full bg-green-50 text-green-700 dark:text-green-500 /30 flex items-center justify-center transition-transform hover:scale-105 active:scale-[0.97] transition-transform duration-150 shadow-sm border border-green-100 /30">
               {" "}
               <BadgePlus size={24} strokeWidth={2.5} />{" "}
             </div>{" "}
@@ -306,7 +307,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
             onClick={() => setShowClearConfirm(true)}
           >
             {" "}
-            <div className="w-14 h-14 rounded-full bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-[0.97] transition-transform duration-150 shadow-sm border border-zinc-200 dark:border-zinc-800 /50">
+            <div className="w-14 h-14 rounded-full bg-transparent text-zinc-500 dark:text-zinc-400 flex items-center justify-center transition-transform hover:scale-105 active:scale-[0.97] transition-transform duration-150 shadow-sm border border-zinc-200 dark:border-zinc-800 /50">
               {" "}
               <Check strokeWidth={3} size={24} />{" "}
             </div>{" "}
@@ -327,16 +328,16 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
               initial={{ opacity: 0, y: -20, height: 0 }}
               animate={{ opacity: 1, y: 0, height: "auto" }}
               exit={{ opacity: 0, y: -20, height: 0 }}
-              className="bg-emerald-50 /20 p-4 rounded-3xl border border-emerald-200 flex items-start gap-3"
+              className="bg-green-50 /20 p-4 rounded-3xl border border-emerald-200 flex items-start gap-3"
             >
               {" "}
               <Lightbulb
-                className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5"
+                className="text-green-700 dark:text-green-500 shrink-0 mt-0.5"
                 size={20}
               />{" "}
               <div>
                 {" "}
-                <h4 className="text-[12px] font-semibold text-emerald-600 dark:text-emerald-400 mb-1">
+                <h4 className="text-[12px] font-semibold text-green-700 dark:text-green-500 mb-1">
                   {" "}
                   Dica da IA{" "}
                 </h4>{" "}
@@ -413,7 +414,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                         }}
                         exit={{ opacity: 0, scale: 0.8, x: 20 }}
                         transition={{ type: "spring", bounce: 0.3 }}
-                        className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? "bg-zinc-50 dark:bg-[#1C1C1E]/50 border-zinc-200 dark:border-zinc-800 border-dashed" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm"}`}
+                        className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? "bg-zinc-500/10 border-zinc-200 dark:border-zinc-800 border-dashed" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm"}`}
                       >
                         {" "}
                         <button
@@ -426,7 +427,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                               ),
                             )
                           }
-                          className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? "bg-emerald-600 border-emerald-500" : "border-zinc-300"}`}
+                          className={`shrink-0 w-8 h-8 border-[2px] rounded-full flex items-center justify-center transition-colors ${item.isBought ? "bg-green-700 border-green-600" : "border-zinc-300"}`}
                         >
                           {" "}
                           {item.isBought && (
@@ -544,7 +545,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                         </div>{" "}
                         <div className="flex items-center gap-1.5 shrink-0">
                           {" "}
-                          <div className="flex items-center bg-zinc-50 dark:bg-[#1C1C1E] rounded-xl px-1.5 py-1">
+                          <div className="flex items-center bg-transparent rounded-xl px-1.5 py-1">
                             {" "}
                             <input
                               type="number"
@@ -657,7 +658,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
               </button>{" "}
               <button
                 onClick={() => setShowClearConfirm(false)}
-                className="w-full py-3.5 mt-2 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-[#1C1C1E] active:scale-[0.97] transition-transform duration-150 transition-all"
+                className="w-full py-3.5 mt-2 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-transparent active:scale-[0.97] transition-transform duration-150 transition-all"
               >
                 {" "}
                 Cancelar{" "}
@@ -674,12 +675,12 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
         >
           {" "}
           <div
-            className="w-full max-w-lg bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom border-none"
+            className="w-full max-w-lg bg-zinc-50 dark:bg-zinc-900 rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom border-none"
             style={{ maxHeight: "85vh" }}
             onClick={(e) => e.stopPropagation()}
           >
             {" "}
-            <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E] z-10">
+            <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-zinc-50 dark:bg-zinc-900 z-10">
               {" "}
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                 {" "}
@@ -696,7 +697,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                 <ChevronDown size={24} />{" "}
               </button>{" "}
             </div>{" "}
-            <div className="px-4 pt-4 pb-2 bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E] sticky top-[73px] z-10">
+            <div className="px-4 pt-4 pb-2 bg-zinc-50 dark:bg-zinc-900 sticky top-[73px] z-10">
               {" "}
               <div className="relative">
                 {" "}
@@ -709,12 +710,12 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar itens..."
-                  className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-emerald-500 text-[15px] transition-colors placeholder-zinc-400"
+                  className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900 border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-green-600 text-[15px] transition-colors placeholder-zinc-400"
                 />{" "}
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-emerald-400 dark:text-emerald-400 :text-zinc-200 bg-zinc-50 dark:bg-[#1C1C1E] rounded-full p-1.5"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-green-500 dark:text-green-500 :text-zinc-200 bg-transparent rounded-full p-1.5"
                   >
                     {" "}
                     <X size={14} />{" "}
@@ -722,7 +723,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                 )}{" "}
               </div>{" "}
             </div>{" "}
-            <div className="overflow-y-auto p-4 space-y-4 bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E]">
+            <div className="overflow-y-auto p-4 space-y-4 bg-transparent">
               {" "}
               {searchQuery ? (
                 searchResults.length === 0 ? (
@@ -733,7 +734,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                       onClick={() =>
                         handleAddFromCatalog(searchQuery, "Outros")
                       }
-                      className="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-full shadow-sm hover:bg-emerald-600-hover transition-colors active:scale-[0.97]"
+                      className="px-6 py-3 bg-green-700 text-white font-semibold rounded-full shadow-sm hover:bg-green-700-hover transition-colors active:scale-[0.97]"
                     >
                       {" "}
                       Adicionar"{searchQuery}"{" "}
@@ -758,7 +759,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                             onClick={() =>
                               handleAddFromCatalog(item.name, item.category)
                             }
-                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-[0.97] transition-transform duration-150 text-left max-w-full border ${isAdded ? "bg-emerald-600 text-white border-emerald-500 shadow-sm" : "bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-emerald-400 dark:text-emerald-400 dark:hover:text-emerald-400 dark:text-emerald-400 border-zinc-200 dark:border-zinc-800"}`}
+                            className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-[0.97] transition-transform duration-150 text-left max-w-full border ${isAdded ? "bg-green-700 text-white border-green-600 shadow-sm" : "bg-transparent hover:bg-green-50 dark:hover:bg-emerald-900/30 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-green-500 dark:text-green-500 dark:hover:text-green-500 dark:text-green-500 border-zinc-200 dark:border-zinc-800"}`}
                           >
                             {" "}
                             {isAdded ? (
@@ -792,7 +793,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                           handleAddFromCatalog(searchQuery, "Outros");
                           setSearchQuery("");
                         }}
-                        className="px-5 py-2.5 bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-900 dark:text-zinc-100 text-[14px] font-semibold rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm hover:bg-zinc-50 dark:bg-[#1C1C1E] :bg-zinc-700 transition-colors"
+                        className="px-5 py-2.5 bg-transparent text-zinc-900 dark:text-zinc-100 text-[14px] font-semibold rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm hover:bg-transparent :bg-zinc-700 transition-colors"
                       >
                         {" "}
                         Adicionar"{searchQuery}"como item avulso{" "}
@@ -856,7 +857,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                                       onClick={() =>
                                         handleAddFromCatalog(itemName, cat.name)
                                       }
-                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-[0.97] transition-transform duration-150 text-left max-w-full border ${isAdded ? "bg-emerald-600 text-white border-emerald-500 shadow-sm" : "bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-emerald-400 dark:text-emerald-400 dark:hover:text-emerald-400 dark:text-emerald-400 border-zinc-200 dark:border-zinc-800"}`}
+                                      className={`px-4 py-2 text-[14px] font-medium rounded-full transition-colors flex items-start gap-1.5 active:scale-[0.97] transition-transform duration-150 text-left max-w-full border ${isAdded ? "bg-green-700 text-white border-green-600 shadow-sm" : "bg-transparent hover:bg-green-50 dark:hover:bg-emerald-900/30 text-zinc-500 dark:text-zinc-400 hoverdark:hover:text-green-500 dark:text-green-500 dark:hover:text-green-500 dark:text-green-500 border-zinc-200 dark:border-zinc-800"}`}
                                     >
                                       {" "}
                                       {isAdded ? (

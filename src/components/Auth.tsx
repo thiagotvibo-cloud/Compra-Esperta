@@ -38,13 +38,13 @@ export const AuthUI: React.FC = () => {
     import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const isConfigured = url && url.startsWith("http") && key;
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-[#1C1C1E] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4">
       {" "}
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl p-8 shadow-xl">
         {" "}
         <div className="text-center mb-8">
           {" "}
-          <div className="w-20 h-20 bg-emerald-600 rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
+          <div className="w-20 h-20 bg-green-700 rounded-[20px] flex items-center justify-center text-white mx-auto mb-4 shadow-primary">
             {" "}
             <ShoppingCart size={40} strokeWidth={2.5} />{" "}
           </div>{" "}
@@ -110,7 +110,7 @@ export const AuthUI: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-600-hover text-white font-semibold rounded-full py-4 mt-4 disabled:opacity-50 transition-colors shadow-primary"
+            className="w-full bg-green-700 hover:bg-green-700-hover text-white font-semibold rounded-full py-4 mt-4 disabled:opacity-50 transition-colors shadow-primary"
           >
             {" "}
             {loading ? "Aguarde..." : isLogin ? "Entrar" : "Cadastrar"}{" "}
@@ -121,7 +121,7 @@ export const AuthUI: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hoverdark:hover:text-emerald-400 dark:text-emerald-400-hover transition-colors"
+            className="text-sm font-medium text-green-700 dark:text-green-500 hoverdark:hover:text-green-500 dark:text-green-500-hover transition-colors"
           >
             {" "}
             {isLogin

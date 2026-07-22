@@ -73,13 +73,14 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
     };
   }, [items, markets, promotions]);
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-[#1C1C1E] min-h-screen">
+    <div className="pb-28 bg-transparent min-h-screen">
       {" "}
       {/* HEADER */}{" "}
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 relative">
+      <div className="bg-gradient-to-br from-green-600 to-green-500 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 relative">
         {" "}
-        <div className="absolute rounded-full bg-white/10" style={{ width: 120, height: 120, top: -20, right: -20 }}></div>
-        <div className="absolute rounded-full" style={{ width: 80, height: 80, bottom: 20, right: 40, backgroundColor: "rgba(255,255,255,0.05)" }}></div>{" "}
+        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
+        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>{" "}
         <div className="flex justify-between items-center relative z-10">
           {" "}
           <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
@@ -107,12 +108,12 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           <div className="space-y-6">
             {" "}
             {/* BEST OPTION BENTO BOX */}{" "}
-            <div className="bg-emerald-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+            <div className="bg-green-700 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
               {" "}
               <div className="absolute -right-10 -top-10 opacity-20">
                 <Store size={150} />
               </div>{" "}
-              <h3 className="text-[11px] font-bold text-emerald-100 mb-1">
+              <h3 className="text-[11px] font-bold text-green-100 mb-1">
                 Melhor Opção
               </h3>{" "}
               <div className="text-[32px] font-bold tracking-tight leading-none mb-4 break-words">
@@ -129,7 +130,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                     </span>
                   </span>{" "}
                 </div>{" "}
-                <div className="text-[12px] font-medium text-emerald-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
+                <div className="text-[12px] font-medium text-green-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
                   {" "}
                   <BadgePercent size={14} /> Cobertura:{" "}
                   {marketRankings.vencedor.itensCobertos} de{" "}
@@ -157,7 +158,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                     <div className="flex items-center gap-3">
                       {" "}
                       <div
-                        className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index === 0 ? "bg-emerald-50 text-emerald-600 dark:text-emerald-400" : "bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400"}`}
+                        className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index === 0 ? "bg-green-50 text-green-700 dark:text-green-500" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
                       >
                         {" "}
                         {index + 1}{" "}
@@ -166,7 +167,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                         {ranking.mercadoNome}
                       </span>{" "}
                     </div>{" "}
-                    <div className="font-bold text-[16px] text-emerald-600 dark:text-emerald-400">
+                    <div className="font-bold text-[16px] text-green-700 dark:text-green-500">
                       {" "}
                       <span className="money-value">
                         {formatMoney(ranking.totalEstimado)}
@@ -175,10 +176,10 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                   </div>{" "}
                   <div className="flex items-center gap-3">
                     {" "}
-                    <div className="flex-1 h-2 bg-zinc-50 dark:bg-[#1C1C1E] rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-transparent rounded-full overflow-hidden">
                       {" "}
                       <div
-                        className={`h-full rounded-full ${index === 0 ? "bg-emerald-600" : "bg-zinc-400"}`}
+                        className={`h-full rounded-full ${index === 0 ? "bg-green-700" : "bg-zinc-400"}`}
                         style={{ width: `${width}%` }}
                       />{" "}
                     </div>{" "}

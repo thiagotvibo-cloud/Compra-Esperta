@@ -184,9 +184,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
   };
   const budgetPercent =
     settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
-  let headerColor = "bg-emerald-600";
+  let headerColor = "bg-green-700";
   let textColor = "text-white";
-  let subTextColor = "text-emerald-100";
+  let subTextColor = "text-green-100";
   let pulseClass = "";
   if (budgetPercent > 100) {
     headerColor = "bg-red-600";
@@ -271,15 +271,16 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
       </div>
     );
   return (
-    <div className="pb-36 bg-zinc-50 dark:bg-[#1C1C1E] min-h-screen">
+    <div className="pb-36 bg-transparent min-h-screen">
       {" "}
       {}{" "}
       <div
         className={`sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+20px)] px-6 pb-8 rounded-b-[40px] overflow-hidden shadow-lg transition-colors duration-500 ${headerColor} ${pulseClass}`}
       >
         {" "}
-        <div className="absolute rounded-full bg-white/10" style={{ width: 120, height: 120, top: -20, right: -20 }}></div>
-        <div className="absolute rounded-full" style={{ width: 80, height: 80, bottom: 20, right: 40, backgroundColor: "rgba(255,255,255,0.05)" }}></div>{" "}
+        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
+        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>{" "}
         {}{" "}
         <div className="relative z-10 mb-4 bg-black/10 backdrop-blur-sm rounded-3xl flex items-center gap-2 px-3 py-2 border border-white/10">
           {" "}
@@ -398,7 +399,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-[calc(env(safe-area-inset-top)+80px)] left-4 right-4 z-50 bg-emerald-600-hover text-white py-2.5 px-4 rounded-2xl text-center font-semibold text-sm shadow-lg pointer-events-none"
+            className="fixed top-[calc(env(safe-area-inset-top)+80px)] left-4 right-4 z-50 bg-green-700-hover text-white py-2.5 px-4 rounded-2xl text-center font-semibold text-sm shadow-lg pointer-events-none"
           >
             {" "}
             ✅ {lastBoughtName} adicionado!{" "}
@@ -421,12 +422,12 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
               placeholder="Buscar no carrinho..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 pl-10 pr-4 py-3.5 rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400 text-[15px] shadow-sm"
             />{" "}
           </div>{" "}
           <button
             onClick={() => setShowAvulso(!showAvulso)}
-            className={`shrink-0 p-3.5 rounded-3xl border flex items-center justify-center transition-colors ${showAvulso ? "bg-emerald-600-hover text-white border-emerald-600" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm"}`}
+            className={`shrink-0 p-3.5 rounded-3xl border flex items-center justify-center transition-colors ${showAvulso ? "bg-green-700-hover text-white border-green-700" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 shadow-sm"}`}
           >
             {" "}
             <Plus size={22} />{" "}
@@ -435,7 +436,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
         {showAvulso && (
           <div className="mb-6 p-4 bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
             {" "}
-            <div className="bg-emerald-50 p-3 rounded-full text-emerald-600 dark:text-emerald-400">
+            <div className="bg-green-50 p-3 rounded-full text-green-700 dark:text-green-500">
               <CreditCard size={20} />
             </div>{" "}
             <div className="relative flex-1">
@@ -468,7 +469,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             </div>{" "}
             <button
               onClick={handleAvulsoAdd}
-              className="bg-emerald-600-hover text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-[0.97] transition-transform duration-150"
+              className="bg-green-700-hover text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-[0.97] transition-transform duration-150"
             >
               Adicionar
             </button>{" "}
@@ -499,7 +500,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                     </h3>{" "}
                     <div className="flex-1 border-t border-dashed border-zinc-200 dark:border-zinc-800"></div>{" "}
                     {catSubtotal > 0 && (
-                      <div className="text-[14px] font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                      <div className="text-[14px] font-bold text-green-700 dark:text-green-500 whitespace-nowrap">
                         {" "}
                         R${" "}
                         {catSubtotal.toLocaleString("pt-BR", {
@@ -515,7 +516,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                         key={item.id}
                         className={`p-3.5 rounded-3xl border transition-all duration-500 ease-out flex gap-3 items-center ${
                           item.isBought
-                            ? "bg-zinc-50 dark:bg-[#1C1C1E] border-dashed border-zinc-200 dark:border-zinc-800 opacity-40 scale-[0.98]"
+                            ? "bg-transparent border-dashed border-zinc-200 dark:border-zinc-800 opacity-40 scale-[0.98]"
                             : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm opacity-100 scale-100"
                         }`}
                       >
@@ -525,7 +526,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                           onClick={() => toggleBought(item.id)}
                           className={`w-[52px] h-[52px] shrink-0 rounded-full flex items-center justify-center transition-all ${
                             item.isBought
-                              ? "bg-emerald-600 border-none"
+                              ? "bg-green-700 border-none"
                               : "bg-transparent border-[3px] border-zinc-200 dark:border-zinc-800"
                           }`}
                         >
@@ -567,7 +568,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                             {" "}
                             {/* QTY */}{" "}
                             <div
-                              className={`flex items-center rounded-xl p-1 shrink-0 ${item.isBought ? "bg-zinc-50 dark:bg-[#1C1C1E]" : "bg-zinc-50 dark:bg-[#1C1C1E]"}`}
+                              className={`flex items-center rounded-xl p-1 shrink-0 ${item.isBought ? "bg-transparent" : "bg-transparent"}`}
                             >
                               {" "}
                               {["kg", "l"].includes(item.unit.toLowerCase()) ? (
@@ -652,10 +653,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                   handlePriceInput(item.id, e.target.value)
                                 }
                                 placeholder="0,00"
-                                className={`w-full pl-6 pr-2 py-2 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-[14px] transition-colors ${
+                                className={`w-full pl-6 pr-2 py-2 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-green-600 text-[14px] transition-colors ${
                                   item.isBought
                                     ? "bg-transparent text-zinc-500 dark:text-zinc-400"
-                                    : "bg-zinc-50 dark:bg-[#1C1C1E] text-emerald-600 dark:text-emerald-400"
+                                    : "bg-transparent text-green-700 dark:text-green-500"
                                 }`}
                               />{" "}
                             </div>{" "}
@@ -701,8 +702,8 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                         key={idx}
                                         className={`flex justify-between items-center px-2.5 py-1.5 rounded-lg border ${
                                           isCurrentMarket
-                                            ? "bg-emerald-50 border-emerald-100"
-                                            : "bg-zinc-50 dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-800"
+                                            ? "bg-green-50 border-green-100"
+                                            : "bg-transparent border-zinc-200 dark:border-zinc-800"
                                         }`}
                                       >
                                         {" "}
@@ -710,24 +711,24 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                           {" "}
                                           <Store
                                             size={12}
-                                            className={`shrink-0 ${isCurrentMarket ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400"}`}
+                                            className={`shrink-0 ${isCurrentMarket ? "text-green-700 dark:text-green-500" : "text-zinc-500 dark:text-zinc-400"}`}
                                           />{" "}
                                           <span
-                                            className={`text-[11px] font-bold truncate ${isCurrentMarket ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400"}`}
+                                            className={`text-[11px] font-bold truncate ${isCurrentMarket ? "text-green-700 dark:text-green-500" : "text-zinc-500 dark:text-zinc-400"}`}
                                           >
                                             {" "}
                                             {market?.name || "Mercado"}{" "}
                                           </span>{" "}
                                         </div>{" "}
                                         <div
-                                          className={`text-[12px] font-bold shrink-0 ${isCurrentMarket ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400"}`}
+                                          className={`text-[12px] font-bold shrink-0 ${isCurrentMarket ? "text-green-700 dark:text-green-500" : "text-zinc-500 dark:text-zinc-400"}`}
                                         >
                                           {" "}
                                           <span className="money-value">
                                             {formatMoney(precoUnitario)}
                                           </span>
                                           <span
-                                            className={`text-[9px] font-medium ${isCurrentMarket ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400"}`}
+                                            className={`text-[9px] font-medium ${isCurrentMarket ? "text-green-700 dark:text-green-500" : "text-zinc-500 dark:text-zinc-400"}`}
                                           >
                                             /{item.unit}
                                           </span>{" "}
@@ -786,7 +787,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
         {" "}
         <button
           onClick={() => setShowFinishConfirm(true)}
-          className="pointer-events-auto bg-zinc-50 dark:bg-[#1C1C1E] text-white px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"
+          className="pointer-events-auto bg-transparent text-white px-6 py-3.5 rounded-full font-bold text-[15px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:scale-105 transition-transform"
         >
           {" "}
           <ShoppingBag size={18} /> Finalizar Compra{" "}
@@ -804,7 +805,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             onClick={(e) => e.stopPropagation()}
           >
             {" "}
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-green-50 text-green-700 dark:text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
               {" "}
               <ShoppingBag size={32} />{" "}
             </div>{" "}
@@ -819,13 +820,13 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
               {" "}
               <button
                 onClick={() => setShowFinishConfirm(false)}
-                className="flex-1 py-3 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-[#1C1C1E]"
+                className="flex-1 py-3 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-transparent"
               >
                 Voltar
               </button>{" "}
               <button
                 onClick={finishPurchase}
-                className="flex-1 py-3 rounded-3xl font-bold text-white bg-emerald-600 hover:bg-emerald-600-hover"
+                className="flex-1 py-3 rounded-3xl font-bold text-white bg-green-700 hover:bg-green-700-hover"
               >
                 Sim, Finalizar
               </button>{" "}
@@ -865,7 +866,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-emerald-100 font-medium mb-8"
+              className="text-green-100 font-medium mb-8"
             >
               {" "}
               no {purchaseSummary.marketName}{" "}
@@ -918,9 +919,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                 )}{" "}
                 {context.settings.budget > 0 &&
                   purchaseSummary.total < context.settings.budget && (
-                    <div className="bg-emerald-50 rounded-2xl p-3 text-center mt-2">
+                    <div className="bg-green-50 rounded-2xl p-3 text-center mt-2">
                       {" "}
-                      <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span className="text-sm font-semibold text-green-700 dark:text-green-500">
                         {" "}
                         🎯 Ficou{" "}
                         <span className="money-value">

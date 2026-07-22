@@ -648,7 +648,7 @@ export default function App() {
   };
   if (isLoadingAuth) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4"></div>
+      <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4"></div>
     );
   }
   if (!session) {
@@ -670,12 +670,12 @@ export default function App() {
     setActiveTab,
   };
   return (
-    <div className="min-h-[100dvh] bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-900 dark:text-zinc-100 flex justify-center">
+    <div className="min-h-[100dvh] bg-transparent text-zinc-900 dark:text-zinc-100 flex justify-center">
       {" "}
-      <div className="w-full max-w-md bg-zinc-50 dark:bg-[#1C1C1E] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+      <div className="w-full max-w-md bg-transparent min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
         {" "}
         {showInstallBanner && (
-          <div className="bg-emerald-600 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">
+          <div className="bg-green-700 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">
             {" "}
             <div className="text-sm font-medium">
               Instalar Compra Esperta no seu dispositivo
@@ -684,13 +684,13 @@ export default function App() {
               {" "}
               <button
                 onClick={() => setShowInstallBanner(false)}
-                className="text-emerald-100 hover:text-white px-2 py-1 text-sm font-semibold"
+                className="text-green-100 hover:text-white px-2 py-1 text-sm font-semibold"
               >
                 Agora não
               </button>{" "}
               <button
                 onClick={handleInstallClick}
-                className="bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-[0.97] transition-transform duration-150 transition-transform"
+                className="bg-white dark:bg-zinc-900 text-green-700 dark:text-green-500 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-[0.97] transition-transform duration-150 transition-transform"
               >
                 Instalar
               </button>{" "}
@@ -770,7 +770,7 @@ function NavButton({ active, onClick, icon, label }: any) {
       onClick={onClick}
       className={`flex flex-col items-center justify-center w-full gap-1 pt-1.5 pb-1 transition-colors relative ${
         active
-          ? "text-emerald-600 dark:text-emerald-400 font-bold"
+          ? "text-green-700 dark:text-green-500 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-500 dark:text-zinc-400 font-medium"
       }`}
     >
@@ -787,7 +787,7 @@ function NavButton({ active, onClick, icon, label }: any) {
       {active ? (
         <motion.div
           layoutId="activeTabDot"
-          className="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute -bottom-1.5"
+          className="w-1.5 h-1.5 rounded-full bg-green-700 absolute -bottom-1.5"
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
       ) : (

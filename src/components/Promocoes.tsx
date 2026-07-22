@@ -173,13 +173,14 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
     });
   }, [promotions, promoFilter, todayStr, tomorrowStr]);
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-[#1C1C1E] #1C1C1E] min-h-screen">
+    <div className="pb-28 bg-transparent min-h-screen">
       {" "}
       {/* HEADER */}{" "}
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-400 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 relative">
+      <div className="bg-gradient-to-br from-green-600 to-green-500 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 relative">
         {" "}
-        <div className="absolute rounded-full bg-white/10" style={{ width: 120, height: 120, top: -20, right: -20 }}></div>
-        <div className="absolute rounded-full" style={{ width: 80, height: 80, bottom: 20, right: 40, backgroundColor: "rgba(255,255,255,0.05)" }}></div>{" "}
+        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
+        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>{" "}
         <div className="flex justify-between items-center relative z-10">
           {" "}
           <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
@@ -187,7 +188,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             Ofertas & Mercados{" "}
           </h2>{" "}
         </div>{" "}
-        <p className="text-emerald-50 mt-2 text-[13px] font-medium relative z-10 pr-10 mb-5">
+        <p className="text-green-50 mt-2 text-[13px] font-medium relative z-10 pr-10 mb-5">
           {" "}
           Gerencie as ofertas que encontrou e organize por supermercado.{" "}
         </p>{" "}
@@ -199,7 +200,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
           {" "}
           <label className="block text-[12px] font-semibold mb-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
             {" "}
-            <Store size={18} className="text-emerald-600 dark:text-emerald-400" /> Selecione o
+            <Store size={18} className="text-green-700 dark:text-green-500" /> Selecione o
             Mercado{" "}
           </label>{" "}
           <div className="flex gap-2">
@@ -207,7 +208,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             <select
               value={selectedMarket}
               onChange={(e) => setSelectedMarket(e.target.value)}
-              className="flex-1 px-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-inner appearance-none"
+              className="flex-1 px-4 py-3.5 bg-transparent border-none rounded-3xl font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600 shadow-inner appearance-none"
             >
               {" "}
               <option value="" disabled>
@@ -224,7 +225,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             {selectedMarket && (
               <button
                 onClick={() => removeMarket(selectedMarket)}
-                className="p-3.5 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-[#1C1C1E] border-none hover:text-red-500 hover:bg-red-50 :bg-red-900/30 rounded-3xl transition-colors"
+                className="p-3.5 text-zinc-500 dark:text-zinc-400 bg-transparent border-none hover:text-red-500 hover:bg-red-50 :bg-red-900/30 rounded-3xl transition-colors"
               >
                 {" "}
                 <Trash2 size={22} />{" "}
@@ -238,11 +239,11 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
               value={newMarketName}
               onChange={(e) => setNewMarketName(e.target.value)}
               placeholder="Novo mercado (ex: Extra)"
-              className="flex-1 min-w-0 px-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-zinc-400 font-medium"
+              className="flex-1 min-w-0 px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 placeholder-zinc-400 font-medium"
             />{" "}
             <button
               type="submit"
-              className="shrink-0 bg-emerald-600 hover:bg-emerald-700 transition-colors text-white px-5 py-3.5 rounded-3xl font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
+              className="shrink-0 bg-green-700 hover:bg-emerald-700 transition-colors text-white px-5 py-3.5 rounded-3xl font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
             >
               {" "}
               Criar{" "}
@@ -253,7 +254,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
         {selectedMarket ? (
           <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 mb-6 shadow-sm">
             {" "}
-            <h3 className="text-[13px] font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <h3 className="text-[13px] font-bold text-green-700 dark:text-green-500 mb-4 flex items-center gap-2">
               {" "}
               <Plus size={18} strokeWidth={3} />
               {""}{" "}
@@ -269,7 +270,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 </label>{" "}
                 <div
                   onClick={() => setShowCatalog(true)}
-                  className={`w-full px-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl cursor-pointer font-semibold ${itemName ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-500 dark:text-zinc-400"}`}
+                  className={`w-full px-4 py-3.5 bg-transparent border-none rounded-3xl cursor-pointer font-semibold ${itemName ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-500 dark:text-zinc-400"}`}
                 >
                   {" "}
                   {itemName || "Selecionar produto..."}{" "}
@@ -294,7 +295,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       value={getPriceDisplayValue(price)}
                       onChange={(e) => handlePriceInput(e.target.value)}
                       placeholder="0,00"
-                      className="w-full pl-9 pr-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl font-bold text-[16px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full pl-9 pr-4 py-3.5 bg-transparent border-none rounded-3xl font-bold text-[16px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600"
                       required
                     />{" "}
                   </div>{" "}
@@ -305,7 +306,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     {" "}
                     Por (Qtd / Un){" "}
                   </label>{" "}
-                  <div className="flex gap-1.5 bg-zinc-50 dark:bg-[#1C1C1E] rounded-3xl p-1.5 focus-within:ring-2 focus-within:ring-emerald-500">
+                  <div className="flex gap-1.5 bg-transparent rounded-3xl p-1.5 focus-within:ring-2 focus-within:ring-green-600">
                     {" "}
                     <input
                       type="number"
@@ -353,7 +354,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Ex: Marca Ype..."
-                    className="w-full px-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium placeholder-zinc-400"
+                    className="w-full px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400"
                   />{" "}
                 </div>{" "}
                 <div>
@@ -366,7 +367,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     type="date"
                     value={expiryDate}
                     onChange={(e) => setExpiryDate(e.target.value)}
-                    className="w-full px-4 py-3.5 bg-zinc-50 dark:bg-[#1C1C1E] border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-zinc-900 dark:text-zinc-100"
+                    className="w-full px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium text-zinc-900 dark:text-zinc-100"
                   />{" "}
                 </div>{" "}
               </div>{" "}
@@ -374,7 +375,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 {" "}
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-3xl font-bold text-[15px] transition-transform active:scale-[0.97] transition-transform duration-150 shadow-sm"
+                  className="flex-1 bg-green-700 hover:bg-emerald-700 text-white p-4 rounded-3xl font-bold text-[15px] transition-transform active:scale-[0.97] transition-transform duration-150 shadow-sm"
                 >
                   {" "}
                   {editingPromoId ? "Salvar Alterações" : "Salvar Oferta"}{" "}
@@ -383,7 +384,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   <button
                     type="button"
                     onClick={cancelEdit}
-                    className="w-full sm:w-auto px-6 py-4 bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-zinc-200 :bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-3xl font-semibold transition-colors active:scale-[0.97] transition-transform duration-150"
+                    className="w-full sm:w-auto px-6 py-4 bg-transparent hover:bg-zinc-200 :bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-3xl font-semibold transition-colors active:scale-[0.97] transition-transform duration-150"
                   >
                     {" "}
                     Cancelar{" "}
@@ -413,7 +414,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             {" "}
             <button
               onClick={() => setPromoFilter("all")}
-              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "all" ? "bg-emerald-600 text-white" : "bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400"}`}
+              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "all" ? "bg-green-700 text-white" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
             >
               {" "}
               Todas Ofertas{" "}
@@ -464,7 +465,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       {" "}
                       <div className="flex items-center gap-2 mb-1">
                         {" "}
-                        <span className="text-[10px] font-bold bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="text-[10px] font-bold bg-transparent text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full flex items-center gap-1">
                           {" "}
                           <Store size={10} /> {marketName}{" "}
                         </span>{" "}
@@ -475,7 +476,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       </h4>{" "}
                       <div className="flex items-end gap-2 mt-1 mb-2">
                         {" "}
-                        <div className="text-emerald-600 dark:text-emerald-400 font-bold text-[22px] tracking-tight leading-none">
+                        <div className="text-green-700 dark:text-green-500 font-bold text-[22px] tracking-tight leading-none">
                           {" "}
                           <span className="money-value">
                             {" "}
@@ -485,7 +486,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       </div>{" "}
                       <div className="flex gap-2 text-[10px] font-bold mt-2 flex-wrap">
                         {" "}
-                        <span className="bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400 py-1 px-2.5 rounded-full">
+                        <span className="bg-transparent text-zinc-500 dark:text-zinc-400 py-1 px-2.5 rounded-full">
                           {" "}
                           Por {promo.qty} {promo.unit}{" "}
                         </span>{" "}
@@ -512,7 +513,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                           )}{" "}
                           {promo.expiryDate && (
                             <div
-                              className={`text-[11px] font-bold mt-1 flex items-center gap-1.5 px-2 py-1 rounded border inline-flex w-max ${isExpiringToday ? "bg-red-50 border-red-200 text-red-600 /20 /30" : isExpiringTomorrow ? "bg-orange-50 border-orange-200 text-orange-600 /20 /30" : "bg-zinc-50 dark:bg-[#1C1C1E] border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 /50"}`}
+                              className={`text-[11px] font-bold mt-1 flex items-center gap-1.5 px-2 py-1 rounded border inline-flex w-max ${isExpiringToday ? "bg-red-50 border-red-200 text-red-600 /20 /30" : isExpiringTomorrow ? "bg-orange-50 border-orange-200 text-orange-600 /20 /30" : "bg-transparent border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 /50"}`}
                             >
                               {" "}
                               <Calendar size={14} />{" "}
@@ -533,7 +534,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                           promotions.filter((p) => p.id !== promo.id),
                         );
                       }}
-                      className="text-zinc-500 dark:text-zinc-400 hover:text-red-500 p-3 bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-red-50 flex-shrink-0 rounded-xl transition-colors"
+                      className="text-zinc-500 dark:text-zinc-400 hover:text-red-500 p-3 bg-transparent hover:bg-red-50 flex-shrink-0 rounded-xl transition-colors"
                     >
                       {" "}
                       <Trash2 size={20} />{" "}
@@ -553,7 +554,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
         >
           {" "}
           <div
-            className="w-full max-w-lg bg-zinc-50 dark:bg-[#1C1C1E] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom"
+            className="w-full max-w-lg bg-zinc-50 dark:bg-zinc-900 rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom"
             style={{ maxHeight: "85vh" }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -569,13 +570,13 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   setShowCatalog(false);
                   setSearchQuery("");
                 }}
-                className="p-2 bg-zinc-50 dark:bg-[#1C1C1E] rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 :text-zinc-200 transition-colors"
+                className="p-2 bg-transparent rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 :text-zinc-200 transition-colors"
               >
                 {" "}
                 <X size={20} className="w-5 h-5" />{" "}
               </button>{" "}
             </div>{" "}
-            <div className="px-4 pt-4 pb-2 bg-zinc-50 dark:bg-[#1C1C1E] sticky top-[73px] z-10">
+            <div className="px-4 pt-4 pb-2 bg-zinc-50 dark:bg-zinc-900 sticky top-[73px] z-10">
               {" "}
               <div className="relative">
                 {" "}
@@ -588,12 +589,12 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar itens..."
-                  className="w-full pl-10 pr-4 py-3.5 bg-white #1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-[15px] transition-colors shadow-sm placeholder-zinc-400"
+                  className="w-full pl-10 pr-4 py-3.5 bg-white #1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-semibold text-[15px] transition-colors shadow-sm placeholder-zinc-400"
                 />{" "}
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-500 dark:text-zinc-400 :text-zinc-200 bg-zinc-50 dark:bg-[#1C1C1E] rounded-full p-1"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-500 dark:text-zinc-400 :text-zinc-200 bg-transparent rounded-full p-1"
                   >
                     {" "}
                     <X size={14} />{" "}
@@ -601,7 +602,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 )}{" "}
               </div>{" "}
             </div>{" "}
-            <div className="overflow-y-auto p-4 space-y-3 bg-zinc-50 dark:bg-[#1C1C1E]">
+            <div className="overflow-y-auto p-4 space-y-3 bg-transparent">
               {" "}
               {searchQuery ? (
                 searchResults.length === 0 ? (
@@ -622,7 +623,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                         <button
                           key={index}
                           onClick={() => handleAddFromCatalog(item.name)}
-                          className="px-4 py-2.5 bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-emerald-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-emerald-400 dark:text-emerald-400 :text-emerald-400 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
+                          className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-green-500 dark:text-green-500 :text-green-500 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
                         >
                           {" "}
                           <Plus size={16} className="opacity-50" />{" "}
@@ -683,7 +684,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                                     onClick={() =>
                                       handleAddFromCatalog(itemName)
                                     }
-                                    className="px-4 py-2.5 bg-zinc-50 dark:bg-[#1C1C1E] hover:bg-emerald-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-emerald-400 dark:text-emerald-400 :text-emerald-400 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
+                                    className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-green-500 dark:text-green-500 :text-green-500 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
                                   >
                                     {" "}
                                     <Plus size={16} className="opacity-50" />
@@ -749,7 +750,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       <div className="flex justify-between items-baseline mb-1.5">
                         {" "}
                         <span
-                          className={`text-sm font-semibold ${isWinner ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-900 dark:text-zinc-100"}`}
+                          className={`text-sm font-semibold ${isWinner ? "text-green-700 dark:text-green-500" : "text-zinc-900 dark:text-zinc-100"}`}
                         >
                           {" "}
                           {isWinner && "👑"} {entry.market.name}{" "}
@@ -762,17 +763,17 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                           </span>{" "}
                         </span>{" "}
                       </div>{" "}
-                      <div className="h-3 rounded-full bg-zinc-50 dark:bg-[#1C1C1E] overflow-hidden">
+                      <div className="h-3 rounded-full bg-transparent overflow-hidden">
                         {" "}
                         <div
-                          className={`h-full rounded-full transition-all duration-1000 ease-out ${isWinner ? "bg-gradient-to-r from-emerald-500 to-teal-400" : "bg-zinc-300"}`}
+                          className={`h-full rounded-full transition-all duration-1000 ease-out ${isWinner ? "bg-gradient-to-r from-green-600 to-green-500" : "bg-zinc-300"}`}
                           style={{
                             width: animateChart ? `${widthPercent}%` : "0%",
                           }}
                         />{" "}
                       </div>{" "}
                       {isWinner && marketComparison.length > 1 && (
-                        <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1.5">
+                        <div className="text-[11px] font-semibold text-green-700 dark:text-green-500 mt-1.5">
                           {" "}
                           Economia de{""}{" "}
                           <span className="money-value">

@@ -56,13 +56,14 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
     },
   ];
   return (
-    <div className="pb-28 bg-zinc-50 dark:bg-[#1C1C1E] min-h-screen">
+    <div className="pb-28 bg-transparent min-h-screen">
       {" "}
-      <div className="bg-emerald-500 pb-24 pt-[calc(env(safe-area-inset-top)+20px)] px-6 rounded-b-[40px] relative overflow-hidden shrink-0 shadow-lg">
-        <div className="absolute rounded-full bg-white/10" style={{ width: 120, height: 120, top: -20, right: -20 }}></div>
-        <div className="absolute rounded-full" style={{ width: 80, height: 80, bottom: 20, right: 40, backgroundColor: "rgba(255,255,255,0.05)" }}></div>
+      <div className="bg-green-600 pb-24 pt-[calc(env(safe-area-inset-top)+20px)] px-6 rounded-b-[40px] relative overflow-hidden shrink-0 shadow-lg">
+        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
+        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>
         <h2 className="text-3xl font-extrabold text-white mb-2 relative z-10">Ajustes & Dados</h2>
-        <p className="text-emerald-50 text-[15px] font-medium max-w-[280px] leading-snug relative z-10">Configure preferências de uso, meta de gastos e gerencie seus dados locais.</p>
+        <p className="text-green-50 text-[15px] font-medium max-w-[280px] leading-snug relative z-10">Configure preferências de uso, meta de gastos e gerencie seus dados locais.</p>
       </div>
       <div className="px-4 -mt-16 relative z-20 pb-24 space-y-6">{" "}
         <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 shadow-xl mb-6">
@@ -81,7 +82,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
               setSettings({ ...settings, budget: Number(e.target.value) })
             }
             placeholder="Ex: 500.00"
-            className="w-full pl-4 pr-4 py-3.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl ring-0 focus:ring-2 focus:ring-emerald-500 font-bold text-[16px] text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
+            className="w-full pl-4 pr-4 py-3.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl ring-0 focus:ring-2 focus:ring-green-600 font-bold text-[16px] text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
           />{" "}
         </div>{" "}
         <div className="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-800 mt-4 relative z-10">
@@ -93,14 +94,14 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
             onClick={() =>
               setSettings({ ...settings, darkMode: !settings.darkMode })
             }
-            className={`p-3 rounded-3xl transition-all ${settings.darkMode ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 border border-zinc-200 dark:border-zinc-800" : "bg-zinc-50 dark:bg-[#1C1C1E] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800"}`}
+            className={`p-3 rounded-3xl transition-all ${settings.darkMode ? "bg-white dark:bg-zinc-900 text-green-700 dark:text-green-500 border border-zinc-200 dark:border-zinc-800" : "bg-transparent text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800"}`}
           >
             {" "}
             {settings.darkMode ? <Moon size={20} /> : <Sun size={20} />}{" "}
           </button>{" "}
         </div> <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-3xl space-y-4 shadow-sm">
           {" "}
-          <h3 className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+          <h3 className="text-[11px] font-semibold text-green-700 dark:text-green-500 flex items-center gap-2">
             <Store size={16} /> Meus Mercados
           </h3>{" "}
           {markets.length === 0 && (
@@ -113,7 +114,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
             {markets.map((m) => (
               <div
                 key={m.id}
-                className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-[#1C1C1E] rounded-3xl border border-zinc-200 dark:border-zinc-800"
+                className="flex justify-between items-center p-3 bg-transparent rounded-3xl border border-zinc-200 dark:border-zinc-800"
               >
                 {" "}
                 <span className="font-bold text-[14px] text-zinc-900 dark:text-zinc-100">
@@ -150,7 +151,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
                 >
                   {" "}
                   <div
-                    className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl ${badge.unlocked ? "bg-violet-100 text-violet-600" : "bg-zinc-50 dark:bg-[#1C1C1E] grayscale opacity-40"}`}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl ${badge.unlocked ? "bg-violet-100 text-violet-600" : "bg-transparent grayscale opacity-40"}`}
                   >
                     {badge.emoji}
                   </div>{" "}
@@ -165,12 +166,12 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
           </div>{" "}
           <div className="grid grid-cols-3 gap-3 mb-6">
             {" "}
-            <div className="bg-emerald-50 rounded-2xl p-3 text-center shadow-sm">
+            <div className="bg-green-50 rounded-2xl p-3 text-center shadow-sm">
               {" "}
-              <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-xl font-bold text-green-700 dark:text-green-500">
                 {context.history.length}
               </div>{" "}
-              <div className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400/70 mt-0.5">
+              <div className="text-[10px] font-semibold text-green-700 dark:text-green-500/70 mt-0.5">
                 Compras
               </div>{" "}
             </div>{" "}
@@ -218,10 +219,10 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
                   return (
                     <div
                       key={h.id}
-                      className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-[#1C1C1E] rounded-2xl border border-zinc-200 dark:border-zinc-800"
+                      className="flex items-center gap-3 p-3 bg-transparent rounded-2xl border border-zinc-200 dark:border-zinc-800"
                     >
                       {" "}
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-700 dark:text-green-500 font-bold text-sm shrink-0">
                         {dateStr.split("")[0]}
                       </div>{" "}
                       <div className="flex-1 min-w-0">
@@ -319,7 +320,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
               {" "}
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 py-3 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-[#1C1C1E]"
+                className="flex-1 py-3 rounded-3xl font-bold text-zinc-500 dark:text-zinc-400 bg-transparent"
               >
                 Cancelar
               </button>{" "}
