@@ -61,7 +61,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
       <div className="bg-green-600 pb-24 pt-[calc(env(safe-area-inset-top)+20px)] px-6 rounded-b-[40px] relative overflow-hidden shrink-0 shadow-lg">
         <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
         <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '300px 300px', backgroundRepeat: 'repeat' }}></div>
+        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '150px 150px', backgroundRepeat: 'repeat' }}></div>
         <h2 className="text-3xl font-extrabold text-white mb-2 relative z-10">Ajustes & Dados</h2>
         <p className="text-green-50 text-[15px] font-medium max-w-[280px] leading-snug relative z-10">Configure preferências de uso, meta de gastos e gerencie seus dados locais.</p>
       </div>
