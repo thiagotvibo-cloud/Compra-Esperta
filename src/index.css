@@ -8,7 +8,6 @@
 }
 
 html, body {
-  overflow-x: hidden;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,12 +51,7 @@ input, textarea, select {
   }
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar:horizontal {
   display: none;
-  width: 0;
   height: 0;
-}
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }

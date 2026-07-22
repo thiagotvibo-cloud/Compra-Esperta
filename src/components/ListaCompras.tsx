@@ -200,7 +200,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
     return flatCatalog.filter((i) => i.searchKey.includes(query));
   }, [searchQuery, flatCatalog]);
   return (
-    <div className="pb-28 bg-transparent min-h-screen relative overflow-x-hidden">
+    <div className="pb-28 bg-transparent min-h-screen relative">
       {" "}
       {/* HEADER MARKET PRO */}{" "}
       <div
@@ -350,7 +350,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
           )}{" "}
         </AnimatePresence>{" "}
         {/* LISTA DE ITENS */}{" "}
-        <div className="overflow-y-auto overflow-x-hidden">
+        <div className="overflow-y-auto">
           {" "}
           <AnimatePresence mode="popLayout">
             {" "}
@@ -414,7 +414,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
                         }}
                         exit={{ opacity: 0, scale: 0.8, x: 20 }}
                         transition={{ type: "spring", bounce: 0.3 }}
-                        className={`flex items-center gap-3.5 p-3.5 rounded-3xl border overflow-x-hidden ${item.isBought ? "bg-zinc-500/10 border-zinc-200 dark:border-zinc-800 border-dashed" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm"}`}
+                        className={`flex items-center gap-3.5 p-3.5 rounded-3xl border ${item.isBought ? "bg-zinc-500/10 border-zinc-200 dark:border-zinc-800 border-dashed" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm"}`}
                       >
                         {" "}
                         <button
