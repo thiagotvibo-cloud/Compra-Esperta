@@ -670,9 +670,24 @@ export default function App() {
     setActiveTab,
   };
   return (
-    <div className="min-h-[100dvh] bg-transparent text-zinc-900 dark:text-zinc-100 flex justify-center">
+    <div className="min-h-[100dvh] bg-transparent text-zinc-900 dark:text-zinc-100 flex justify-center md:items-center md:p-6">
       {" "}
-      <div className="w-full max-w-md bg-transparent min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+      <div className="w-full max-w-md md:max-w-5xl bg-transparent md:bg-white md:dark:bg-zinc-900 min-h-[100dvh] md:min-h-[85vh] md:h-[85vh] relative shadow-2xl flex flex-col md:flex-row md:rounded-[32px] md:overflow-hidden md:border border-zinc-200 dark:border-zinc-800 overflow-x-hidden">
+        
+        {/* DESKTOP SIDE NAVIGATION */}
+        <nav className="hidden md:flex flex-col w-24 bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 py-8 items-center gap-8 z-50 shrink-0">
+          <div className="w-12 h-12 bg-green-700 text-white rounded-2xl flex justify-center items-center font-bold text-xl mb-4 shadow-lg">CE</div>
+          <div className="flex flex-col gap-4 w-full px-2">
+            <NavButton active={activeTab === "lista"} onClick={() => setActiveTab("lista")} icon={<ListTodo size={28} />} label="Lista" />
+            <NavButton active={activeTab === "roteiro"} onClick={() => setActiveTab("roteiro")} icon={<Map size={28} />} label="Rota" />
+            <NavButton active={activeTab === "promocoes"} onClick={() => setActiveTab("promocoes")} icon={<Tags size={28} />} label="Ofertas" />
+            <NavButton active={activeTab === "compras"} onClick={() => setActiveTab("compras")} icon={<ShoppingCart size={28} />} label="Comprar" />
+          </div>
+          <div className="mt-auto w-full px-2">
+             <NavButton active={activeTab === "extras"} onClick={() => setActiveTab("extras")} icon={<SettingsIcon size={28} />} label="Config" />
+          </div>
+        </nav>
+
         {" "}
         {showInstallBanner && (
           <div className="bg-green-700 text-white p-3 flex justify-between items-center z-50 rounded-b-xl shadow-md mx-2 mt-2">
@@ -703,7 +718,7 @@ export default function App() {
             {toastMessage}{" "}
           </div>
         )}{" "}
-        <main className="flex-1 relative pb-24">
+        <main className="flex-1 relative pb-24 md:pb-0 overflow-x-hidden md:overflow-y-auto">
           {" "}
           <AnimatePresence mode="wait">
             {" "}
@@ -724,7 +739,7 @@ export default function App() {
           </AnimatePresence>{" "}
         </main>{" "}
         {/* BOTTOM NAVIGATION */}{" "}
-        <nav className="fixed bottom-0 w-full max-w-md bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <nav className="md:hidden fixed bottom-0 w-full max-w-md bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           {" "}
           <div className="grid grid-cols-5 w-full items-center">
             {" "}
