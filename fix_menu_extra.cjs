@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+const fs = require('fs');
+
+const code = `import React, { useState } from "react";
 import { AppContextType } from "../types";
 import { 
   Sun, 
@@ -91,7 +93,7 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
             </h2>
             <button
               onClick={() => setSettings({ ...settings, darkMode: !settings.darkMode })}
-              className={`p-2 rounded-full transition-colors ${settings.darkMode ? "bg-slate-800 text-slate-300" : "bg-slate-200 text-slate-600"}`}
+              className={\`p-2 rounded-full transition-colors \${settings.darkMode ? "bg-slate-800 text-slate-300" : "bg-slate-200 text-slate-600"}\`}
               title="Alternar Tema"
             >
               {settings.darkMode ? <Moon size={16} /> : <Sun size={16} />}
@@ -153,12 +155,12 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
               {badges.map((badge, idx) => (
                 <div
                   key={idx}
-                  className={`snap-center shrink-0 w-20 flex flex-col items-center text-center gap-2 ${badge.unlocked ? "" : "opacity-40 grayscale"}`}
+                  className={\`snap-center shrink-0 w-20 flex flex-col items-center text-center gap-2 \${badge.unlocked ? "" : "opacity-40 grayscale"}\`}
                 >
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl border-2 ${badge.unlocked ? "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 text-amber-600" : "bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700"}`}>
+                  <div className={\`w-14 h-14 rounded-full flex items-center justify-center text-2xl border-2 \${badge.unlocked ? "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 text-amber-600" : "bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700"}\`}>
                     {badge.emoji}
                   </div>
-                  <div className={`text-[10px] font-bold leading-tight ${badge.unlocked ? "text-slate-800 dark:text-slate-200" : "text-slate-500"}`}>
+                  <div className={\`text-[10px] font-bold leading-tight \${badge.unlocked ? "text-slate-800 dark:text-slate-200" : "text-slate-500"}\`}>
                     {badge.name}
                   </div>
                 </div>
@@ -332,3 +334,6 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
     </div>
   );
 };
+`
+fs.writeFileSync('src/components/MenuExtra.tsx', code);
+console.log('MenuExtra replaced');

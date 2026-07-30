@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { PRODUCT_CATALOG } from "../data/catalog";
 import { motion, AnimatePresence } from "motion/react";
+import { PageHeader } from "./ui/PageHeader";
 export const ListaCompras: React.FC<{ context: AppContextType }> = ({
   context,
 }) => {
@@ -209,7 +210,7 @@ export const ListaCompras: React.FC<{ context: AppContextType }> = ({
         {" "}
         <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
         <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '100px 100px', backgroundRepeat: 'repeat' }}></div>{" "}
+        {" "}
         <div className="flex flex-col items-center relative z-10">
           {" "}
           <p className="text-green-50 font-semibold text-[11px] mb-1.5">

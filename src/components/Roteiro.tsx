@@ -1,4 +1,5 @@
 /* Este componente foi absorvido pelo Promocoes.tsx */
+import { PageHeader } from "./ui/PageHeader";
 import React, { useMemo } from "react";
 import { AppContextType, Market } from "../types";
 import { Store, BadgePercent } from "lucide-react";
@@ -80,7 +81,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
         {" "}
         <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
         <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '100px 100px', backgroundRepeat: 'repeat' }}></div>{" "}
+        {" "}
         <div className="flex justify-between items-center relative z-10">
           {" "}
           <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
@@ -89,7 +90,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           </h2>{" "}
         </div>{" "}
       </div>{" "}
-      <div className="px-4 lg:px-6 -mt-16 relative z-20">
+      <div className="px-6 mt-4 relative z-20 pb-24">
         {" "}
         {!marketRankings ? (
           <div className="text-center py-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-zinc-500 dark:text-zinc-400 shadow-sm flex flex-col items-center">
@@ -108,12 +109,12 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           <div className="space-y-6">
             {" "}
             {/* BEST OPTION BENTO BOX */}{" "}
-            <div className="bg-green-700 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+            <div className="bg-slate-900 dark:bg-slate-100 rounded-3xl p-6 text-white dark:text-slate-900 shadow-sm overflow-hidden relative border border-slate-200 dark:border-zinc-800">
               {" "}
               <div className="absolute -right-10 -top-10 opacity-20">
                 <Store size={150} />
               </div>{" "}
-              <h3 className="text-[11px] font-bold text-green-100 mb-1">
+              <h3 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-1">
                 Melhor Opção
               </h3>{" "}
               <div className="text-[32px] font-bold tracking-tight leading-none mb-4 break-words">
@@ -121,7 +122,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
               </div>{" "}
               <div className="space-y-2">
                 {" "}
-                <div className="font-semibold text-[16px] bg-white dark:bg-zinc-900/20 p-3 rounded-3xl flex justify-between">
+                <div className="font-semibold text-[16px] bg-slate-800 dark:bg-slate-200 p-3 rounded-3xl flex justify-between">
                   {" "}
                   <span>Total Ofertas:</span>{" "}
                   <span>
@@ -130,7 +131,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                     </span>
                   </span>{" "}
                 </div>{" "}
-                <div className="text-[12px] font-medium text-green-100 flex items-center gap-2 pt-1 border-t border-white/20 mt-2">
+                <div className="text-[12px] font-medium text-slate-400 dark:text-slate-500 flex items-center gap-2 pt-1 border-t border-slate-800 dark:border-slate-200 mt-2">
                   {" "}
                   <BadgePercent size={14} /> Cobertura:{" "}
                   {marketRankings.vencedor.itensCobertos} de{" "}
@@ -150,7 +151,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
               return (
                 <div
                   key={ranking.mercadoId}
-                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-3xl shadow-sm mb-4"
+                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm mb-4"
                 >
                   {" "}
                   <div className="flex justify-between items-center mb-2">
@@ -158,7 +159,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                     <div className="flex items-center gap-3">
                       {" "}
                       <div
-                        className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index === 0 ? "bg-green-50 text-green-700 dark:text-green-500" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
+                        className={`w-8 h-8 rounded-full flex justify-center items-center font-bold text-[13px] ${index === 0 ? "bg-green-50 text-slate-900 dark:text-slate-100" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
                       >
                         {" "}
                         {index + 1}{" "}
@@ -167,7 +168,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                         {ranking.mercadoNome}
                       </span>{" "}
                     </div>{" "}
-                    <div className="font-bold text-[16px] text-green-700 dark:text-green-500">
+                    <div className="font-bold text-[16px] text-slate-900 dark:text-slate-100">
                       {" "}
                       <span className="money-value">
                         {formatMoney(ranking.totalEstimado)}
@@ -179,7 +180,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
                     <div className="flex-1 h-2 bg-transparent rounded-full overflow-hidden">
                       {" "}
                       <div
-                        className={`h-full rounded-full ${index === 0 ? "bg-green-700" : "bg-zinc-400"}`}
+                        className={`h-full rounded-full ${index === 0 ? "bg-slate-900 dark:bg-slate-100" : "bg-zinc-400"}`}
                         style={{ width: `${width}%` }}
                       />{" "}
                     </div>{" "}

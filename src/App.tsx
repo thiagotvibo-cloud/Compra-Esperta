@@ -11,6 +11,8 @@ import { ListaCompras } from "./components/ListaCompras";
 import { Promocoes } from "./components/Promocoes";
 import { ModoCompra } from "./components/ModoCompra";
 import { MenuExtra } from "./components/MenuExtra";
+import { Dashboard } from "./components/Dashboard";
+import { AgenteIA } from "./components/AgenteIA";
 import { Roteiro } from "./components/Roteiro";
 import { AuthUI } from "./components/Auth";
 import { supabase } from "./lib/supabase";
@@ -22,7 +24,11 @@ import {
   ShoppingCart,
   Settings as SettingsIcon,
   Map,
+  LayoutDashboard,
+  CheckSquare,
 } from "lucide-react";
+import { ModoMarmiteiro } from "./components/ModoMarmiteiro";
+
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
@@ -39,9 +45,7 @@ export default function App() {
   });
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [shoppingMarketId, setShoppingMarketId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<
-    "lista" | "roteiro" | "promocoes" | "compras" | "extras"
-  >("lista");
+  const [activeTab, setActiveTab] = useState<"lista" | "roteiro" | "promocoes" | "compras" | "config" | "dashboard">("lista");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -77,35 +81,38 @@ export default function App() {
     });
     return () => subscription.unsubscribe();
   }, []);
-  const handleError = (context: string, error: any) => {
-    /* Ignore auth/JWT/Refresh token errors quietly instead of alerting the user, and sign out automatically. */ const msg =
+  const handleError = (context: string, error: unknown) => {
+    /* Ignore auth/JWT/Refresh token errors quietly instead of alerting the user, and sign out automatically. */
+    const err = error as { message?: string, code?: string, details?: string };
+    const msg =
       typeof error === "string"
         ? error
-        : error?.message || JSON.stringify(error) || "";
+        : err?.message || JSON.stringify(error) || "";
     if (
       msg.includes("JWT") ||
       msg.includes("Refresh Token") ||
       msg.includes("token") ||
-      error?.code === "401" ||
-      error?.code === "403"
+      err?.code === "401" ||
+      err?.code === "403"
     ) {
       supabase.auth.signOut().catch(console.error);
       return;
     }
-    /* Ignore missing table errors silently */ if (
-      error?.code === "42P01" ||
-      error?.code === "PGRST205" ||
+    /* Ignore missing table errors silently */ 
+    if (
+      err?.code === "42P01" ||
+      err?.code === "PGRST205" ||
       msg.includes("schema cache")
     ) {
       return;
     }
     console.error(
       `❌ Erro Supabase (${context}):`,
-      error?.message,
-      error?.details,
+      err?.message,
+      err?.details,
       error,
     );
-    showToast(`Erro: ${context}. ${error?.message || ""}`);
+    showToast(`Erro: ${context}. ${err?.message || ""}`);
   };
   const isSyncingItems = useRef(false);
   const isSyncingMarkets = useRef(false);
@@ -292,14 +299,14 @@ export default function App() {
             { event: "*", schema: "public", table: "history" },
             fetchData,
           )
-          .subscribe((status, err: any) => {
+          .subscribe((status, err: unknown) => {
             console.log(`🔌 Supabase Realtime Status: ${status}`);
             if (status === "SUBSCRIBED") {
               console.log("✅ Conexão Realtime estabelecida com sucesso!");
             } else if (status === "CLOSED") {
               console.warn("⚠️ Conexão Realtime foi fechada.");
             } else if (status === "CHANNEL_ERROR") {
-              const errMsg = err?.message || err;
+              const errMsg = (err as Error)?.message || err;
               if (
                 String(errMsg).includes("1006") ||
                 String(errMsg).includes("transport failure") ||
@@ -329,7 +336,7 @@ export default function App() {
       };
     }
   }, [session]);
-  const updateSetting = async (key: string, value: any) => {
+  const updateSetting = async (key: string, value: string | number | boolean) => {
     if (!session?.user) return;
     try {
       const { error } = await supabase
@@ -620,12 +627,12 @@ export default function App() {
       return next;
     });
   };
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<Event & { prompt: () => void; userChoice: Promise<{ outcome: string }> } | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as Event & { prompt: () => void; userChoice: Promise<{ outcome: string }> });
       setShowInstallBanner(true);
     };
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -678,13 +685,12 @@ export default function App() {
         <nav className="hidden md:flex flex-col w-24 bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 py-8 items-center gap-8 z-50 shrink-0">
           <div className="w-12 h-12 bg-green-700 text-white rounded-2xl flex justify-center items-center font-bold text-xl mb-4 shadow-lg">CE</div>
           <div className="flex flex-col gap-4 w-full px-2">
-            <NavButton active={activeTab === "lista"} onClick={() => setActiveTab("lista")} icon={<ListTodo size={28} />} label="Lista" />
-            <NavButton active={activeTab === "roteiro"} onClick={() => setActiveTab("roteiro")} icon={<Map size={28} />} label="Rota" />
-            <NavButton active={activeTab === "promocoes"} onClick={() => setActiveTab("promocoes")} icon={<Tags size={28} />} label="Ofertas" />
-            <NavButton active={activeTab === "compras"} onClick={() => setActiveTab("compras")} icon={<ShoppingCart size={28} />} label="Comprar" />
+            <NavButton active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")} icon={<LayoutDashboard size={28} />} label="Painel" />
+            <NavButton active={activeTab === "lista"} onClick={() => setActiveTab("lista")} icon={<ShoppingCart size={28} />} label="Lista" />
+            <NavButton active={activeTab === "compras"} onClick={() => setActiveTab("compras")} icon={<CheckSquare size={28} />} label="Comprar" />
           </div>
           <div className="mt-auto w-full px-2">
-             <NavButton active={activeTab === "extras"} onClick={() => setActiveTab("extras")} icon={<SettingsIcon size={28} />} label="Config" />
+             <NavButton active={activeTab === "config"} onClick={() => setActiveTab("config")} icon={<SettingsIcon size={28} />} label="Ajustes" />
           </div>
         </nav>
 
@@ -730,48 +736,40 @@ export default function App() {
               transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1.0] }}
             >
               {" "}
+              {activeTab === "dashboard" && <Dashboard context={context} />}
               {activeTab === "lista" && <ListaCompras context={context} />}{" "}
               {activeTab === "roteiro" && <Roteiro context={context} />}{" "}
               {activeTab === "promocoes" && <Promocoes context={context} />}{" "}
               {activeTab === "compras" && <ModoCompra context={context} />}{" "}
-              {activeTab === "extras" && <MenuExtra context={context} />}{" "}
+              {activeTab === "config" && <MenuExtra context={context} />}{" "}
             </motion.div>{" "}
           </AnimatePresence>{" "}
+        <ModoMarmiteiro context={context} />
+          <AgenteIA context={context} />
         </main>{" "}
         {/* BOTTOM NAVIGATION */}{" "}
         <nav className="md:hidden fixed bottom-0 w-full max-w-md bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           {" "}
-          <div className="grid grid-cols-5 w-full items-center">
+          <div className="grid grid-cols-4 w-full items-center">
             {" "}
+            <NavButton active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")} icon={<LayoutDashboard size={24} />} label="Painel" />
             <NavButton
               active={activeTab === "lista"}
               onClick={() => setActiveTab("lista")}
-              icon={<ListTodo size={24} />}
+              icon={<ShoppingCart size={24} />}
               label="Lista"
-            />{" "}
-            <NavButton
-              active={activeTab === "roteiro"}
-              onClick={() => setActiveTab("roteiro")}
-              icon={<Map size={24} />}
-              label="Rota"
-            />{" "}
-            <NavButton
-              active={activeTab === "promocoes"}
-              onClick={() => setActiveTab("promocoes")}
-              icon={<Tags size={24} />}
-              label="Ofertas"
             />{" "}
             <NavButton
               active={activeTab === "compras"}
               onClick={() => setActiveTab("compras")}
-              icon={<ShoppingCart size={24} />}
+              icon={<CheckSquare size={24} />}
               label="Comprar"
             />{" "}
             <NavButton
-              active={activeTab === "extras"}
-              onClick={() => setActiveTab("extras")}
+              active={activeTab === "config"}
+              onClick={() => setActiveTab("config")}
               icon={<SettingsIcon size={24} />}
-              label="Config"
+              label="Ajustes"
             />{" "}
           </div>{" "}
         </nav>{" "}
@@ -779,7 +777,17 @@ export default function App() {
     </div>
   );
 }
-function NavButton({ active, onClick, icon, label }: any) {
+function NavButton({
+  active,
+  onClick,
+  icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
   return (
     <button
       onClick={onClick}

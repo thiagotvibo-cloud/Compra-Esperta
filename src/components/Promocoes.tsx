@@ -1,3 +1,4 @@
+import { PageHeader } from "./ui/PageHeader";
 import React, { useState, useMemo, useEffect } from "react";
 import { Market, Promotion, Unit, AppContextType } from "../types";
 import {
@@ -37,6 +38,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
   /* States para o modal de catálogo */ const [showCatalog, setShowCatalog] =
     useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   /* Filtro */ const [promoFilter, setPromoFilter] = useState<
     "all" | "today" | "tomorrow"
@@ -180,7 +182,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
         {" "}
         <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
         <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        <div className="absolute inset-0 opacity-100 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/pattern-dark.svg")', backgroundSize: '100px 100px', backgroundRepeat: 'repeat' }}></div>{" "}
+        {" "}
         <div className="flex justify-between items-center relative z-10">
           {" "}
           <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
@@ -193,10 +195,10 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
           Gerencie as ofertas que encontrou e organize por supermercado.{" "}
         </p>{" "}
       </div>{" "}
-      <div className="px-4 lg:px-6 -mt-16 relative z-20">
+      <div className="px-6 mt-4 relative z-20">
         {" "}
         {/* SELETOR DE MERCADO */}{" "}
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] mb-6 shadow-xl">
+        <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl mb-6 shadow-sm border border-slate-200 dark:border-zinc-800">
           {" "}
           <label className="block text-[12px] font-semibold mb-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
             {" "}
@@ -243,7 +245,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             />{" "}
             <button
               type="submit"
-              className="shrink-0 bg-green-700 hover:bg-emerald-700 transition-colors text-white px-5 py-3.5 rounded-3xl font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
+              className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 transition-colors text-white px-5 py-3.5 rounded-3xl font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
             >
               {" "}
               Criar{" "}
@@ -340,37 +342,46 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     </select>{" "}
                   </div>{" "}
                 </div>{" "}
-              </div>{" "}
-              <div className="grid grid-cols-2 gap-3">
-                {" "}
-                <div>
-                  {" "}
-                  <label className="block text-[11px] font-semibold mb-1.5 text-zinc-500 dark:text-zinc-400">
-                    {" "}
-                    Anotação{" "}
-                  </label>{" "}
-                  <input
-                    type="text"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Ex: Marca Ype..."
-                    className="w-full px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400"
-                  />{" "}
-                </div>{" "}
-                <div>
-                  {" "}
-                  <label className="block text-[11px] font-semibold mb-1.5 text-zinc-500 dark:text-zinc-400">
-                    {" "}
-                    Validade{" "}
-                  </label>{" "}
-                  <input
-                    type="date"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    className="w-full px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium text-zinc-900 dark:text-zinc-100"
-                  />{" "}
-                </div>{" "}
-              </div>{" "}
+
+              </div>
+              {showAdvanced && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold mb-1.5 text-zinc-500 dark:text-zinc-400">
+                      Anotação
+                    </label>
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Ex: Marca Ype..."
+                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400 text-[14px]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold mb-1.5 text-zinc-500 dark:text-zinc-400">
+                      Validade
+                    </label>
+                    <input
+                      type="date"
+                      value={expiryDate}
+                      onChange={(e) => setExpiryDate(e.target.value)}
+                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium text-zinc-900 dark:text-zinc-100 text-[14px]"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-center -mt-2 mb-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowAdvanced(!showAdvanced)} 
+                  className="text-[11px] font-bold text-green-700 dark:text-green-500 flex items-center gap-1 uppercase tracking-wider py-1 px-3 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                >
+                  {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />} 
+                  {showAdvanced ? "Ocultar Opcionais" : "Mostrar Opcionais"}
+                </button>
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-2 mt-2 pt-2">
                 {" "}
                 <button
@@ -414,21 +425,21 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             {" "}
             <button
               onClick={() => setPromoFilter("all")}
-              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "all" ? "bg-green-700 text-white" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
+              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "all" ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900" : "bg-transparent text-zinc-500 dark:text-zinc-400"}`}
             >
               {" "}
               Todas Ofertas{" "}
             </button>{" "}
             <button
               onClick={() => setPromoFilter("today")}
-              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "today" ? "bg-red-500 text-white" : "bg-red-50 /10 text-red-500"}`}
+              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "today" ? "bg-red-500 text-white" : "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"}`}
             >
               {" "}
               Vence Hoje{" "}
             </button>{" "}
             <button
               onClick={() => setPromoFilter("tomorrow")}
-              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "tomorrow" ? "bg-orange-500 text-white" : "bg-orange-50 /10 text-orange-500"}`}
+              className={`px-4 py-2 rounded-xl font-bold text-[12px] transition-colors shrink-0 ${promoFilter === "tomorrow" ? "bg-orange-500 text-white" : "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400"}`}
             >
               {" "}
               Vence Amanhã{" "}

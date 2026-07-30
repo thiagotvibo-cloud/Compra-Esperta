@@ -1,314 +1,26 @@
-import { motion, AnimatePresence } from "motion/react";
-import { PageHeader } from "./ui/PageHeader";
-import React, { useMemo, useState, useEffect, useRef } from "react";
-import { AppContextType, Item, HistoryItem } from "../types";
-import {
-  formatMoney,
-  formatItemName,
-  generateId,
-  CATEGORY_EMOJI_UPDATED,
-} from "../utils";
-import {
-  Check,
-  AlertTriangle,
-  Plus,
-  Minus,
-  Search,
-  CreditCard,
-  X,
-  Trash2,
-  Store,
-  Ban,
-  ShoppingBag,
-  ChevronRight,
-  Map,
-} from "lucide-react";
-export const ModoCompra: React.FC<{ context: AppContextType }> = ({
-  context,
-}) => {
-  const {
-    items,
-    setItems,
-    settings,
-    markets,
-    promotions,
-    setHistory,
-    history,
-    shoppingMarketId,
-    setShoppingMarketId,
-  } = context;
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAvulso, setShowAvulso] = useState(false);
-  const [avulsoVal, setAvulsoVal] = useState("");
-  const [delayedSorting, setDelayedSorting] = useState<boolean>(false);
-  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
-  const [purchaseSummary, setPurchaseSummary] = useState<{
-    total: number;
-    economy: number;
-    itemCount: number;
-    marketName: string;
-  } | null>(null);
-  const activeItems = useMemo(() => items.filter((i) => !i.notFound), [items]);
-  const [scaleTotal, setScaleTotal] = useState(false);
-  const [lastBoughtName, setLastBoughtName] = useState("");
-  const [showBoughtToast, setShowBoughtToast] = useState(false);
-  const totalSpent = useMemo(() => {
-    return activeItems
-      .filter((i) => i.isBought)
-      .reduce(
-        (acc, curr) => acc + (curr.actualPrice || 0) * (curr.qty || 1),
-        0,
-      );
-  }, [activeItems]);
-  const prevTotalRef = useRef(totalSpent);
-  useEffect(() => {
-    if (totalSpent !== prevTotalRef.current) {
-      setScaleTotal(true);
-      const t = setTimeout(() => setScaleTotal(false), 150);
-      prevTotalRef.current = totalSpent;
-      return () => clearTimeout(t);
-    }
-  }, [totalSpent]);
-  const toggleBought = (id: string) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, isBought: !item.isBought } : item,
-      ),
-    );
-    setDelayedSorting(true);
-  };
-  const markNotFound = (id: string) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, notFound: true, isBought: false } : item,
-      ),
-    );
-  };
-  useEffect(() => {
-    if (delayedSorting) {
-      const timer = setTimeout(() => {
-        setDelayedSorting(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [delayedSorting, items]);
-  const updatePrice = (id: string, newPrice: number) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, actualPrice: newPrice } : item,
-      ),
-    );
-  };
-  const handlePriceInput = (id: string, inputValue: string) => {
-    const numericStr = inputValue.replace(/\D/g, "");
-    if (!numericStr) {
-      updatePrice(id, 0);
-      return;
-    }
-    const newPrice = parseInt(numericStr, 10) / 100;
-    updatePrice(id, newPrice);
-  };
-  const getPriceDisplayValue = (price: number) => {
-    if (!price) return "";
-    return price.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-  const updateQtyExplicit = (id: string, newQty: number) => {
-    setItems(
-      items.map((item) => (item.id === id ? { ...item, qty: newQty } : item)),
-    );
-  };
-  const handleQtyChange = (id: string, inputValue: string, unit: string) => {
-    const isFractional = ["kg", "l"].includes(unit.toLowerCase());
-    const numericStr = inputValue.replace(/\D/g, "");
-    if (isFractional) {
-      if (!numericStr) {
-        updateQtyExplicit(id, 0);
-        return;
-      }
-      updateQtyExplicit(id, parseInt(numericStr, 10) / 1000);
-    } else {
-      if (!numericStr) {
-        updateQtyExplicit(id, 0);
-        return;
-      }
-      updateQtyExplicit(id, parseInt(numericStr, 10));
-    }
-  };
-  const getQtyDisplayValue = (qty: number, unit: string) => {
-    const isFractional = ["kg", "l"].includes(unit.toLowerCase());
-    if (isFractional)
-      return (qty || 0).toLocaleString("pt-BR", {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
-      });
-    return (qty || 0).toString();
-  };
-  const handleAvulsoAdd = () => {
-    const numericStr = avulsoVal.replace(/\D/g, "");
-    if (!numericStr) return;
-    const newPrice = parseInt(numericStr, 10) / 100;
-    if (newPrice <= 0) return;
-    setItems([
-      ...items,
-      {
-        id: generateId(),
-        name: `Item Avulso`,
-        category: "Outros",
-        qty: 1,
-        unit: "un",
-        actualPrice: newPrice,
-        isBought: true,
-        isEssential: false,
-        onlyPromo: false,
-        notes: "",
-      },
-    ]);
-    setAvulsoVal("");
-    setShowAvulso(false);
-  };
-  const handleMarketSelect = (marketId: string) => {
-    setShoppingMarketId(marketId);
-    if (!marketId) return;
-    const marketPromos = promotions.filter((p) => p.marketId === marketId);
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.isBought) return item;
-        /* Conserva valor preenchido manualmente */ const promo =
-          marketPromos.find((p) => p.itemName === item.name);
-        if (promo) {
-          return { ...item, actualPrice: promo.price };
-        }
-        return item;
-      }),
-    );
-  };
-  const budgetPercent =
-    settings.budget > 0 ? (totalSpent / settings.budget) * 100 : 0;
-  let headerColor = "bg-green-700";
-  let textColor = "text-white";
-  let subTextColor = "text-green-100";
-  let pulseClass = "";
-  if (budgetPercent > 100) {
-    headerColor = "bg-red-600";
-    textColor = "text-white";
-    subTextColor = "text-red-100";
-    pulseClass = "animate-pulse";
-  } else if (budgetPercent >= 90) {
-    headerColor = "bg-red-200";
-    textColor = "text-red-800";
-    subTextColor = "text-red-700";
-  } else if (budgetPercent >= 70) {
-    headerColor = "bg-orange-500";
-    textColor = "text-white";
-    subTextColor = "text-orange-100";
-  }
-  const finishPurchase = () => {
-    let economy = 0;
-    if (settings.budget > 0) {
-      economy = settings.budget - totalSpent;
-    } else {
-      /* Simplification of economy if no budget */ const expectedTotal =
-        activeItems.reduce((acc, curr) => acc + 15.0 * curr.qty, 0);
-      /* 15 = placeholder */ economy = expectedTotal - totalSpent;
-    }
-    const h: HistoryItem = {
-      id: generateId(),
-      date: new Date().toISOString(),
-      marketId: shoppingMarketId || null,
-      totalSpent: totalSpent,
-      economyGenerated: Math.max(0, economy),
-      /* para não ficar negativo se passou */ items: activeItems
-        .filter((i) => i.isBought)
-        .map((i) => ({
-          nome: i.name,
-          quantidade: i.qty,
-          subtotal: (i.actualPrice || 0) * i.qty,
-        })),
-    };
-    setHistory([h, ...history]);
-    setItems(
-      items.map((i) => ({
-        ...i,
-        isBought: false,
-        actualPrice: 0,
-        notFound: false,
-      })),
-    );
-    setShowFinishConfirm(false);
-    context.setActiveTab("lista");
-  };
-  const itemsByCategory = useMemo(() => {
-    const filteredItems = activeItems.filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    const grouped = filteredItems.reduce(
-      (acc, item) => {
-        const cat = item.category || "Outros";
-        if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(item);
-        return acc;
-      },
-      {} as Record<string, Item[]>,
-    );
-    if (!delayedSorting) {
-      Object.keys(grouped).forEach((cat) => {
-        grouped[cat].sort((a, b) => {
-          if (a.isBought === b.isBought) {
-            if (a.isEssential && !b.isEssential) return -1;
-            if (!a.isEssential && b.isEssential) return 1;
-            return a.name.localeCompare(b.name);
-          }
-          return a.isBought ? 1 : -1;
-        });
-      });
-    }
-    return grouped;
-  }, [activeItems, searchTerm, delayedSorting]);
-  /* Se não tem itens */ if (items.length === 0)
-    return (
-      <div className="p-10 text-center text-zinc-500 dark:text-zinc-400 font-medium">
-        Sua lista está vazia. Adicione itens antes de ir às compras.
-      </div>
-    );
-  const totalItemsCount = activeItems.length;
-  const boughtItemsCount = activeItems.filter(i => i.isBought).length;
+const fs = require('fs');
 
-  return (
-    <div className="pb-36 bg-transparent min-h-screen">
-      <PageHeader 
+let content = fs.readFileSync('src/components/ModoCompra.tsx', 'utf8');
+
+const splitToken = '  return (\n    <div className="pb-36 bg-transparent min-h-screen">';
+const parts = content.split(splitToken);
+if (parts.length !== 2) {
+  console.log("Failed to split ModoCompra.tsx");
+  process.exit(1);
+}
+
+const headerPart = parts[0];
+
+const newRender = `      <PageHeader 
         title="Comprar" 
-        subtitle={`${boughtItemsCount} de ${totalItemsCount} itens no carrinho`}
+        subtitle={\`\${boughtItemsCount} de \${totalItemsCount} itens no carrinho\`}
       />
 
-      
-      <div className="px-6 mt-4 mb-2">
-        <button 
-          onClick={() => context.setActiveTab("roteiro")}
-          className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-500 flex items-center justify-center rounded-xl">
-              <Map size={20} />
-            </div>
-            <div className="text-left">
-              <h3 className="font-bold text-[14px] text-slate-800 dark:text-slate-200">Inteligência de Mercado</h3>
-              <p className="text-[12px] text-slate-500 font-medium">Veja a melhor rota e economize</p>
-            </div>
-          </div>
-          <div className="text-slate-400">
-            <ChevronRight size={20} />
-          </div>
-        </button>
-      </div>
-
       <div className="px-6 pt-4 pb-2">
-        <div className={`rounded-3xl p-5 border shadow-sm transition-colors duration-500 flex flex-col ${budgetPercent >= 100 ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900/50' : totalSpent > 0 ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900/50' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800'}`}>
+        <div className={\`rounded-3xl p-5 border shadow-sm transition-colors duration-500 flex flex-col \${budgetPercent >= 100 ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900/50' : totalSpent > 0 ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900/50' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800'}\`}>
           
           <div className="mb-4 bg-white/60 dark:bg-zinc-950/50 backdrop-blur-sm rounded-xl flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-zinc-800/80">
-            <Store className={`${budgetPercent >= 100 ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`} size={16} />
+            <Store className={\`\${budgetPercent >= 100 ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}\`} size={16} />
             <select
               value={shoppingMarketId}
               onChange={(e) => handleMarketSelect(e.target.value)}
@@ -327,12 +39,12 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
           
           <div className="flex justify-between items-end">
             <div>
-              <div className={`text-[12px] font-semibold mb-1 ${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}>
+              <div className={\`text-[12px] font-semibold mb-1 \${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}\`}>
                 Valor no Carrinho
               </div>
-              <div className={`text-[36px] font-bold tracking-tight leading-none ${budgetPercent >= 100 ? 'text-red-800 dark:text-red-300' : totalSpent > 0 ? 'text-blue-900 dark:text-blue-300' : 'text-slate-900 dark:text-slate-100'}`}>
+              <div className={\`text-[36px] font-bold tracking-tight leading-none \${budgetPercent >= 100 ? 'text-red-800 dark:text-red-300' : totalSpent > 0 ? 'text-blue-900 dark:text-blue-300' : 'text-slate-900 dark:text-slate-100'}\`}>
                 <span className="text-[20px] font-semibold mr-1 opacity-80">R$</span>
-                <span className={`money-value transition-transform duration-150 inline-block ${scaleTotal ? "scale-[1.06]" : "scale-100"}`}>
+                <span className={\`money-value transition-transform duration-150 inline-block \${scaleTotal ? "scale-[1.06]" : "scale-100"}\`}>
                   {totalSpent.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -341,7 +53,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
               </div>
               
               {settings.budget > 0 && (
-                <div className={`text-[13px] font-medium mt-1 ${budgetPercent >= 100 ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                <div className={\`text-[13px] font-medium mt-1 \${budgetPercent >= 100 ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}\`}>
                   de R$ {settings.budget.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} · {budgetPercent > 100 ? (
                     <span className="font-bold">Estourou {Math.round(budgetPercent - 100)}%</span>
                   ) : (
@@ -352,12 +64,12 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             </div>
             
             <div className="text-right">
-              <div className={`text-[11px] font-semibold mb-1 ${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}>
+              <div className={\`text-[11px] font-semibold mb-1 \${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}\`}>
                 No Carrinho
               </div>
-              <div className={`text-[28px] font-bold leading-none ${budgetPercent >= 100 ? 'text-red-800 dark:text-red-300' : totalSpent > 0 ? 'text-blue-900 dark:text-blue-300' : 'text-slate-900 dark:text-slate-100'}`}>
+              <div className={\`text-[28px] font-bold leading-none \${budgetPercent >= 100 ? 'text-red-800 dark:text-red-300' : totalSpent > 0 ? 'text-blue-900 dark:text-blue-300' : 'text-slate-900 dark:text-slate-100'}\`}>
                 {boughtItemsCount}
-                <span className={`text-[16px] font-medium opacity-80 ml-1 ${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                <span className={\`text-[16px] font-medium opacity-80 ml-1 \${budgetPercent >= 100 ? 'text-red-700 dark:text-red-400' : totalSpent > 0 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}\`}>
                   /{totalItemsCount}
                 </span>
               </div>
@@ -377,7 +89,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                 type="tel"
                 value={avulsoVal}
                 onChange={(e) => {
-                  let val = e.target.value.replace(/\D/g, "");
+                  let val = e.target.value.replace(/\\D/g, "");
                   val = (Number(val) / 100).toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -427,19 +139,19 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                     {catItems.map((item) => (
                       <div
                         key={item.id}
-                        className={`p-3 rounded-2xl border transition-all duration-300 ease-out flex gap-3 items-center ${
+                        className={\`p-3 rounded-2xl border transition-all duration-300 ease-out flex gap-3 items-center \${
                           item.isBought
                             ? "bg-slate-50 dark:bg-zinc-950/50 border-transparent opacity-60"
                             : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 shadow-sm"
-                        }`}
+                        }\`}
                       >
                         <button
                           onClick={() => toggleBought(item.id)}
-                          className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all mt-0.5 ${
+                          className={\`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all mt-0.5 \${
                             item.isBought
                               ? "bg-green-600 border-none"
                               : "bg-slate-50 dark:bg-zinc-800 border-2 border-slate-200 dark:border-zinc-700"
-                          }`}
+                          }\`}
                         >
                           {item.isBought && <Check size={20} strokeWidth={3} className="text-white" />}
                         </button>
@@ -447,9 +159,9 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                         <div className="flex-1 min-w-0 flex flex-col justify-center">
                           <div className="flex items-start justify-between gap-2">
                             <div
-                              className={`text-[15px] font-bold leading-tight flex-1 min-w-0 break-words ${
+                              className={\`text-[15px] font-bold leading-tight flex-1 min-w-0 break-words \${
                                 item.isBought ? "line-through text-slate-500 dark:text-slate-400" : "text-slate-900 dark:text-slate-100"
-                              }`}
+                              }\`}
                             >
                               {item.name}
                             </div>
@@ -464,7 +176,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                           </div>
 
                           <div className="flex items-center gap-2 mt-2">
-                            <div className={`flex items-center rounded-lg p-0.5 ${item.isBought ? "opacity-70" : ""}`}>
+                            <div className={\`flex items-center rounded-lg p-0.5 \${item.isBought ? "opacity-70" : ""}\`}>
                               {["kg", "l"].includes(item.unit.toLowerCase()) ? (
                                 <input
                                   disabled={item.isBought}
@@ -515,11 +227,11 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                 value={getPriceDisplayValue(item.actualPrice || 0)}
                                 onChange={(e) => handlePriceInput(item.id, e.target.value)}
                                 placeholder="0,00"
-                                className={`w-full pl-6 pr-2 py-1.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 text-[14px] transition-colors ${
+                                className={\`w-full pl-6 pr-2 py-1.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 text-[14px] transition-colors \${
                                   item.isBought
                                     ? "bg-transparent text-slate-500 dark:text-slate-400"
                                     : "bg-slate-50 dark:bg-zinc-950 text-green-700 dark:text-green-500"
-                                }`}
+                                }\`}
                               />
                             </div>
                           </div>
@@ -548,24 +260,24 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                     return (
                                       <div
                                         key={idx}
-                                        className={`flex justify-between items-center px-2 py-1.5 rounded-md border ${
+                                        className={\`flex justify-between items-center px-2 py-1.5 rounded-md border \${
                                           isCurrentMarket
                                             ? "bg-green-50 border-green-100 dark:bg-green-950/20 dark:border-green-900/30"
                                             : "bg-transparent border-slate-200 dark:border-zinc-800"
-                                        }`}
+                                        }\`}
                                       >
                                         <div className="flex items-center gap-1.5 overflow-hidden">
                                           <Store
                                             size={12}
-                                            className={`shrink-0 ${isCurrentMarket ? "text-green-600" : "text-slate-400"}`}
+                                            className={\`shrink-0 \${isCurrentMarket ? "text-green-600" : "text-slate-400"}\`}
                                           />
-                                          <span className={`text-[11px] font-bold truncate ${isCurrentMarket ? "text-green-700 dark:text-green-400" : "text-slate-500"}`}>
+                                          <span className={\`text-[11px] font-bold truncate \${isCurrentMarket ? "text-green-700 dark:text-green-400" : "text-slate-500"}\`}>
                                             {market?.name || "Mercado"}
                                           </span>
                                         </div>
-                                        <div className={`text-[11px] font-bold shrink-0 ${isCurrentMarket ? "text-green-700 dark:text-green-400" : "text-slate-500"}`}>
+                                        <div className={\`text-[11px] font-bold shrink-0 \${isCurrentMarket ? "text-green-700 dark:text-green-400" : "text-slate-500"}\`}>
                                           <span className="money-value">{formatMoney(precoUnitario)}</span>
-                                          <span className={`text-[9px] font-medium ${isCurrentMarket ? "text-green-600/80" : "text-slate-400"}`}>
+                                          <span className={\`text-[9px] font-medium \${isCurrentMarket ? "text-green-600/80" : "text-slate-400"}\`}>
                                             /{item.unit}
                                           </span>
                                         </div>
@@ -763,3 +475,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
     </div>
   );
 };
+`;
+
+fs.writeFileSync('src/components/ModoCompra.tsx', headerPart + splitToken + "\n" + newRender);
+console.log("Rewrote ModoCompra.tsx render");
