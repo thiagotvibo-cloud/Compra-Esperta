@@ -12,3 +12,17 @@ export const generateId = () => { if (typeof crypto !== 'undefined' && crypto.ra
 }; export const CATEGORY_EMOJI: Record<string, string> = { 'Açougue e Peixaria': '🥩', 'Frios e Laticínios': '🧀', 'Hortifruti': '🥦', 'Bebidas': '🥤', 'Mercearia': '🍚', 'Limpeza': '🧼', 'Higiene e Perfumaria': '🧴', 'Padaria': '🍞', 'Congelados': '🧊', 'Pet Shop': '🐾', 'Outros': '🛒'
 }; export const CATEGORY_EMOJI_UPDATED: Record<string, string> = { 'Açougue': '🥩', 'Açougue e Aves': '🥩', 'Açougue e Peixaria': '🥩', 'Peixaria': '🐟', 'Hortifruti': '🥦', 'Laticínios e Frios': '🧀', 'Frios e Laticínios': '🧀', 'Congelados': '🧊', 'Mercearia': '🍚', 'Padaria': '🍞', 'Padaria, Biscoitos e Doces': '🥖', 'Bebidas': '🧃', 'Limpeza': '🧼', 'Higiene e Perfumaria': '🧴', 'Higiene e Limpeza': '🧼', 'Bebês': '🍼', 'Pet Shop': '🐾', 'Outros': '🛒'
 };
+
+export const formatCurrencyInput = (val: number) => {
+  if (!val) return "";
+  return val.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+export const parseCurrencyInput = (inputValue: string): number => {
+  const numericStr = inputValue.replace(/\D/g, "");
+  if (!numericStr) return 0;
+  return parseInt(numericStr, 10) / 100;
+};

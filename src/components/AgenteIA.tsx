@@ -87,9 +87,9 @@ export const AgenteIA: React.FC<{ context: AppContextType }> = ({ context }) => 
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-24 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-40 transition-colors"
+            className="fixed bottom-40 right-4 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-sm flex items-center justify-center z-40 transition-colors"
           >
-            <Sparkles size={24} />
+            <Sparkles size={20} />
           </motion.button>
         )}
       </AnimatePresence>
@@ -103,17 +103,17 @@ export const AgenteIA: React.FC<{ context: AppContextType }> = ({ context }) => 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/40 z-50 md:hidden"
+              className="fixed inset-0 bg-black/40 z-[90] md:hidden"
             />
             <motion.div
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 h-[80vh] bg-zinc-50 dark:bg-zinc-900 rounded-t-3xl shadow-2xl z-50 flex flex-col md:w-[400px] md:h-[600px] md:bottom-24 md:left-auto md:right-6 md:rounded-3xl border border-zinc-200 dark:border-zinc-800"
+              className="fixed bottom-0 left-0 right-0 h-[80vh] bg-zinc-50 dark:bg-zinc-900 rounded-t-[28px] shadow-sm z-[100] flex flex-col md:w-[400px] md:h-[600px] md:bottom-24 md:left-auto md:right-6 md:rounded-3xl border border-zinc-200 dark:border-zinc-800"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 md:rounded-t-3xl rounded-t-3xl">
+              <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 md:rounded-t-[28px] rounded-t-[28px]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
                     <Sparkles size={20} />

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AppContextType } from "../types";
 import { ChefHat, X, Calculator, ShoppingBag, AlertCircle, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { formatMoney } from "../utils";
+import { formatMoney, formatCurrencyInput, parseCurrencyInput } from "../utils";
 
 export const ModoMarmiteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -65,9 +65,9 @@ export const ModoMarmiteiro: React.FC<{ context: AppContextType }> = ({ context 
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 p-4 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center border-4 border-white dark:border-zinc-900"
+        className="fixed bottom-24 right-4 w-12 h-12 z-40 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center border-2 border-white dark:border-zinc-900"
       >
-        <ChefHat size={26} />
+        <ChefHat size={20} />
       </button>
 
       {/* Modal / Bottom Sheet */}
@@ -86,7 +86,7 @@ export const ModoMarmiteiro: React.FC<{ context: AppContextType }> = ({ context 
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 max-h-[90vh] bg-white dark:bg-zinc-900 z-[110] rounded-t-[32px] shadow-2xl flex flex-col md:max-w-xl md:mx-auto"
+              className="fixed bottom-0 left-0 right-0 max-h-[90vh] bg-white dark:bg-zinc-900 z-[110] rounded-t-[28px] shadow-sm flex flex-col md:max-w-xl md:mx-auto"
             >
               <div className="flex justify-between items-center p-6 pb-2 border-b border-slate-100 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
@@ -116,9 +116,9 @@ export const ModoMarmiteiro: React.FC<{ context: AppContextType }> = ({ context 
                     <div className="bg-slate-50 dark:bg-zinc-950 p-3 rounded-2xl border border-slate-200 dark:border-zinc-800">
                       <label className="text-[11px] font-bold text-slate-500 block mb-1">Orçamento Mensal</label>
                       <input 
-                        type="number" 
-                        value={budget || ""} 
-                        onChange={(e) => setBudget(Number(e.target.value))}
+                        type="tel" 
+                        value={formatCurrencyInput(budget || 0)} 
+                        onChange={(e) => setBudget(parseCurrencyInput(e.target.value))}
                         className="w-full bg-transparent font-bold text-slate-900 dark:text-slate-100 outline-none text-lg"
                       />
                     </div>

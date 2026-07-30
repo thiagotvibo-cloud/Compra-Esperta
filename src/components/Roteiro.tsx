@@ -77,23 +77,11 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
     <div className="pb-28 bg-transparent min-h-screen">
       {" "}
       {/* HEADER */}{" "}
-      <div className="bg-gradient-to-br from-green-600 to-green-500 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-16 px-6 text-white shadow-primary z-10 relative">
-        {" "}
-        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
-        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        {" "}
-        <div className="flex justify-between items-center relative z-10">
-          {" "}
-          <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
-            {" "}
-            Inteligência de Mercado{" "}
-          </h2>{" "}
-        </div>{" "}
-      </div>{" "}
+      <PageHeader title="Roteiro de Compras" subtitle="Onde comprar cada item para economizar" />
       <div className="px-6 mt-4 relative z-20 pb-24">
         {" "}
         {!marketRankings ? (
-          <div className="text-center py-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-zinc-500 dark:text-zinc-400 shadow-sm flex flex-col items-center">
+          <div className="text-center py-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[20px] text-zinc-500 dark:text-zinc-400 shadow-sm flex flex-col items-center">
             {" "}
             <Store
               size={48}
@@ -109,7 +97,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
           <div className="space-y-6">
             {" "}
             {/* BEST OPTION BENTO BOX */}{" "}
-            <div className="bg-slate-900 dark:bg-slate-100 rounded-3xl p-6 text-white dark:text-slate-900 shadow-sm overflow-hidden relative border border-slate-200 dark:border-zinc-800">
+            <div className="bg-slate-900 dark:bg-slate-100 rounded-[20px] p-4 text-white dark:text-slate-900 shadow-sm overflow-hidden relative border border-slate-200 dark:border-zinc-800">
               {" "}
               <div className="absolute -right-10 -top-10 opacity-20">
                 <Store size={150} />
@@ -122,7 +110,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
               </div>{" "}
               <div className="space-y-2">
                 {" "}
-                <div className="font-semibold text-[16px] bg-slate-800 dark:bg-slate-200 p-3 rounded-3xl flex justify-between">
+                <div className="font-semibold text-[16px] bg-slate-800 dark:bg-slate-200 p-3 rounded-[20px] flex justify-between">
                   {" "}
                   <span>Total Ofertas:</span>{" "}
                   <span>
@@ -151,7 +139,7 @@ export const Roteiro: React.FC<{ context: AppContextType }> = ({ context }) => {
               return (
                 <div
                   key={ranking.mercadoId}
-                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-5 rounded-3xl shadow-sm mb-4"
+                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-4 rounded-[20px] shadow-sm mb-4"
                 >
                   {" "}
                   <div className="flex justify-between items-center mb-2">

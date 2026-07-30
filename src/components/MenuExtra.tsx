@@ -13,7 +13,7 @@ import {
   LogOut,
   Target
 } from "lucide-react";
-import { formatMoney } from "../utils";
+import { formatMoney, formatCurrencyInput, parseCurrencyInput } from "../utils";
 import { PageHeader } from "./ui/PageHeader";
 
 export const MenuExtra: React.FC<{ context: AppContextType }> = ({
@@ -108,11 +108,10 @@ export const MenuExtra: React.FC<{ context: AppContextType }> = ({
                   Orçamento de Compras (R$)
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
-                  value={settings.budget || ""}
+                  type="tel"
+                  value={formatCurrencyInput(settings.budget || 0)}
                   onChange={(e) =>
-                    setSettings({ ...settings, budget: Number(e.target.value) })
+                    setSettings({ ...settings, budget: parseCurrencyInput(e.target.value) })
                   }
                   placeholder="Ex: 500.00"
                   className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-[18px] text-slate-900 dark:text-slate-100 placeholder-slate-400"

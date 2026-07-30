@@ -688,6 +688,8 @@ export default function App() {
             <NavButton active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")} icon={<LayoutDashboard size={28} />} label="Painel" />
             <NavButton active={activeTab === "lista"} onClick={() => setActiveTab("lista")} icon={<ShoppingCart size={28} />} label="Lista" />
             <NavButton active={activeTab === "compras"} onClick={() => setActiveTab("compras")} icon={<CheckSquare size={28} />} label="Comprar" />
+            <NavButton active={activeTab === "promocoes"} onClick={() => setActiveTab("promocoes")} icon={<Tags size={28} />} label="Ofertas" />
+            <NavButton active={activeTab === "roteiro"} onClick={() => setActiveTab("roteiro")} icon={<Map size={28} />} label="Roteiro" />
           </div>
           <div className="mt-auto w-full px-2">
              <NavButton active={activeTab === "config"} onClick={() => setActiveTab("config")} icon={<SettingsIcon size={28} />} label="Ajustes" />
@@ -744,13 +746,13 @@ export default function App() {
               {activeTab === "config" && <MenuExtra context={context} />}{" "}
             </motion.div>{" "}
           </AnimatePresence>{" "}
+        </main>
         <ModoMarmiteiro context={context} />
-          <AgenteIA context={context} />
-        </main>{" "}
+        <AgenteIA context={context} />{" "}
         {/* BOTTOM NAVIGATION */}{" "}
         <nav className="md:hidden fixed bottom-0 w-full max-w-md bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           {" "}
-          <div className="grid grid-cols-4 w-full items-center">
+          <div className="flex justify-between w-full items-center px-1 overflow-x-auto gap-2 scrollbar-hide">
             {" "}
             <NavButton active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")} icon={<LayoutDashboard size={24} />} label="Painel" />
             <NavButton
@@ -764,6 +766,18 @@ export default function App() {
               onClick={() => setActiveTab("compras")}
               icon={<CheckSquare size={24} />}
               label="Comprar"
+            />{" "}
+            <NavButton
+              active={activeTab === "promocoes"}
+              onClick={() => setActiveTab("promocoes")}
+              icon={<Tags size={24} />}
+              label="Ofertas"
+            />{" "}
+            <NavButton
+              active={activeTab === "roteiro"}
+              onClick={() => setActiveTab("roteiro")}
+              icon={<Map size={24} />}
+              label="Roteiro"
             />{" "}
             <NavButton
               active={activeTab === "config"}
@@ -791,7 +805,7 @@ function NavButton({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-full gap-1 pt-1.5 pb-1 transition-colors relative ${
+      className={`flex flex-col items-center justify-center w-full min-w-[4.5rem] shrink-0 gap-1 pt-1.5 pb-1 transition-colors relative ${
         active
           ? "text-green-700 dark:text-green-500 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-500 dark:text-zinc-400 font-medium"

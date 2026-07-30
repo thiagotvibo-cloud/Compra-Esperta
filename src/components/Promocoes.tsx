@@ -7,6 +7,8 @@ import {
   getPricePerBaseUnit,
   convertToBaseUnit,
   formatItemName,
+  formatCurrencyInput,
+  parseCurrencyInput,
 } from "../utils";
 import {
   Store,
@@ -65,22 +67,6 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
       .replace(/[\u0300-\u036f]/g, "");
     return flatCatalog.filter((i) => i.searchKey.includes(query));
   }, [searchQuery, flatCatalog]);
-  const handlePriceInput = (inputValue: string) => {
-    const numericStr = inputValue.replace(/\D/g, "");
-    if (!numericStr) {
-      setPrice(0);
-      return;
-    }
-    const newPrice = parseInt(numericStr, 10) / 100;
-    setPrice(newPrice);
-  };
-  const getPriceDisplayValue = (val: number) => {
-    if (!val) return "";
-    return val.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
   const handleAddFromCatalog = (name: string) => {
     setItemName(name);
     setShowCatalog(false);
@@ -177,32 +163,15 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
   return (
     <div className="pb-28 bg-transparent min-h-screen">
       {" "}
-      {/* HEADER */}{" "}
-      <div className="bg-gradient-to-br from-green-600 to-green-500 rounded-b-[40px] overflow-hidden relative pt-[calc(env(safe-area-inset-top)+32px)] pb-20 px-6 text-white shadow-primary z-10 relative">
-        {" "}
-        <div className="absolute rounded-full border-[12px] border-white/10" style={{ width: 280, height: 280, top: -100, left: -100 }}></div>
-        <div className="absolute rounded-full bg-black/10" style={{ width: 140, height: 140, bottom: -20, right: -20 }}></div>
-        {" "}
-        <div className="flex justify-between items-center relative z-10">
-          {" "}
-          <h2 className="text-[24px] font-bold tracking-tight flex items-center gap-2">
-            {" "}
-            Ofertas & Mercados{" "}
-          </h2>{" "}
-        </div>{" "}
-        <p className="text-green-50 mt-2 text-[13px] font-medium relative z-10 pr-10 mb-5">
-          {" "}
-          Gerencie as ofertas que encontrou e organize por supermercado.{" "}
-        </p>{" "}
-      </div>{" "}
+      <PageHeader title="Ofertas & Mercados" subtitle="Gerencie ofertas e compare supermercados" />
       <div className="px-6 mt-4 relative z-20">
         {" "}
         {/* SELETOR DE MERCADO */}{" "}
-        <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl mb-6 shadow-sm border border-slate-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-4 rounded-[20px] mb-6 shadow-sm border border-slate-200 dark:border-zinc-800">
           {" "}
           <label className="block text-[12px] font-semibold mb-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
             {" "}
-            <Store size={18} className="text-green-700 dark:text-green-500" /> Selecione o
+            <Store size={18} className="text-green-700 dark:text-slate-300" /> Selecione o
             Mercado{" "}
           </label>{" "}
           <div className="flex gap-2">
@@ -210,7 +179,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             <select
               value={selectedMarket}
               onChange={(e) => setSelectedMarket(e.target.value)}
-              className="flex-1 px-4 py-3.5 bg-transparent border-none rounded-3xl font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600 shadow-inner appearance-none"
+              className="flex-1 px-4 py-3.5 bg-transparent border-none rounded-[20px] font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600 shadow-inner appearance-none"
             >
               {" "}
               <option value="" disabled>
@@ -227,7 +196,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             {selectedMarket && (
               <button
                 onClick={() => removeMarket(selectedMarket)}
-                className="p-3.5 text-zinc-500 dark:text-zinc-400 bg-transparent border-none hover:text-red-500 hover:bg-red-50 :bg-red-900/30 rounded-3xl transition-colors"
+                className="p-3.5 text-zinc-500 dark:text-zinc-400 bg-transparent border-none hover:text-red-500 hover:bg-red-50 :bg-red-900/30 rounded-[20px] transition-colors"
               >
                 {" "}
                 <Trash2 size={22} />{" "}
@@ -241,11 +210,11 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
               value={newMarketName}
               onChange={(e) => setNewMarketName(e.target.value)}
               placeholder="Novo mercado (ex: Extra)"
-              className="flex-1 min-w-0 px-4 py-3.5 bg-transparent border-none rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 placeholder-zinc-400 font-medium"
+              className="flex-1 min-w-0 px-4 py-3.5 bg-transparent border-none rounded-[20px] focus:outline-none focus:ring-2 focus:ring-green-600 placeholder-zinc-400 font-medium"
             />{" "}
             <button
               type="submit"
-              className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 transition-colors text-white px-5 py-3.5 rounded-3xl font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
+              className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 transition-colors text-white px-5 py-3.5 rounded-[20px] font-semibold active:scale-[0.97] transition-transform duration-150 shadow-sm"
             >
               {" "}
               Criar{" "}
@@ -254,9 +223,9 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
         </div>{" "}
         {/* CADASTRAR/EDITAR PROMOÇÃO */}{" "}
         {selectedMarket ? (
-          <div className="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 mb-6 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 p-4 rounded-[20px] border border-zinc-200 dark:border-zinc-800 mb-6 shadow-sm">
             {" "}
-            <h3 className="text-[13px] font-bold text-green-700 dark:text-green-500 mb-4 flex items-center gap-2">
+            <h3 className="text-[13px] font-bold text-green-700 dark:text-slate-300 mb-4 flex items-center gap-2">
               {" "}
               <Plus size={18} strokeWidth={3} />
               {""}{" "}
@@ -272,7 +241,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 </label>{" "}
                 <div
                   onClick={() => setShowCatalog(true)}
-                  className={`w-full px-4 py-3.5 bg-transparent border-none rounded-3xl cursor-pointer font-semibold ${itemName ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-500 dark:text-zinc-400"}`}
+                  className={`w-full px-4 py-3.5 bg-transparent border-none rounded-[20px] cursor-pointer font-semibold ${itemName ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-500 dark:text-zinc-400"}`}
                 >
                   {" "}
                   {itemName || "Selecionar produto..."}{" "}
@@ -294,10 +263,10 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     </span>{" "}
                     <input
                       type="tel"
-                      value={getPriceDisplayValue(price)}
-                      onChange={(e) => handlePriceInput(e.target.value)}
+                      value={formatCurrencyInput(price)}
+                      onChange={(e) => setPrice(parseCurrencyInput(e.target.value))}
                       placeholder="0,00"
-                      className="w-full pl-9 pr-4 py-3.5 bg-transparent border-none rounded-3xl font-bold text-[16px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600"
+                      className="w-full pl-9 pr-4 py-3.5 bg-transparent border-none rounded-[20px] font-bold text-[16px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-green-600"
                       required
                     />{" "}
                   </div>{" "}
@@ -308,7 +277,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     {" "}
                     Por (Qtd / Un){" "}
                   </label>{" "}
-                  <div className="flex gap-1.5 bg-transparent rounded-3xl p-1.5 focus-within:ring-2 focus-within:ring-green-600">
+                  <div className="flex gap-1.5 bg-transparent rounded-[20px] p-1.5 focus-within:ring-2 focus-within:ring-green-600">
                     {" "}
                     <input
                       type="number"
@@ -355,7 +324,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Ex: Marca Ype..."
-                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400 text-[14px]"
+                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-[16px] focus:outline-none focus:ring-2 focus:ring-green-600 font-medium placeholder-zinc-400 text-[14px]"
                     />
                   </div>
                   <div>
@@ -366,7 +335,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       type="date"
                       value={expiryDate}
                       onChange={(e) => setExpiryDate(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-600 font-medium text-zinc-900 dark:text-zinc-100 text-[14px]"
+                      className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-[16px] focus:outline-none focus:ring-2 focus:ring-green-600 font-medium text-zinc-900 dark:text-zinc-100 text-[14px]"
                     />
                   </div>
                 </div>
@@ -375,7 +344,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 <button 
                   type="button" 
                   onClick={() => setShowAdvanced(!showAdvanced)} 
-                  className="text-[11px] font-bold text-green-700 dark:text-green-500 flex items-center gap-1 uppercase tracking-wider py-1 px-3 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                  className="text-[11px] font-bold text-green-700 dark:text-slate-300 flex items-center gap-1 uppercase tracking-wider py-1 px-3 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
                 >
                   {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />} 
                   {showAdvanced ? "Ocultar Opcionais" : "Mostrar Opcionais"}
@@ -386,7 +355,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 {" "}
                 <button
                   type="submit"
-                  className="flex-1 bg-green-700 hover:bg-emerald-700 text-white p-4 rounded-3xl font-bold text-[15px] transition-transform active:scale-[0.97] transition-transform duration-150 shadow-sm"
+                  className="flex-1 bg-green-700 hover:bg-emerald-700 text-white p-4 rounded-[20px] font-bold text-[15px] transition-transform active:scale-[0.97] transition-transform duration-150 shadow-sm"
                 >
                   {" "}
                   {editingPromoId ? "Salvar Alterações" : "Salvar Oferta"}{" "}
@@ -395,7 +364,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   <button
                     type="button"
                     onClick={cancelEdit}
-                    className="w-full sm:w-auto px-6 py-4 bg-transparent hover:bg-zinc-200 :bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-3xl font-semibold transition-colors active:scale-[0.97] transition-transform duration-150"
+                    className="w-full sm:w-auto px-6 py-4 bg-transparent hover:bg-zinc-200 :bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-[20px] font-semibold transition-colors active:scale-[0.97] transition-transform duration-150"
                   >
                     {" "}
                     Cancelar{" "}
@@ -405,7 +374,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             </form>{" "}
           </div>
         ) : (
-          <div className="text-center text-zinc-500 dark:text-zinc-400 pt-10 pb-10 flex flex-col items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm mb-6">
+          <div className="text-center text-zinc-500 dark:text-zinc-400 pt-10 pb-10 flex flex-col items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[20px] shadow-sm mb-6">
             {" "}
             <Store
               size={48}
@@ -446,7 +415,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
             </button>{" "}
           </div>{" "}
           {filteredPromos.length === 0 ? (
-            <div className="text-center py-10 text-zinc-500 dark:text-zinc-400 font-medium bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+            <div className="text-center py-10 text-zinc-500 dark:text-zinc-400 font-medium bg-white dark:bg-zinc-900 rounded-[20px] border border-zinc-200 dark:border-zinc-800">
               {" "}
               Não há promoções nesta aba.{" "}
             </div>
@@ -468,7 +437,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                 return (
                   <div
                     key={promo.id}
-                    className="bg-white dark:bg-zinc-900 p-4 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex justify-between items-center gap-4 transition-all cursor-pointer active:scale-[0.97] transition-transform duration-150"
+                    className="bg-white dark:bg-zinc-900 p-4 rounded-[20px] shadow-sm border border-zinc-200 dark:border-zinc-800 flex justify-between items-center gap-4 transition-all cursor-pointer active:scale-[0.97] transition-transform duration-150"
                     onClick={() => handleEditPromo(promo)}
                   >
                     {" "}
@@ -487,7 +456,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       </h4>{" "}
                       <div className="flex items-end gap-2 mt-1 mb-2">
                         {" "}
-                        <div className="text-green-700 dark:text-green-500 font-bold text-[22px] tracking-tight leading-none">
+                        <div className="text-green-700 dark:text-slate-300 font-bold text-[22px] tracking-tight leading-none">
                           {" "}
                           <span className="money-value">
                             {" "}
@@ -565,7 +534,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
         >
           {" "}
           <div
-            className="w-full max-w-lg bg-zinc-50 dark:bg-zinc-900 rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom"
+            className="w-full max-w-lg bg-zinc-50 dark:bg-zinc-900 rounded-t-[28px] overflow-hidden flex flex-col shadow-sm animate-in slide-in-from-bottom"
             style={{ maxHeight: "85vh" }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -600,7 +569,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar itens..."
-                  className="w-full pl-10 pr-4 py-3.5 bg-white #1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 font-semibold text-[15px] transition-colors shadow-sm placeholder-zinc-400"
+                  className="w-full pl-10 pr-4 py-3.5 bg-white #1C1C1E] border border-zinc-200 dark:border-zinc-800 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-green-600 font-semibold text-[15px] transition-colors shadow-sm placeholder-zinc-400"
                 />{" "}
                 {searchQuery && (
                   <button
@@ -622,7 +591,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                     Nenhum produto encontrado.{" "}
                   </div>
                 ) : (
-                  <div className="bg-white #1C1C1E] rounded-3xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
+                  <div className="bg-white #1C1C1E] rounded-[20px] border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm">
                     {" "}
                     <h4 className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 mb-4">
                       {" "}
@@ -634,7 +603,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                         <button
                           key={index}
                           onClick={() => handleAddFromCatalog(item.name)}
-                          className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-green-500 dark:text-green-500 :text-green-500 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
+                          className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-slate-300 dark:text-slate-300 :text-slate-300 text-[14px] font-semibold rounded-[20px] transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
                         >
                           {" "}
                           <Plus size={16} className="opacity-50" />{" "}
@@ -650,7 +619,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                   return (
                     <div
                       key={i}
-                      className="bg-white #1C1C1E] rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all shadow-sm"
+                      className="bg-white #1C1C1E] rounded-[20px] border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all shadow-sm"
                     >
                       {" "}
                       <button
@@ -695,7 +664,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                                     onClick={() =>
                                       handleAddFromCatalog(itemName)
                                     }
-                                    className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-green-500 dark:text-green-500 :text-green-500 text-[14px] font-semibold rounded-3xl transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
+                                    className="px-4 py-2.5 bg-transparent hover:bg-green-50 :bg-emerald-900/30 text-zinc-900 dark:text-zinc-100 hoverdark:hover:text-slate-300 dark:text-slate-300 :text-slate-300 text-[14px] font-semibold rounded-[20px] transition-colors flex items-center gap-1.5 active:scale-[0.97] transition-transform duration-150"
                                   >
                                     {" "}
                                     <Plus size={16} className="opacity-50" />
@@ -744,12 +713,12 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
               Baseado nos itens da sua lista{" "}
             </p>{" "}
             {marketComparison.length < 2 ? (
-              <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 text-center border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-sm">
+              <div className="bg-white dark:bg-zinc-900 rounded-[16px] p-4 text-center border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-sm">
                 {" "}
                 Cadastre promoções em pelo menos 2 mercados para comparar.{" "}
               </div>
             ) : (
-              <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div className="bg-white dark:bg-zinc-900 rounded-[20px] p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm">
                 {" "}
                 {marketComparison.map((entry, index) => {
                   const widthPercent =
@@ -761,7 +730,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                       <div className="flex justify-between items-baseline mb-1.5">
                         {" "}
                         <span
-                          className={`text-sm font-semibold ${isWinner ? "text-green-700 dark:text-green-500" : "text-zinc-900 dark:text-zinc-100"}`}
+                          className={`text-sm font-semibold ${isWinner ? "text-green-700 dark:text-slate-300" : "text-zinc-900 dark:text-zinc-100"}`}
                         >
                           {" "}
                           {isWinner && "👑"} {entry.market.name}{" "}
@@ -784,7 +753,7 @@ export const Promocoes: React.FC<{ context: AppContextType }> = ({
                         />{" "}
                       </div>{" "}
                       {isWinner && marketComparison.length > 1 && (
-                        <div className="text-[11px] font-semibold text-green-700 dark:text-green-500 mt-1.5">
+                        <div className="text-[11px] font-semibold text-green-700 dark:text-slate-300 mt-1.5">
                           {" "}
                           Economia de{""}{" "}
                           <span className="money-value">

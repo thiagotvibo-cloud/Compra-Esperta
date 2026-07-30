@@ -1,12 +1,14 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-function getAi() { return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' }); }
+function getAi() { 
+  return new OpenAI({ apiKey: process.env.COMPRAS || '' }); 
+}
 
 async function startServer() {
   const app = express();
@@ -14,13 +16,13 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API Route for Gemini Tip
+  // API Route for Gemini Tip (now OpenAI Tip)
   app.post("/api/tip", async (req, res) => {
     try {
       const { essentialItems } = req.body;
       
-      if (!process.env.GEMINI_API_KEY) {
-         return res.status(500).json({ error: "Gemini API key is not configured inside server." });
+      if (!process.env.COMPRAS) {
+         return res.status(500).json({ error: "OpenAI API key (COMPRAS) is not configured inside server." });
       }
 
       if (!essentialItems || essentialItems.length === 0) {
@@ -28,68 +30,112 @@ async function startServer() {
       }
 
       const prompt = `Gere uma pequena dica de economia diária (máximo 2 frases curtas) baseada nos seguintes itens que o usuário considera essenciais na sua lista de compras: ${essentialItems.join(', ')}. Não use markdown, seja direto e útil.`;
-
-      const response = await getAi().models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
+      
+      const response = await getAi().chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
       });
-
-      res.json({ tip: response.text });
-    } catch (error) {
-      if (error?.status === 400 || (error?.message && error.message.includes("API key not valid"))) {
-         console.warn("Gemini tip warning: API key not valid");
-         return res.status(500).json({ error: "Chave de API do Gemini inválida. Configure no menu Settings." });
+      
+      res.json({ tip: response.choices[0].message.content });
+    } catch (err) { 
+      const error = err as any;
+      if (error?.status === 429) {
+        if (req.path === '/api/recipe') {
+             return res.json({
+               receitas: [
+                 {
+                   nome: "⚠️ Limite da API Atingido",
+                   ingredientes: ["Sua cota da OpenAI", "Acabou"],
+                   tempo: "0 min",
+                   motivo: "Erro 429: Você excedeu sua cota atual da OpenAI. Adicione créditos em platform.openai.com.",
+                   instrucoes: ["Acesse platform.openai.com", "Verifique seu plano e saldo", "Adicione créditos se necessário"]
+                 }
+               ]
+             });
+        } else if (req.path === '/api/chat') {
+             return res.json({ text: "⚠️ **Atenção:** A cota da sua chave de API da OpenAI acabou (Erro 429). Por favor, verifique seu plano e adicione saldo em platform.openai.com para que eu possa voltar a funcionar normalmente!" });
+        } else if (req.path === '/api/tip') {
+             return res.json({ tip: "Dica: Sua cota da OpenAI acabou. Verifique seu saldo para receber dicas reais!" });
+        }
       }
-      console.error("Gemini tip error:", error);
+      
+      if (error?.status === 403 || error?.status === 401 || (error?.message && error.message.includes("API key"))) {
+         return res.json({ tip: "Dica (Demo): Defina um limite de gastos para o mês e acompanhe pelo aplicativo." });
+      }
+      console.error("OpenAI tip error:", error);
       res.status(500).json({ error: "Erro ao gerar dica de economia." });
-
     }
   });
-
   
   app.post("/api/chat", async (req, res) => {
     try {
       const { messages, contextData } = req.body;
-      if (!process.env.GEMINI_API_KEY) {
-         return res.status(500).json({ error: "Gemini API key is not configured." });
+      let validMessages = messages;
+      if (validMessages && validMessages.length > 0 && validMessages[0].role === "model") {
+        validMessages = validMessages.slice(1);
+      }
+
+      if (!process.env.COMPRAS) {
+         return res.status(500).json({ error: "OpenAI API key (COMPRAS) is not configured." });
       }
       
       const systemInstruction = `Você é um agente de IA assistente de planejamento doméstico e financeiro no app 'Compra Esperta'.
 Responda sempre em português, de forma amigável, clara e concisa. Não use formatações complexas.
 Foque em planejamento doméstico, orçamentos, lista de compras e ideias de refeições.
-
 Contexto atual da casa:
 - Orçamento Mensal: R$ ${contextData.budget}
 - Gasto no mês atual: R$ ${contextData.spent}
 - Saldo: R$ ${contextData.remaining}
-- Itens na lista de compras (resumo): ${contextData.listItems || 'nenhum'}
-`;
+- Itens na lista de compras (resumo): ${contextData.listItems || 'nenhum'}`;
 
-      const response = await getAi().models.generateContent({
-        model: "gemini-2.5-flash",
-        config: {
-          systemInstruction: systemInstruction
-        },
-        contents: messages,
+      const formattedMessages = validMessages.map((msg: any) => ({
+        role: msg.role === 'model' ? 'assistant' : 'user',
+        content: msg.parts[0].text
+      }));
+      formattedMessages.unshift({ role: 'system', content: systemInstruction });
+
+      const response = await getAi().chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: formattedMessages,
       });
-      res.json({ text: response.text });
-    } catch (error) {
-      if (error?.status === 400 || (error?.message && error.message.includes("API key not valid"))) {
-         console.warn("Gemini chat warning: API key not valid");
-         return res.status(500).json({ error: "Chave de API do Gemini inválida. Configure no menu Settings." });
-      }
-      console.error("Gemini chat error:", error);
-      res.status(500).json({ error: "Erro ao gerar resposta da IA." });
 
+      res.json({ text: response.choices[0].message.content });
+    } catch (err) { 
+      const error = err as any;
+      if (error?.status === 429) {
+        if (req.path === '/api/recipe') {
+             return res.json({
+               receitas: [
+                 {
+                   nome: "⚠️ Limite da API Atingido",
+                   ingredientes: ["Sua cota da OpenAI", "Acabou"],
+                   tempo: "0 min",
+                   motivo: "Erro 429: Você excedeu sua cota atual da OpenAI. Adicione créditos em platform.openai.com.",
+                   instrucoes: ["Acesse platform.openai.com", "Verifique seu plano e saldo", "Adicione créditos se necessário"]
+                 }
+               ]
+             });
+        } else if (req.path === '/api/chat') {
+             return res.json({ text: "⚠️ **Atenção:** A cota da sua chave de API da OpenAI acabou (Erro 429). Por favor, verifique seu plano e adicione saldo em platform.openai.com para que eu possa voltar a funcionar normalmente!" });
+        } else if (req.path === '/api/tip') {
+             return res.json({ tip: "Dica: Sua cota da OpenAI acabou. Verifique seu saldo para receber dicas reais!" });
+        }
+      }
+      
+      if (error?.status === 403 || error?.status === 401 || (error?.message && error.message.includes("API key"))) {
+         return res.json({ text: "Oi! Sou seu assistente. No momento estou operando no modo demonstração (chave de API ausente/inválida), mas recomendo sempre planejar suas compras antes de ir ao mercado para economizar!" });
+      }
+      console.error("OpenAI chat error:", error);
+      res.status(500).json({ error: "Erro ao gerar resposta da IA." });
     }
   });
-
   
   app.post("/api/recipe", async (req, res) => {
     try {
       const { ingredients } = req.body;
-      if (!process.env.GEMINI_API_KEY) {
-         return res.status(500).json({ error: "Gemini API key is not configured." });
+
+      if (!process.env.COMPRAS) {
+         return res.status(500).json({ error: "OpenAI API key (COMPRAS) is not configured." });
       }
       
       const prompt = `Você é o "Cozinheiro Antidesperdício", focado em sugerir receitas simples e práticas para evitar desperdício.
@@ -107,23 +153,51 @@ Sugira até 2 receitas. Retorne EXATAMENTE UM JSON válido (e nada mais, sem mar
   ]
 }`;
 
-      const response = await getAi().models.generateContent({
-        model: "gemini-2.5-flash",
-        config: {
-          responseMimeType: "application/json"
-        },
-        contents: prompt,
+      const response = await getAi().chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" }
       });
       
-      res.json(JSON.parse(response.text));
-    } catch (error) {
-      if (error?.status === 400 || (error?.message && error.message.includes("API key not valid"))) {
-         console.warn("Gemini recipe warning: API key not valid");
-         return res.status(500).json({ error: "Chave de API do Gemini inválida. Configure no menu Settings." });
+      const content = response.choices[0].message.content || "{}";
+      res.json(JSON.parse(content));
+    } catch (err) { 
+      const error = err as any;
+      if (error?.status === 429) {
+        if (req.path === '/api/recipe') {
+             return res.json({
+               receitas: [
+                 {
+                   nome: "⚠️ Limite da API Atingido",
+                   ingredientes: ["Sua cota da OpenAI", "Acabou"],
+                   tempo: "0 min",
+                   motivo: "Erro 429: Você excedeu sua cota atual da OpenAI. Adicione créditos em platform.openai.com.",
+                   instrucoes: ["Acesse platform.openai.com", "Verifique seu plano e saldo", "Adicione créditos se necessário"]
+                 }
+               ]
+             });
+        } else if (req.path === '/api/chat') {
+             return res.json({ text: "⚠️ **Atenção:** A cota da sua chave de API da OpenAI acabou (Erro 429). Por favor, verifique seu plano e adicione saldo em platform.openai.com para que eu possa voltar a funcionar normalmente!" });
+        } else if (req.path === '/api/tip') {
+             return res.json({ tip: "Dica: Sua cota da OpenAI acabou. Verifique seu saldo para receber dicas reais!" });
+        }
       }
-      console.error("Gemini recipe error:", error);
+      
+      if (error?.status === 403 || error?.status === 401 || (error?.message && error.message.includes("API key"))) {
+         return res.json({
+           receitas: [
+             {
+               nome: "Omelete Antidesperdício",
+               ingredientes: ["Ovos", "Restos de legumes", "Temperos a gosto"],
+               tempo: "15 min",
+               motivo: "Usa os ingredientes de forma rápida e aproveita o que sobrou.",
+               instrucoes: ["Bata os ovos", "Misture os legumes picados", "Frite em uma frigideira antiaderente"]
+             }
+           ]
+         });
+      }
+      console.error("OpenAI recipe error:", error);
       res.status(500).json({ error: "Erro ao gerar receita." });
-
     }
   });
 

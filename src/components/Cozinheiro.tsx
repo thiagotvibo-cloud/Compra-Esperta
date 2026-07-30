@@ -79,17 +79,17 @@ export const Cozinheiro: React.FC<{ context: AppContextType; isOpen: boolean; on
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-[90] backdrop-blur-sm"
           />
           <motion.div
             initial={{ y: "100%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 h-[85vh] bg-zinc-50 dark:bg-zinc-900 rounded-t-3xl shadow-2xl z-50 flex flex-col md:w-[600px] md:h-[80vh] md:m-auto md:top-0 md:bottom-0 md:rounded-3xl border border-zinc-200 dark:border-zinc-800"
+            className="fixed bottom-0 left-0 right-0 h-[85vh] bg-zinc-50 dark:bg-zinc-900 rounded-t-[28px] shadow-sm z-[100] flex flex-col md:w-[600px] md:h-[80vh] md:m-auto md:top-0 md:bottom-0 md:rounded-3xl border border-zinc-200 dark:border-zinc-800"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 md:rounded-t-3xl rounded-t-3xl">
+            <div className="flex items-center justify-between px-6 py-5 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 md:rounded-t-[28px] rounded-t-[28px]">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center">
                   <ChefHat size={24} />

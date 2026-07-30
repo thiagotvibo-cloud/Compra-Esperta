@@ -287,10 +287,10 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
       <div className="px-6 mt-4 mb-2">
         <button 
           onClick={() => context.setActiveTab("roteiro")}
-          className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform"
+          className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[16px] p-4 flex items-center justify-between shadow-sm active:scale-[0.98] transition-transform"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-500 flex items-center justify-center rounded-xl">
+            <div className="w-10 h-10 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-slate-300 flex items-center justify-center rounded-xl">
               <Map size={20} />
             </div>
             <div className="text-left">
@@ -305,7 +305,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
       </div>
 
       <div className="px-6 pt-4 pb-2">
-        <div className={`rounded-3xl p-5 border shadow-sm transition-colors duration-500 flex flex-col ${budgetPercent >= 100 ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900/50' : totalSpent > 0 ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900/50' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800'}`}>
+        <div className={`rounded-[20px] p-4 border shadow-sm transition-colors duration-500 flex flex-col ${budgetPercent >= 100 ? 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900/50' : totalSpent > 0 ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900/50' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800'}`}>
           
           <div className="mb-4 bg-white/60 dark:bg-zinc-950/50 backdrop-blur-sm rounded-xl flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-zinc-800/80">
             <Store className={`${budgetPercent >= 100 ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`} size={16} />
@@ -369,8 +369,8 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
       <div className="px-6 relative mt-4">
         {/* AVULSO ADD */}
         {showAvulso && (
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-zinc-800 mb-6 flex items-center gap-3 animate-in slide-in-from-top-4 fade-in">
-            <div className="flex-1 bg-slate-50 dark:bg-zinc-950 rounded-2xl relative flex items-center border border-slate-200 dark:border-zinc-800 focus-within:ring-2 focus-within:ring-green-500 transition-shadow">
+          <div className="bg-white dark:bg-zinc-900 rounded-[20px] p-4 shadow-sm border border-slate-200 dark:border-zinc-800 mb-6 flex items-center gap-3 animate-in slide-in-from-top-4 fade-in">
+            <div className="flex-1 bg-slate-50 dark:bg-zinc-950 rounded-[16px] relative flex items-center border border-slate-200 dark:border-zinc-800 focus-within:ring-2 focus-within:ring-green-500 transition-shadow">
               <span className="absolute left-4 font-bold text-slate-400">R$</span>
               <input
                 autoFocus
@@ -390,7 +390,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             </div>
             <button
               onClick={handleAvulsoAdd}
-              className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-semibold text-sm active:scale-[0.97] transition-all"
+              className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-[16px] font-semibold text-sm active:scale-[0.97] transition-all"
             >
               Adicionar
             </button>
@@ -398,7 +398,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
         )}
 
         {/* ITEMS LIST */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           {Object.entries<Item[]>(itemsByCategory)
             .sort(([catA], [catB]) => catA.localeCompare(catB))
             .map(([category, catItems]) => {
@@ -427,7 +427,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                     {catItems.map((item) => (
                       <div
                         key={item.id}
-                        className={`p-3 rounded-2xl border transition-all duration-300 ease-out flex gap-3 items-center ${
+                        className={`p-3 rounded-[16px] border transition-all duration-300 ease-out flex gap-3 items-center ${
                           item.isBought
                             ? "bg-slate-50 dark:bg-zinc-950/50 border-transparent opacity-60"
                             : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 shadow-sm"
@@ -518,7 +518,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                                 className={`w-full pl-6 pr-2 py-1.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 text-[14px] transition-colors ${
                                   item.isBought
                                     ? "bg-transparent text-slate-500 dark:text-slate-400"
-                                    : "bg-slate-50 dark:bg-zinc-950 text-green-700 dark:text-green-500"
+                                    : "bg-slate-50 dark:bg-zinc-950 text-green-700 dark:text-slate-300"
                                 }`}
                               />
                             </div>
@@ -632,7 +632,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
           onClick={() => setShowFinishConfirm(false)}
         >
           <div
-            className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl text-center"
+            className="bg-white dark:bg-zinc-900 rounded-[20px] p-4 w-full max-w-sm shadow-xl text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-16 h-16 bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 dark:border-zinc-800">
@@ -647,13 +647,13 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
             <div className="flex gap-3">
               <button
                 onClick={() => setShowFinishConfirm(false)}
-                className="flex-1 py-3 rounded-2xl font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 transition-colors"
+                className="flex-1 py-3 rounded-[16px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 transition-colors"
               >
                 Voltar
               </button>
               <button
                 onClick={finishPurchase}
-                className="flex-1 py-3 rounded-2xl font-bold text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 transition-colors"
+                className="flex-1 py-3 rounded-[16px] font-bold text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 transition-colors"
               >
                 Sim, Finalizar
               </button>
@@ -698,7 +698,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white dark:bg-zinc-900 rounded-3xl p-6 w-full max-w-sm shadow-xl border border-slate-200 dark:border-zinc-800"
+              className="bg-white dark:bg-zinc-900 rounded-[20px] p-4 w-full max-w-sm shadow-xl border border-slate-200 dark:border-zinc-800"
             >
               <div className="text-center mb-4">
                 <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -728,7 +728,7 @@ export const ModoCompra: React.FC<{ context: AppContextType }> = ({
                   </div>
                 )}
                 {context.settings.budget > 0 && purchaseSummary.total < context.settings.budget && (
-                  <div className="bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-3 text-center mt-2">
+                  <div className="bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-[16px] p-3 text-center mt-2">
                     <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                       🎯 Ficou <span className="money-value text-slate-900 dark:text-slate-100">{formatMoney(context.settings.budget - purchaseSummary.total)}</span> abaixo do orçamento!
                     </span>
