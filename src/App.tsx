@@ -12,7 +12,6 @@ import { Promocoes } from "./components/Promocoes";
 import { ModoCompra } from "./components/ModoCompra";
 import { MenuExtra } from "./components/MenuExtra";
 import { Dashboard } from "./components/Dashboard";
-import { AgenteIA } from "./components/AgenteIA";
 import { Roteiro } from "./components/Roteiro";
 import { AuthUI } from "./components/Auth";
 import { supabase } from "./lib/supabase";
@@ -748,11 +747,10 @@ export default function App() {
           </AnimatePresence>{" "}
         </main>
         <ModoMarmiteiro context={context} />
-        <AgenteIA context={context} />{" "}
         {/* BOTTOM NAVIGATION */}{" "}
         <nav className="md:hidden fixed bottom-0 w-full max-w-md bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 py-2 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           {" "}
-          <div className="flex justify-between w-full items-center px-1 overflow-x-auto gap-2 scrollbar-hide">
+          <div className="flex justify-between w-full items-center px-1">
             {" "}
             <NavButton active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")} icon={<LayoutDashboard size={24} />} label="Painel" />
             <NavButton
@@ -805,7 +803,7 @@ function NavButton({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-full min-w-[4.5rem] shrink-0 gap-1 pt-1.5 pb-1 transition-colors relative ${
+      className={`flex flex-col items-center justify-center min-w-[4.5rem] shrink-0 px-1 gap-1 pt-1.5 pb-1 transition-colors relative ${
         active
           ? "text-green-700 dark:text-green-500 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-500 dark:text-zinc-400 font-medium"

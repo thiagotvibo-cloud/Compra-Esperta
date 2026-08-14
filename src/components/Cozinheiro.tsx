@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AppContextType } from "../types";
 import { motion, AnimatePresence } from "motion/react";
 import { ChefHat, X, Clock, Flame, Leaf, Loader2 } from "lucide-react";
-
-interface Recipe {
-  nome: string;
-  ingredientes: string[];
-  tempo: string;
-  motivo: string;
-  instrucoes: string[];
-}
+import { recipesDatabase, Recipe } from "../data/recipes";
 
 export const Cozinheiro: React.FC<{ context: AppContextType; isOpen: boolean; onClose: () => void }> = ({ context, isOpen, onClose }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -18,57 +11,57 @@ export const Cozinheiro: React.FC<{ context: AppContextType; isOpen: boolean; on
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !hasFetched && recipes.length === 0) {
+    if (isOpen) {
       fetchRecipes();
     }
-  }, [isOpen]);
+  }, [isOpen, context.items]);
 
   const fetchRecipes = async () => {
     setIsLoading(true);
     setError("");
     setHasFetched(true);
     
-    // Simulating pantry based on recently bought items + list items
-    // First, try to get items that are marked as isBought in the current list
-    let availableItems = context.items.filter(i => i.isBought).map(i => i.name);
+    // Simulating API delay
+    await new Promise(r => setTimeout(r, 600));
     
-    // If not enough, pull from the current shopping list to pretend they might have it
-    if (availableItems.length < 3) {
-      availableItems = [...availableItems, ...context.items.slice(0, 10).map(i => i.name)];
-    }
+    const userItemNames = context.items.map(i => i.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim());
     
-    // If still empty, provide some defaults
-    if (availableItems.length === 0) {
-      availableItems = ["arroz", "feijão", "ovos", "cebola", "tomate"];
+    if (userItemNames.length === 0) {
+      setRecipes(recipesDatabase.slice(0, 5));
+      setIsLoading(false);
+      return;
     }
 
-    // Deduplicate
-    availableItems = [...new Set(availableItems)];
-    
-    const ingredientsStr = availableItems.slice(0, 15).join(', ');
-
-    try {
-      const response = await fetch("/api/recipe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: ingredientsStr }),
+    const scoredRecipes = recipesDatabase.map(recipe => {
+      let matchCount = 0;
+      const ingredients = recipe.ingredientes.map(ing => ing.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim());
+      
+      ingredients.forEach(ing => {
+        const isMatch = userItemNames.some(uItem => {
+          if (uItem.length < 3) return false;
+          return ing.includes(uItem) || uItem.includes(ing);
+        });
+        if (isMatch) matchCount++;
       });
 
-      const data = await response.json();
-      
-      if (data.error) {
-         setError(data.error);
-      } else if (data.receitas) {
-         setRecipes(data.receitas);
-      } else {
-         setError("Não foi possível gerar as receitas. Tente novamente.");
-      }
-    } catch (err) {
-      setError("Erro de conexão ao buscar receitas.");
-    } finally {
-      setIsLoading(false);
+      return {
+        recipe,
+        matchCount,
+        matchPercentage: matchCount / ingredients.length
+      };
+    });
+
+    scoredRecipes.sort((a, b) => b.matchPercentage - a.matchPercentage || b.matchCount - a.matchCount);
+
+    if (scoredRecipes[0].matchCount === 0) {
+      setRecipes(recipesDatabase.slice(0, 5));
+    } else {
+      setRecipes(scoredRecipes.slice(0, 4).map(r => r.recipe));
     }
+
+    setIsLoading(false);
   };
+
 
   return (
     <AnimatePresence>
